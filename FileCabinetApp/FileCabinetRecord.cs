@@ -1,6 +1,4 @@
-﻿using System;
-
-public class FileCabinetRecord
+﻿public class FileCabinetRecord
 {
     public int Id { get; set; }
 
