@@ -1,21 +1,30 @@
-﻿public class FileCabinetService
+﻿public static class FileCabinetService
 {
-    private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+    private static readonly List<FileCabinetRecord> List = new List<FileCabinetRecord>();
 
-    public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth)
+    public static int CreateRecord(string firstName, string lastName, DateTime dateOfBirth)
     {
-        // TODO: добавьте реализацию метода
-        return 0;
+        var record = new FileCabinetRecord
+        {
+            Id = List.Count + 1,
+            FirstName = firstName,
+            LastName = lastName,
+            DateOfBirth = dateOfBirth,
+        };
+
+        List.Add(record);
+
+        return record.Id;
     }
 
-    public FileCabinetRecord[] GetRecords()
+    public static FileCabinetRecord[] GetRecords()
     {
         // TODO: добавьте реализацию метода
         return Array.Empty<FileCabinetRecord>();
     }
 
-    public int GetStat()
+    public static int GetStat()
     {
-        return this.list.Count;
+        return List.Count;
     }
 }

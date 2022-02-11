@@ -15,6 +15,7 @@
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
+            new Tuple<string, Action<string>>("create", Create),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -22,6 +23,7 @@
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
+            new string[] { "create", "save data to record", "The 'create' command save data to record" },
         };
 
         public static void Main(string[] args)
@@ -100,8 +102,23 @@
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.fileCabinetService.GetStat();
+            var recordsCount = FileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void Create(string parameters)
+        {
+            Console.WriteLine("First name:");
+            var firstName = Console.ReadLine();
+
+            Console.WriteLine("Last name:");
+            var lastName = Console.ReadLine();
+
+            Console.WriteLine("Date of birth:");
+            var dateOfBirth = DateTime.Parse(Console.ReadLine());
+
+            var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth);
+            Console.WriteLine($"Record #{number} is created.");
         }
     }
 }
