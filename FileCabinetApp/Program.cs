@@ -16,6 +16,7 @@
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
+            new Tuple<string, Action<string>>("list", List),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -23,7 +24,8 @@
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
-            new string[] { "create", "save data to record", "The 'create' command save data to record" },
+            new string[] { "create", "saves data to record", "The 'create' command saves data to record" },
+            new string[] { "list", "prints a list of records", "The 'list' command prints a list of records" },
         };
 
         public static void Main(string[] args)
@@ -108,17 +110,56 @@
 
         private static void Create(string parameters)
         {
-            Console.WriteLine("First name:");
+            Console.Write("First name: ");
             var firstName = Console.ReadLine();
 
-            Console.WriteLine("Last name:");
+            Console.Write("Last name: ");
             var lastName = Console.ReadLine();
 
-            Console.WriteLine("Date of birth:");
-            var dateOfBirth = DateTime.Parse(Console.ReadLine());
+            Console.Write("Date of birth: ");
+            var date = Console.ReadLine();
+            DateTime dateOfBirth;
+
+            if (!DateTime.TryParse(date, out dateOfBirth) || string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+            {
+                Console.WriteLine("incorrect format.");
+                return;
+            }
 
             var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth);
             Console.WriteLine($"Record #{number} is created.");
+        }
+
+        private static void List(string parameters)
+        {
+            var records = FileCabinetService.GetRecords();
+            if (records.Length == 0)
+            {
+                Console.WriteLine("records were not created");
+            }
+            else
+            {
+                foreach (var record in records)
+                {
+                    string month = record.DateOfBirth.Month switch
+                    {
+                        1 => "Jan",
+                        2 => "Feb",
+                        3 => "Mar",
+                        4 => "Apr",
+                        5 => "May",
+                        6 => "Jun",
+                        7 => "Jul",
+                        8 => "Aug",
+                        9 => "Sep",
+                        10 => "Oct",
+                        11 => "Nov",
+                        12 => "Dec",
+                        _ => "incorrect format."
+                    };
+                    Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.Year}-{month}-{record.DateOfBirth.Day}");
+                }
+            }
         }
     }
 }

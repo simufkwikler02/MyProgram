@@ -19,8 +19,20 @@
 
     public static FileCabinetRecord[] GetRecords()
     {
-        // TODO: добавьте реализацию метода
-        return Array.Empty<FileCabinetRecord>();
+        if (List.Count == 0)
+        {
+            return Array.Empty<FileCabinetRecord>();
+        }
+        else
+        {
+            var records = new FileCabinetRecord[List.Count];
+            foreach (var record in List)
+            {
+                records[record.Id - 1] = record;
+            }
+
+            return records;
+        }
     }
 
     public static int GetStat()
