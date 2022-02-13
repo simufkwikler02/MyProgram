@@ -2,8 +2,39 @@
 {
     private static readonly List<FileCabinetRecord> List = new List<FileCabinetRecord>();
 
-    public static int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+    public static int CreateRecord(string? firstName, string? lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
     {
+        if (string.IsNullOrEmpty(firstName) || firstName.Length < 2 || firstName.Length > 60)
+        {
+            throw new ArgumentException("incorrect format firstName", nameof(firstName));
+        }
+
+        if (string.IsNullOrEmpty(lastName) || lastName.Length < 2 || lastName.Length > 60)
+        {
+            throw new ArgumentException("incorrect format lastName", nameof(lastName));
+        }
+
+        DateTime minDate = new DateTime(1950, 6, 1);
+        if (minDate > dateOfBirth || DateTime.Now < dateOfBirth)
+        {
+            throw new ArgumentException("incorrect format dateOfBirth", nameof(dateOfBirth));
+        }
+
+        if (property1 < 50 || property1 > 100)
+        {
+            throw new ArgumentException("50 <= property1 <= 100", nameof(property1));
+        }
+
+        if (property2 > 2)
+        {
+            throw new ArgumentException("incorrect format property2", nameof(property2));
+        }
+
+        if (property3 == 'l')
+        {
+            throw new ArgumentException("incorrect format property3", nameof(property3));
+        }
+
         var record = new FileCabinetRecord
         {
             Id = List.Count + 1,

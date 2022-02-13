@@ -158,18 +158,13 @@
 
                 var property3 = Convert.ToChar(line);
 
-                if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
                 var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
                 Console.WriteLine($"Record #{number} is created.");
             }
             catch
             {
-                Console.WriteLine("incorrect format.");
+                Console.WriteLine("incorrect format, try again.");
+                Program.Create(parameters);
             }
         }
 
