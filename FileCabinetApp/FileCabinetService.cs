@@ -2,7 +2,7 @@
 {
     private static readonly List<FileCabinetRecord> List = new List<FileCabinetRecord>();
 
-    public static int CreateRecord(string firstName, string lastName, DateTime dateOfBirth)
+    public static int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
     {
         var record = new FileCabinetRecord
         {
@@ -10,6 +10,9 @@
             FirstName = firstName,
             LastName = lastName,
             DateOfBirth = dateOfBirth,
+            Property1 = property1,
+            Property2 = property2,
+            Property3 = property3,
         };
 
         List.Add(record);

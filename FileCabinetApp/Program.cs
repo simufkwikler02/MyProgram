@@ -110,24 +110,67 @@
 
         private static void Create(string parameters)
         {
-            Console.Write("First name: ");
-            var firstName = Console.ReadLine();
+            try
+            {
+                Console.Write("First name: ");
+                var firstName = Console.ReadLine();
 
-            Console.Write("Last name: ");
-            var lastName = Console.ReadLine();
+                Console.Write("Last name: ");
+                var lastName = Console.ReadLine();
 
-            Console.Write("Date of birth: ");
-            var date = Console.ReadLine();
-            DateTime dateOfBirth;
+                Console.Write("Date of birth: ");
+                var line = Console.ReadLine();
+                if (line == null)
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
 
-            if (!DateTime.TryParse(date, out dateOfBirth) || string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+                var dateOfBirth = DateTime.Parse(line);
+
+                Console.Write("property1 (short): ");
+                line = Console.ReadLine();
+                if (line == null)
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var property1 = Convert.ToInt16(line);
+
+                Console.Write("property2 (decimal): ");
+                line = Console.ReadLine();
+                if (line == null)
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var property2 = Convert.ToDecimal(line);
+
+                Console.Write("property3 (char): ");
+                line = Console.ReadLine();
+                if (line == null)
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var property3 = Convert.ToChar(line);
+
+                if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
+                Console.WriteLine($"Record #{number} is created.");
+            }
+            catch
             {
                 Console.WriteLine("incorrect format.");
-                return;
             }
-
-            var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth);
-            Console.WriteLine($"Record #{number} is created.");
         }
 
         private static void List(string parameters)
@@ -158,6 +201,7 @@
                         _ => "incorrect format."
                     };
                     Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.Year}-{month}-{record.DateOfBirth.Day}");
+                    Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property1}  property3 (char):{record.Property3}");
                 }
             }
         }
