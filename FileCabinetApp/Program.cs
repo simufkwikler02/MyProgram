@@ -17,6 +17,7 @@
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("list", List),
+            new Tuple<string, Action<string>>("edit", Edit),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -26,6 +27,7 @@
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
             new string[] { "create", "saves data to record", "The 'create' command saves data to record" },
             new string[] { "list", "prints a list of records", "The 'list' command prints a list of records" },
+            new string[] { "edit", "edits records", "The 'edit' command edits records" },
         };
 
         public static void Main(string[] args)
@@ -120,7 +122,7 @@
 
                 Console.Write("Date of birth: ");
                 var line = Console.ReadLine();
-                if (line == null)
+                if (string.IsNullOrEmpty(line))
                 {
                     Console.WriteLine("incorrect format.");
                     return;
@@ -130,7 +132,7 @@
 
                 Console.Write("property1 (short): ");
                 line = Console.ReadLine();
-                if (line == null)
+                if (string.IsNullOrEmpty(line))
                 {
                     Console.WriteLine("incorrect format.");
                     return;
@@ -140,7 +142,7 @@
 
                 Console.Write("property2 (decimal): ");
                 line = Console.ReadLine();
-                if (line == null)
+                if (string.IsNullOrEmpty(line))
                 {
                     Console.WriteLine("incorrect format.");
                     return;
@@ -150,7 +152,7 @@
 
                 Console.Write("property3 (char): ");
                 line = Console.ReadLine();
-                if (line == null)
+                if (string.IsNullOrEmpty(line))
                 {
                     Console.WriteLine("incorrect format.");
                     return;
@@ -158,18 +160,13 @@
 
                 var property3 = Convert.ToChar(line);
 
-                if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
                 var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
                 Console.WriteLine($"Record #{number} is created.");
             }
             catch
             {
-                Console.WriteLine("incorrect format.");
+                Console.WriteLine("incorrect format, try again.");
+                Program.Create(parameters);
             }
         }
 
@@ -201,8 +198,81 @@
                         _ => "incorrect format."
                     };
                     Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.Year}-{month}-{record.DateOfBirth.Day}");
-                    Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property1}  property3 (char):{record.Property3}");
+                    Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property2}  property3 (char):{record.Property3}");
+                    Console.WriteLine();
                 }
+            }
+        }
+
+        private static void Edit(string parameters)
+        {
+            Console.Write("record number:");
+            var line = Console.ReadLine();
+            if (string.IsNullOrEmpty(line))
+            {
+                Console.WriteLine("incorrect format.");
+                return;
+            }
+
+            try
+            {
+                int id = Convert.ToInt32(line);
+                if (id < 1 || id > FileCabinetService.GetStat())
+                {
+                    Console.WriteLine($"#{id} record is not found.");
+                    return;
+                }
+
+                Console.Write("First name: ");
+                var firstName = Console.ReadLine();
+
+                Console.Write("Last name: ");
+                var lastName = Console.ReadLine();
+
+                Console.Write("Date of birth: ");
+                line = Console.ReadLine();
+                if (string.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var dateOfBirth = DateTime.Parse(line);
+
+                Console.Write("property1 (short): ");
+                line = Console.ReadLine();
+                if (string.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var property1 = Convert.ToInt16(line);
+
+                Console.Write("property2 (decimal): ");
+                line = Console.ReadLine();
+                if (string.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var property2 = Convert.ToDecimal(line);
+
+                Console.Write("property3 (char): ");
+                line = Console.ReadLine();
+                if (string.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine("incorrect format.");
+                    return;
+                }
+
+                var property3 = Convert.ToChar(line);
+                FileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, property1, property2, property3);
+            }
+            catch
+            {
+                Console.WriteLine("incorrect format");
             }
         }
     }
