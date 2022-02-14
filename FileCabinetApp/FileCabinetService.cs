@@ -20,7 +20,7 @@
             throw new ArgumentException("incorrect format dateOfBirth", nameof(dateOfBirth));
         }
 
-        if (property1 < 50 || property1 > 100)
+        if (property1 < 1 || property1 > 100)
         {
             throw new ArgumentException("50 <= property1 <= 100", nameof(property1));
         }
@@ -72,5 +72,25 @@
     public static int GetStat()
     {
         return List.Count;
+    }
+
+    public static void EditRecord(int id, string? firstName, string? lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+    {
+        foreach (var record in List)
+        {
+            if (record.Id == id)
+            {
+                List.Remove(record);
+                CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
+                var newrecord = List[^1];
+                newrecord.Id = record.Id;
+                List.Insert(id - 1, newrecord);
+                List.RemoveAt(List.Count - 1);
+                Console.WriteLine($"Record #{id} is updated.");
+                return;
+            }
+        }
+
+        throw new ArgumentException("index is not exsist.", nameof(id));
     }
 }
