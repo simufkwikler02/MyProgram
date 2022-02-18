@@ -115,49 +115,25 @@
             try
             {
                 Console.Write("First name: ");
-                var firstName = Console.ReadLine();
+                var firstName = Console.ReadLine() ?? string.Empty;
 
                 Console.Write("Last name: ");
-                var lastName = Console.ReadLine();
+                var lastName = Console.ReadLine() ?? string.Empty;
 
                 Console.Write("Date of birth: ");
-                var line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
+                var line = Console.ReadLine() ?? string.Empty;
                 var dateOfBirth = DateTime.Parse(line);
 
                 Console.Write("property1 (short): ");
-                line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
+                line = Console.ReadLine() ?? string.Empty;
                 var property1 = Convert.ToInt16(line);
 
                 Console.Write("property2 (decimal): ");
-                line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
+                line = Console.ReadLine() ?? string.Empty;
                 var property2 = Convert.ToDecimal(line);
 
                 Console.Write("property3 (char): ");
-                line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
+                line = Console.ReadLine() ?? string.Empty;
                 var property3 = Convert.ToChar(line);
 
                 var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
