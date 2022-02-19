@@ -110,33 +110,40 @@
             Console.WriteLine($"{recordsCount} record(s).");
         }
 
+        private static Tuple<string, string, DateTime, short, decimal, char> EnterData()
+        {
+            Console.Write("First name: ");
+            var firstName = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Last name: ");
+            var lastName = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Date of birth: ");
+            var line = Console.ReadLine() ?? string.Empty;
+            var dateOfBirth = DateTime.Parse(line);
+
+            Console.Write("property1 (short): ");
+            line = Console.ReadLine() ?? string.Empty;
+            var property1 = Convert.ToInt16(line);
+
+            Console.Write("property2 (decimal): ");
+            line = Console.ReadLine() ?? string.Empty;
+            var property2 = Convert.ToDecimal(line);
+
+            Console.Write("property3 (char): ");
+            line = Console.ReadLine() ?? string.Empty;
+            var property3 = Convert.ToChar(line);
+
+            var data = Tuple.Create(firstName, lastName, dateOfBirth, property1, property2, property3);
+            return data;
+        }
+
         private static void Create(string parameters)
         {
             try
             {
-                Console.Write("First name: ");
-                var firstName = Console.ReadLine() ?? string.Empty;
-
-                Console.Write("Last name: ");
-                var lastName = Console.ReadLine() ?? string.Empty;
-
-                Console.Write("Date of birth: ");
-                var line = Console.ReadLine() ?? string.Empty;
-                var dateOfBirth = DateTime.Parse(line);
-
-                Console.Write("property1 (short): ");
-                line = Console.ReadLine() ?? string.Empty;
-                var property1 = Convert.ToInt16(line);
-
-                Console.Write("property2 (decimal): ");
-                line = Console.ReadLine() ?? string.Empty;
-                var property2 = Convert.ToDecimal(line);
-
-                Console.Write("property3 (char): ");
-                line = Console.ReadLine() ?? string.Empty;
-                var property3 = Convert.ToChar(line);
-
-                var number = FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
+                var data = EnterData();
+                var number = FileCabinetService.CreateRecord(data.Item1, data.Item2, data.Item3, data.Item4, data.Item5, data.Item6);
                 Console.WriteLine($"Record #{number} is created.");
             }
             catch
@@ -182,69 +189,20 @@
 
         private static void Edit(string parameters)
         {
-            Console.Write("record number:");
-            var line = Console.ReadLine();
-            if (string.IsNullOrEmpty(line))
-            {
-                Console.WriteLine("incorrect format.");
-                return;
-            }
-
             try
             {
+                Console.Write("record number:");
+                var line = Console.ReadLine() ?? string.Empty;
                 int id = Convert.ToInt32(line);
+
                 if (id < 1 || id > FileCabinetService.GetStat())
                 {
                     Console.WriteLine($"#{id} record is not found.");
                     return;
                 }
 
-                Console.Write("First name: ");
-                var firstName = Console.ReadLine();
-
-                Console.Write("Last name: ");
-                var lastName = Console.ReadLine();
-
-                Console.Write("Date of birth: ");
-                line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
-                var dateOfBirth = DateTime.Parse(line);
-
-                Console.Write("property1 (short): ");
-                line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
-                var property1 = Convert.ToInt16(line);
-
-                Console.Write("property2 (decimal): ");
-                line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
-                var property2 = Convert.ToDecimal(line);
-
-                Console.Write("property3 (char): ");
-                line = Console.ReadLine();
-                if (string.IsNullOrEmpty(line))
-                {
-                    Console.WriteLine("incorrect format.");
-                    return;
-                }
-
-                var property3 = Convert.ToChar(line);
-                FileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, property1, property2, property3);
+                var data = EnterData();
+                FileCabinetService.EditRecord(id, data.Item1, data.Item2, data.Item3, data.Item4, data.Item5, data.Item6);
             }
             catch
             {
