@@ -112,4 +112,23 @@
 
         return result.ToArray();
     }
+
+    public static FileCabinetRecord[] FindByLastName(string lastName)
+    {
+        if (lastName is null)
+        {
+            throw new ArgumentNullException(nameof(lastName));
+        }
+
+        var result = new List<FileCabinetRecord>();
+        foreach (var record in List)
+        {
+            if (string.Equals(record.LastName, lastName, StringComparison.CurrentCultureIgnoreCase))
+            {
+                result.Add(record);
+            }
+        }
+
+        return result.ToArray();
+    }
 }

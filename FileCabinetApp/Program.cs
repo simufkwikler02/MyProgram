@@ -159,7 +159,7 @@
         {
             if (records.Length == 0)
             {
-                Console.WriteLine("records were not created");
+                throw new ArgumentException("records.Length == 0", nameof(records));
             }
             else
             {
@@ -191,7 +191,14 @@
         private static void List(string parameters)
         {
             var records = FileCabinetService.GetRecords();
-            PrintRecords(records);
+            try
+            {
+                PrintRecords(records);
+            }
+            catch
+            {
+                Console.WriteLine("records were not created");
+            }
         }
 
         private static void Edit(string parameters)
@@ -232,6 +239,7 @@
             var commandsForFind = new Tuple<string, Func<string, FileCabinetRecord[]>>[]
             {
             new Tuple<string, Func<string, FileCabinetRecord[]>>("firstName", FileCabinetService.FindByFirstName),
+            new Tuple<string, Func<string, FileCabinetRecord[]>>("lastName", FileCabinetService.FindByLastName),
             };
 
             var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
@@ -240,7 +248,14 @@
                 const int stringIndex = 1;
                 var stringFind = inputs.Length > 1 ? inputs[stringIndex] : string.Empty;
                 stringFind = stringFind.Trim('"');
-                PrintRecords(commandsForFind[index].Item2(stringFind));
+                try
+                {
+                    PrintRecords(commandsForFind[index].Item2(stringFind));
+                }
+                catch
+                {
+                    Console.WriteLine("records were not found");
+                }
             }
             else
             {
