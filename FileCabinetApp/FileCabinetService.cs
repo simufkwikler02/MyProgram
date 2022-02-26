@@ -93,4 +93,23 @@
 
         throw new ArgumentException("index is not exsist.", nameof(id));
     }
+
+    public static FileCabinetRecord[] FindByFirstName(string firstName)
+    {
+        if (firstName is null)
+        {
+            throw new ArgumentNullException(nameof(firstName));
+        }
+
+        var result = new List<FileCabinetRecord>();
+        foreach (var record in List)
+        {
+            if (string.Equals(record.FirstName, firstName, StringComparison.CurrentCultureIgnoreCase))
+            {
+                result.Add(record);
+            }
+        }
+
+        return result.ToArray();
+    }
 }

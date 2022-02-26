@@ -18,6 +18,7 @@
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
+            new Tuple<string, Action<string>>("find", Find),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -28,6 +29,7 @@
             new string[] { "create", "saves data to record", "The 'create' command saves data to record" },
             new string[] { "list", "prints a list of records", "The 'list' command prints a list of records" },
             new string[] { "edit", "edits records", "The 'edit' command edits records" },
+            new string[] { "find {Property} ", "find records", "The 'find' command finds and prints records" },
         };
 
         public static void Main(string[] args)
@@ -153,9 +155,8 @@
             }
         }
 
-        private static void List(string parameters)
+        private static void PrintRecords(FileCabinetRecord[] records)
         {
-            var records = FileCabinetService.GetRecords();
             if (records.Length == 0)
             {
                 Console.WriteLine("records were not created");
@@ -180,11 +181,17 @@
                         12 => "Dec",
                         _ => "incorrect format."
                     };
+                    Console.WriteLine();
                     Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.Year}-{month}-{record.DateOfBirth.Day}");
                     Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property2}  property3 (char):{record.Property3}");
-                    Console.WriteLine();
                 }
             }
+        }
+
+        private static void List(string parameters)
+        {
+            var records = FileCabinetService.GetRecords();
+            PrintRecords(records);
         }
 
         private static void Edit(string parameters)
@@ -207,6 +214,37 @@
             catch
             {
                 Console.WriteLine("incorrect format");
+            }
+        }
+
+        private static void Find(string parameters)
+        {
+            var inputs = parameters != null ? parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
+            const int commandIndex = 0;
+            var command = inputs[commandIndex];
+
+            if (string.IsNullOrEmpty(command))
+            {
+                Console.WriteLine(Program.HintMessage);
+                return;
+            }
+
+            var commandsForFind = new Tuple<string, Func<string, FileCabinetRecord[]>>[]
+            {
+            new Tuple<string, Func<string, FileCabinetRecord[]>>("firstName", FileCabinetService.FindByFirstName),
+            };
+
+            var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
+            if (index >= 0)
+            {
+                const int stringIndex = 1;
+                var stringFind = inputs.Length > 1 ? inputs[stringIndex] : string.Empty;
+                stringFind = stringFind.Trim('"');
+                PrintRecords(commandsForFind[index].Item2(stringFind));
+            }
+            else
+            {
+                PrintMissedCommandInfo(command);
             }
         }
     }
