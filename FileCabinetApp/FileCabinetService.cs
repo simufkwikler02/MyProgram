@@ -131,4 +131,23 @@
 
         return result.ToArray();
     }
+
+    public static FileCabinetRecord[] FindByDateoOfBirth(string dateofbirth)
+    {
+        if (dateofbirth is null)
+        {
+            throw new ArgumentNullException(nameof(dateofbirth));
+        }
+
+        var result = new List<FileCabinetRecord>();
+        foreach (var record in List)
+        {
+            if (DateTime.Parse(dateofbirth) == record.DateOfBirth)
+            {
+                result.Add(record);
+            }
+        }
+
+        return result.ToArray();
+    }
 }

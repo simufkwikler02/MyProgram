@@ -240,6 +240,7 @@
             {
             new Tuple<string, Func<string, FileCabinetRecord[]>>("firstName", FileCabinetService.FindByFirstName),
             new Tuple<string, Func<string, FileCabinetRecord[]>>("lastName", FileCabinetService.FindByLastName),
+            new Tuple<string, Func<string, FileCabinetRecord[]>>("dateofbirth", FileCabinetService.FindByDateoOfBirth),
             };
 
             var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
