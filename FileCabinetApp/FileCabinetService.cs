@@ -2,6 +2,8 @@
 {
     private static readonly List<FileCabinetRecord> List = new List<FileCabinetRecord>();
 
+    private static readonly Dictionary<string, List<FileCabinetRecord>> FirstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+
     public static int CreateRecord(string? firstName, string? lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
     {
         if (string.IsNullOrEmpty(firstName) || firstName.Length < 2 || firstName.Length > 60)
@@ -48,6 +50,13 @@
 
         List.Add(record);
 
+        if (!FirstNameDictionary.ContainsKey(firstName))
+        {
+            FirstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
+        }
+
+        FirstNameDictionary[firstName].Add(record);
+
         return record.Id;
     }
 
@@ -81,6 +90,7 @@
             if (record.Id == id)
             {
                 List.Remove(record);
+                FirstNameDictionary[record.FirstName].Remove(record);
                 CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
                 var newrecord = List[^1];
                 newrecord.Id = record.Id;
@@ -101,16 +111,7 @@
             throw new ArgumentNullException(nameof(firstName));
         }
 
-        var result = new List<FileCabinetRecord>();
-        foreach (var record in List)
-        {
-            if (string.Equals(record.FirstName, firstName, StringComparison.CurrentCultureIgnoreCase))
-            {
-                result.Add(record);
-            }
-        }
-
-        return result.ToArray();
+        return FirstNameDictionary[firstName].ToArray();
     }
 
     public static FileCabinetRecord[] FindByLastName(string lastName)
