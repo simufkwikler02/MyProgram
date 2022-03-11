@@ -1,9 +1,12 @@
-﻿namespace FileCabinetApp
+﻿using System.Globalization;
+
+namespace FileCabinetApp
 {
     public static class Program
     {
         private const string DeveloperName = "Azemsha Oleg";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
@@ -29,7 +32,7 @@
             new string[] { "create", "saves data to record", "The 'create' command saves data to record" },
             new string[] { "list", "prints a list of records", "The 'list' command prints a list of records" },
             new string[] { "edit", "edits records", "The 'edit' command edits records" },
-            new string[] { "find {Property} ", "find records", "The 'find' command finds and prints records" },
+            new string[] { "find", "find records", "The 'find' command finds and prints records" },
         };
 
         public static void Main(string[] args)
@@ -52,7 +55,7 @@
                     continue;
                 }
 
-                var index = Array.FindIndex(commands, 0, commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(commands, 0, commands.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)
                 {
                     const int parametersIndex = 1;
@@ -77,7 +80,7 @@
         {
             if (!string.IsNullOrEmpty(parameters))
             {
-                var index = Array.FindIndex(helpMessages, 0, helpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(helpMessages, 0, helpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)
                 {
                     Console.WriteLine(helpMessages[index][Program.ExplanationHelpIndex]);
@@ -122,19 +125,19 @@
 
             Console.Write("Date of birth: ");
             var line = Console.ReadLine() ?? string.Empty;
-            var dateOfBirth = DateTime.Parse(line);
+            var dateOfBirth = DateTime.Parse(line, CultureInfo.CurrentCulture);
 
             Console.Write("property1 (short): ");
             line = Console.ReadLine() ?? string.Empty;
-            var property1 = Convert.ToInt16(line);
+            var property1 = Convert.ToInt16(line, CultureInfo.CurrentCulture);
 
             Console.Write("property2 (decimal): ");
             line = Console.ReadLine() ?? string.Empty;
-            var property2 = Convert.ToDecimal(line);
+            var property2 = Convert.ToDecimal(line, CultureInfo.CurrentCulture);
 
             Console.Write("property3 (char): ");
             line = Console.ReadLine() ?? string.Empty;
-            var property3 = Convert.ToChar(line);
+            var property3 = Convert.ToChar(line, CultureInfo.CurrentCulture);
 
             var data = Tuple.Create(firstName, lastName, dateOfBirth, property1, property2, property3);
             return data;
@@ -207,7 +210,7 @@
             {
                 Console.Write("record number:");
                 var line = Console.ReadLine() ?? string.Empty;
-                int id = Convert.ToInt32(line);
+                int id = Convert.ToInt32(line, CultureInfo.CurrentCulture);
 
                 if (id < 1 || id > FileCabinetService.GetStat())
                 {
@@ -232,7 +235,7 @@
 
             if (string.IsNullOrEmpty(command))
             {
-                Console.WriteLine(Program.HintMessage);
+                Console.WriteLine(Program.HintMessageFind);
                 return;
             }
 
@@ -243,7 +246,7 @@
             new Tuple<string, Func<string, FileCabinetRecord[]>>("dateofbirth", FileCabinetService.FindByDateoOfBirth),
             };
 
-            var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
+            var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
             if (index >= 0)
             {
                 const int stringIndex = 1;
