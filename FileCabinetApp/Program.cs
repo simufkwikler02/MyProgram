@@ -115,7 +115,7 @@ namespace FileCabinetApp
             Console.WriteLine($"{recordsCount} record(s).");
         }
 
-        private static Tuple<string, string, DateTime, short, decimal, char> EnterData()
+        private static FileCabinetRecord EnterData()
         {
             Console.Write("First name: ");
             var firstName = Console.ReadLine() ?? string.Empty;
@@ -139,7 +139,7 @@ namespace FileCabinetApp
             line = Console.ReadLine() ?? string.Empty;
             var property3 = Convert.ToChar(line, CultureInfo.CurrentCulture);
 
-            var data = Tuple.Create(firstName, lastName, dateOfBirth, property1, property2, property3);
+            var data = new FileCabinetRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
             return data;
         }
 
@@ -147,8 +147,8 @@ namespace FileCabinetApp
         {
             try
             {
-                var data = EnterData();
-                var number = FileCabinetService.CreateRecord(data.Item1, data.Item2, data.Item3, data.Item4, data.Item5, data.Item6);
+                var record = EnterData();
+                var number = FileCabinetService.CreateRecord(record);
                 Console.WriteLine($"Record #{number} is created.");
             }
             catch
@@ -218,8 +218,8 @@ namespace FileCabinetApp
                     return;
                 }
 
-                var data = EnterData();
-                FileCabinetService.EditRecord(id, data.Item1, data.Item2, data.Item3, data.Item4, data.Item5, data.Item6);
+                var newRecord = EnterData();
+                FileCabinetService.EditRecord(id, newRecord);
             }
             catch
             {

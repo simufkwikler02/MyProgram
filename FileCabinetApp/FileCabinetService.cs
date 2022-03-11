@@ -10,74 +10,63 @@ namespace FileCabinetApp
         private static readonly Dictionary<string, List<FileCabinetRecord>> LastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private static readonly Dictionary<DateTime, List<FileCabinetRecord>> DateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
-        public static int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+        public static int CreateRecord(FileCabinetRecord newRecord)
         {
-            if (string.IsNullOrEmpty(firstName) || firstName.Length < 2 || firstName.Length > 60)
+            if (string.IsNullOrEmpty(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
             {
-                throw new ArgumentException("incorrect format firstName", nameof(firstName));
+                throw new ArgumentException("incorrect format firstName", nameof(newRecord));
             }
 
-            if (string.IsNullOrEmpty(lastName) || lastName.Length < 2 || lastName.Length > 60)
+            if (string.IsNullOrEmpty(newRecord.LastName) || newRecord.LastName.Length < 2 || newRecord.LastName.Length > 60)
             {
-                throw new ArgumentException("incorrect format lastName", nameof(lastName));
+                throw new ArgumentException("incorrect format lastName", nameof(newRecord));
             }
 
             DateTime minDate = new DateTime(1950, 6, 1);
-            if (minDate > dateOfBirth || DateTime.Now < dateOfBirth)
+            if (minDate > newRecord.DateOfBirth || DateTime.Now < newRecord.DateOfBirth)
             {
-                throw new ArgumentException("incorrect format dateOfBirth", nameof(dateOfBirth));
+                throw new ArgumentException("incorrect format dateOfBirth", nameof(newRecord));
             }
 
-            if (property1 < 1 || property1 > 100)
+            if (newRecord.Property1 < 1 || newRecord.Property1 > 100)
             {
-                throw new ArgumentException("50 <= property1 <= 100", nameof(property1));
+                throw new ArgumentException("50 <= property1 <= 100", nameof(newRecord));
             }
 
-            if (property2 > 2)
+            if (newRecord.Property2 > 2)
             {
-                throw new ArgumentException("incorrect format property2", nameof(property2));
+                throw new ArgumentException("incorrect format property2", nameof(newRecord));
             }
 
-            if (property3 == 'l')
+            if (newRecord.Property3 == 'l')
             {
-                throw new ArgumentException("incorrect format property3", nameof(property3));
+                throw new ArgumentException("incorrect format property3", nameof(newRecord));
             }
 
-            var record = new FileCabinetRecord
-            {
-                Id = List.Count + 1,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dateOfBirth,
-                Property1 = property1,
-                Property2 = property2,
-                Property3 = property3,
-            };
+            List.Add(newRecord);
 
-            List.Add(record);
-
-            if (!FirstNameDictionary.ContainsKey(firstName))
+            if (!FirstNameDictionary.ContainsKey(newRecord.FirstName))
             {
-                FirstNameDictionary.Add(firstName, new List<FileCabinetRecord>());
+                FirstNameDictionary.Add(newRecord.FirstName, new List<FileCabinetRecord>());
             }
 
-            FirstNameDictionary[firstName].Add(record);
+            FirstNameDictionary[newRecord.FirstName].Add(newRecord);
 
-            if (!LastNameDictionary.ContainsKey(lastName))
+            if (!LastNameDictionary.ContainsKey(newRecord.LastName))
             {
-                LastNameDictionary.Add(lastName, new List<FileCabinetRecord>());
+                LastNameDictionary.Add(newRecord.LastName, new List<FileCabinetRecord>());
             }
 
-            LastNameDictionary[lastName].Add(record);
+            LastNameDictionary[newRecord.LastName].Add(newRecord);
 
-            if (!DateOfBirthDictionary.ContainsKey(dateOfBirth))
+            if (!DateOfBirthDictionary.ContainsKey(newRecord.DateOfBirth))
             {
-                DateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>());
+                DateOfBirthDictionary.Add(newRecord.DateOfBirth, new List<FileCabinetRecord>());
             }
 
-            DateOfBirthDictionary[dateOfBirth].Add(record);
+            DateOfBirthDictionary[newRecord.DateOfBirth].Add(newRecord);
 
-            return record.Id;
+            return newRecord.Id;
         }
 
         public static FileCabinetRecord[] GetRecords()
@@ -103,16 +92,15 @@ namespace FileCabinetApp
             return List.Count;
         }
 
-        public static void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+        public static void EditRecord(int id, FileCabinetRecord recordEdit)
         {
             foreach (var record in List)
             {
                 if (record.Id == id)
                 {
-                    CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
-                    var newrecord = List[^1];
-                    newrecord.Id = record.Id;
-                    List.Insert(id - 1, newrecord);
+                    CreateRecord(recordEdit);
+                    recordEdit.Id = record.Id;
+                    List.Insert(id - 1, recordEdit);
                     List.RemoveAt(List.Count - 1);
                     List.RemoveAt(id);
                     FirstNameDictionary[record.FirstName].Remove(record);
