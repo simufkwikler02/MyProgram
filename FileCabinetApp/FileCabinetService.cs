@@ -43,6 +43,7 @@ namespace FileCabinetApp
                 throw new ArgumentException("incorrect format property3", nameof(newRecord));
             }
 
+            newRecord.Id = List.Count + 1;
             List.Add(newRecord);
 
             if (!FirstNameDictionary.ContainsKey(newRecord.FirstName))

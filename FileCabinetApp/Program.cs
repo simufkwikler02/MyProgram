@@ -7,6 +7,7 @@ namespace FileCabinetApp
         private const string DeveloperName = "Azemsha Oleg";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
+        private const string HintMessageEdit = "Use: edit [number]";
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
@@ -206,15 +207,20 @@ namespace FileCabinetApp
 
         private static void Edit(string parameters)
         {
+            var command = parameters != null ? parameters : string.Empty;
+
+            if (string.IsNullOrEmpty(command))
+            {
+                Console.WriteLine(Program.HintMessageEdit);
+                return;
+            }
+
             try
             {
-                Console.Write("record number:");
-                var line = Console.ReadLine() ?? string.Empty;
-                int id = Convert.ToInt32(line, CultureInfo.CurrentCulture);
-
+                int id = Convert.ToInt32(command, CultureInfo.CurrentCulture);
                 if (id < 1 || id > FileCabinetService.GetStat())
                 {
-                    Console.WriteLine($"#{id} record is not found.");
+                    Console.WriteLine($"record with number {id} is not exist.");
                     return;
                 }
 
