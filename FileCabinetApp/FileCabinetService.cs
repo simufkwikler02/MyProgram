@@ -95,6 +95,37 @@ namespace FileCabinetApp
 
         public static void EditRecord(int id, FileCabinetRecord recordEdit)
         {
+            if (string.IsNullOrEmpty(recordEdit.FirstName) || recordEdit.FirstName.Length < 2 || recordEdit.FirstName.Length > 60)
+            {
+                throw new ArgumentException("incorrect format firstName", nameof(recordEdit));
+            }
+
+            if (string.IsNullOrEmpty(recordEdit.LastName) || recordEdit.LastName.Length < 2 || recordEdit.LastName.Length > 60)
+            {
+                throw new ArgumentException("incorrect format lastName", nameof(recordEdit));
+            }
+
+            DateTime minDate = new DateTime(1950, 6, 1);
+            if (minDate > recordEdit.DateOfBirth || DateTime.Now < recordEdit.DateOfBirth)
+            {
+                throw new ArgumentException("incorrect format dateOfBirth", nameof(recordEdit));
+            }
+
+            if (recordEdit.Property1 < 1 || recordEdit.Property1 > 100)
+            {
+                throw new ArgumentException("50 <= property1 <= 100", nameof(recordEdit));
+            }
+
+            if (recordEdit.Property2 > 2)
+            {
+                throw new ArgumentException("incorrect format property2", nameof(recordEdit));
+            }
+
+            if (recordEdit.Property3 == 'l')
+            {
+                throw new ArgumentException("incorrect format property3", nameof(recordEdit));
+            }
+
             foreach (var record in List)
             {
                 if (record.Id == id)
