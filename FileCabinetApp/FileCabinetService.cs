@@ -2,84 +2,58 @@
 
 namespace FileCabinetApp
 {
-    public static class FileCabinetService
+    public abstract class FileCabinetService
     {
-        private static readonly List<FileCabinetRecord> List = new List<FileCabinetRecord>();
+        private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
-        private static readonly Dictionary<string, List<FileCabinetRecord>> FirstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
-        private static readonly Dictionary<string, List<FileCabinetRecord>> LastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
-        private static readonly Dictionary<DateTime, List<FileCabinetRecord>> DateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> FirstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> LastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<DateTime, List<FileCabinetRecord>> DateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
-        public static int CreateRecord(FileCabinetRecord newRecord)
+        public int CreateRecord(FileCabinetRecord newRecord)
         {
-            if (string.IsNullOrEmpty(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
+            if (!this.ValidateParameters(newRecord))
             {
-                throw new ArgumentException("incorrect format firstName", nameof(newRecord));
+                throw new ArgumentException("incorrect format", nameof(newRecord));
             }
 
-            if (string.IsNullOrEmpty(newRecord.LastName) || newRecord.LastName.Length < 2 || newRecord.LastName.Length > 60)
+            newRecord.Id = this.list.Count + 1;
+            this.list.Add(newRecord);
+
+            if (!this.FirstNameDictionary.ContainsKey(newRecord.FirstName))
             {
-                throw new ArgumentException("incorrect format lastName", nameof(newRecord));
+                this.FirstNameDictionary.Add(newRecord.FirstName, new List<FileCabinetRecord>());
             }
 
-            DateTime minDate = new DateTime(1950, 6, 1);
-            if (minDate > newRecord.DateOfBirth || DateTime.Now < newRecord.DateOfBirth)
+            this.FirstNameDictionary[newRecord.FirstName].Add(newRecord);
+
+            if (!this.LastNameDictionary.ContainsKey(newRecord.LastName))
             {
-                throw new ArgumentException("incorrect format dateOfBirth", nameof(newRecord));
+                this.LastNameDictionary.Add(newRecord.LastName, new List<FileCabinetRecord>());
             }
 
-            if (newRecord.Property1 < 1 || newRecord.Property1 > 100)
+            this.LastNameDictionary[newRecord.LastName].Add(newRecord);
+
+            if (!this.DateOfBirthDictionary.ContainsKey(newRecord.DateOfBirth))
             {
-                throw new ArgumentException("50 <= property1 <= 100", nameof(newRecord));
+                this.DateOfBirthDictionary.Add(newRecord.DateOfBirth, new List<FileCabinetRecord>());
             }
 
-            if (newRecord.Property2 > 2)
-            {
-                throw new ArgumentException("incorrect format property2", nameof(newRecord));
-            }
-
-            if (newRecord.Property3 == 'l')
-            {
-                throw new ArgumentException("incorrect format property3", nameof(newRecord));
-            }
-
-            newRecord.Id = List.Count + 1;
-            List.Add(newRecord);
-
-            if (!FirstNameDictionary.ContainsKey(newRecord.FirstName))
-            {
-                FirstNameDictionary.Add(newRecord.FirstName, new List<FileCabinetRecord>());
-            }
-
-            FirstNameDictionary[newRecord.FirstName].Add(newRecord);
-
-            if (!LastNameDictionary.ContainsKey(newRecord.LastName))
-            {
-                LastNameDictionary.Add(newRecord.LastName, new List<FileCabinetRecord>());
-            }
-
-            LastNameDictionary[newRecord.LastName].Add(newRecord);
-
-            if (!DateOfBirthDictionary.ContainsKey(newRecord.DateOfBirth))
-            {
-                DateOfBirthDictionary.Add(newRecord.DateOfBirth, new List<FileCabinetRecord>());
-            }
-
-            DateOfBirthDictionary[newRecord.DateOfBirth].Add(newRecord);
+            this.DateOfBirthDictionary[newRecord.DateOfBirth].Add(newRecord);
 
             return newRecord.Id;
         }
 
-        public static FileCabinetRecord[] GetRecords()
+        public FileCabinetRecord[] GetRecords()
         {
-            if (List.Count == 0)
+            if (this.list.Count == 0)
             {
                 return Array.Empty<FileCabinetRecord>();
             }
             else
             {
-                var records = new FileCabinetRecord[List.Count];
-                foreach (var record in List)
+                var records = new FileCabinetRecord[this.list.Count];
+                foreach (var record in this.list)
                 {
                     records[record.Id - 1] = record;
                 }
@@ -88,56 +62,30 @@ namespace FileCabinetApp
             }
         }
 
-        public static int GetStat()
+        public int GetStat()
         {
-            return List.Count;
+            return this.list.Count;
         }
 
-        public static void EditRecord(int id, FileCabinetRecord recordEdit)
+        public void EditRecord(int id, FileCabinetRecord recordEdit)
         {
-            if (string.IsNullOrEmpty(recordEdit.FirstName) || recordEdit.FirstName.Length < 2 || recordEdit.FirstName.Length > 60)
+            if (!this.ValidateParameters(recordEdit))
             {
-                throw new ArgumentException("incorrect format firstName", nameof(recordEdit));
+                throw new ArgumentException("incorrect format", nameof(recordEdit));
             }
 
-            if (string.IsNullOrEmpty(recordEdit.LastName) || recordEdit.LastName.Length < 2 || recordEdit.LastName.Length > 60)
-            {
-                throw new ArgumentException("incorrect format lastName", nameof(recordEdit));
-            }
-
-            DateTime minDate = new DateTime(1950, 6, 1);
-            if (minDate > recordEdit.DateOfBirth || DateTime.Now < recordEdit.DateOfBirth)
-            {
-                throw new ArgumentException("incorrect format dateOfBirth", nameof(recordEdit));
-            }
-
-            if (recordEdit.Property1 < 1 || recordEdit.Property1 > 100)
-            {
-                throw new ArgumentException("50 <= property1 <= 100", nameof(recordEdit));
-            }
-
-            if (recordEdit.Property2 > 2)
-            {
-                throw new ArgumentException("incorrect format property2", nameof(recordEdit));
-            }
-
-            if (recordEdit.Property3 == 'l')
-            {
-                throw new ArgumentException("incorrect format property3", nameof(recordEdit));
-            }
-
-            foreach (var record in List)
+            foreach (var record in this.list)
             {
                 if (record.Id == id)
                 {
-                    CreateRecord(recordEdit);
+                    this.CreateRecord(recordEdit);
                     recordEdit.Id = record.Id;
-                    List.Insert(id - 1, recordEdit);
-                    List.RemoveAt(List.Count - 1);
-                    List.RemoveAt(id);
-                    FirstNameDictionary[record.FirstName].Remove(record);
-                    LastNameDictionary[record.LastName].Remove(record);
-                    DateOfBirthDictionary[record.DateOfBirth].Remove(record);
+                    this.list.Insert(id - 1, recordEdit);
+                    this.list.RemoveAt(this.list.Count - 1);
+                    this.list.RemoveAt(id);
+                    this.FirstNameDictionary[record.FirstName].Remove(record);
+                    this.LastNameDictionary[record.LastName].Remove(record);
+                    this.DateOfBirthDictionary[record.DateOfBirth].Remove(record);
                     Console.WriteLine($"Record #{id} is updated.");
                     return;
                 }
@@ -146,34 +94,36 @@ namespace FileCabinetApp
             throw new ArgumentException("index is not exsist.", nameof(id));
         }
 
-        public static FileCabinetRecord[] FindByFirstName(string firstName)
+        public FileCabinetRecord[] FindByFirstName(string firstName)
         {
             if (firstName is null)
             {
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            return FirstNameDictionary[firstName].ToArray();
+            return this.FirstNameDictionary[firstName].ToArray();
         }
 
-        public static FileCabinetRecord[] FindByLastName(string lastName)
+        public FileCabinetRecord[] FindByLastName(string lastName)
         {
             if (lastName is null)
             {
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            return LastNameDictionary[lastName].ToArray();
+            return this.LastNameDictionary[lastName].ToArray();
         }
 
-        public static FileCabinetRecord[] FindByDateoOfBirth(string dateofbirth)
+        public FileCabinetRecord[] FindByDateoOfBirth(string dateofbirth)
         {
             if (dateofbirth is null)
             {
                 throw new ArgumentNullException(nameof(dateofbirth));
             }
 
-            return DateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)].ToArray();
+            return this.DateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)].ToArray();
         }
+
+        protected abstract bool ValidateParameters(FileCabinetRecord newRecord);
     }
 }

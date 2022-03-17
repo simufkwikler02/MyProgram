@@ -12,6 +12,7 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
+        private static FileCabinetService fileCabinetService = new FileCabinetCustomService();
         private static bool isRunning = true;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
@@ -112,7 +113,7 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = FileCabinetService.GetStat();
+            var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
         }
 
@@ -149,7 +150,7 @@ namespace FileCabinetApp
             try
             {
                 var record = EnterData();
-                var number = FileCabinetService.CreateRecord(record);
+                var number = Program.fileCabinetService.CreateRecord(record);
                 Console.WriteLine($"Record #{number} is created.");
             }
             catch
@@ -194,7 +195,7 @@ namespace FileCabinetApp
 
         private static void List(string parameters)
         {
-            var records = FileCabinetService.GetRecords();
+            var records = Program.fileCabinetService.GetRecords();
             try
             {
                 PrintRecords(records);
@@ -218,14 +219,14 @@ namespace FileCabinetApp
             try
             {
                 int id = Convert.ToInt32(command, CultureInfo.CurrentCulture);
-                if (id < 1 || id > FileCabinetService.GetStat())
+                if (id < 1 || id > Program.fileCabinetService.GetStat())
                 {
                     Console.WriteLine($"record with number {id} is not exist.");
                     return;
                 }
 
                 var newRecord = EnterData();
-                FileCabinetService.EditRecord(id, newRecord);
+                Program.fileCabinetService.EditRecord(id, newRecord);
             }
             catch
             {
@@ -247,9 +248,9 @@ namespace FileCabinetApp
 
             var commandsForFind = new Tuple<string, Func<string, FileCabinetRecord[]>>[]
             {
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("firstName", FileCabinetService.FindByFirstName),
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("lastName", FileCabinetService.FindByLastName),
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("dateofbirth", FileCabinetService.FindByDateoOfBirth),
+            new Tuple<string, Func<string, FileCabinetRecord[]>>("firstName", Program.fileCabinetService.FindByFirstName),
+            new Tuple<string, Func<string, FileCabinetRecord[]>>("lastName", Program.fileCabinetService.FindByLastName),
+            new Tuple<string, Func<string, FileCabinetRecord[]>>("dateofbirth", Program.fileCabinetService.FindByDateoOfBirth),
             };
 
             var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
