@@ -125,5 +125,6 @@ namespace FileCabinetApp
         }
 
         protected abstract bool ValidateParameters(FileCabinetRecord newRecord);
+        public abstract string GetRules();
     }
 }

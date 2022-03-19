@@ -8,6 +8,13 @@ namespace FileCabinetApp
 {
     public class FileCabinetDefaultService : FileCabinetService
     {
+        private readonly string rules = "default";
+
+        public override string GetRules()
+        {
+            return this.rules;
+        }
+
         protected override bool ValidateParameters(FileCabinetRecord newRecord)
         {
             if (string.IsNullOrEmpty(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
