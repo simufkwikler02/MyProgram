@@ -15,40 +15,9 @@ namespace FileCabinetApp
             return this.rules;
         }
 
-        protected override bool ValidateParameters(FileCabinetRecord newRecord)
+        protected override IRecordValidator CreateValidator()
         {
-            if (string.IsNullOrEmpty(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(newRecord.LastName) || newRecord.LastName.Length < 2 || newRecord.LastName.Length > 60)
-            {
-                return false;
-            }
-
-            DateTime minDate = new DateTime(1950, 6, 1);
-            if (minDate > newRecord.DateOfBirth || DateTime.Now < newRecord.DateOfBirth)
-            {
-                return false;
-            }
-
-            if (newRecord.Property1 < 1 || newRecord.Property1 > 100)
-            {
-                return false;
-            }
-
-            if (newRecord.Property2 > 2)
-            {
-                return false;
-            }
-
-            if (newRecord.Property3 == 'l')
-            {
-                return false;
-            }
-
-            return true;
+            return new DefaultValidator();
         }
     }
 }

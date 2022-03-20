@@ -12,7 +12,8 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            if (!this.ValidateParameters(newRecord))
+            var validator = this.CreateValidator();
+            if (!validator.ValidateParametrs(newRecord))
             {
                 throw new ArgumentException("incorrect format", nameof(newRecord));
             }
@@ -69,7 +70,8 @@ namespace FileCabinetApp
 
         public void EditRecord(int id, FileCabinetRecord recordEdit)
         {
-            if (!this.ValidateParameters(recordEdit))
+            var validator = this.CreateValidator();
+            if (!validator.ValidateParametrs(recordEdit))
             {
                 throw new ArgumentException("incorrect format", nameof(recordEdit));
             }
@@ -124,7 +126,8 @@ namespace FileCabinetApp
             return this.DateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)].ToArray();
         }
 
-        protected abstract bool ValidateParameters(FileCabinetRecord newRecord);
         public abstract string GetRules();
+
+        protected abstract IRecordValidator CreateValidator();
     }
 }
