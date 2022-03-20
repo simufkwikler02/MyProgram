@@ -8,17 +8,8 @@ namespace FileCabinetApp
 {
     public class FileCabinetCustomService : FileCabinetService
     {
-        private readonly string rules = "custom";
-
-        public override string GetRules()
-        {
-            return this.rules;
-        }
-
-        protected override IRecordValidator CreateValidator()
-        {
-            return new CustomValidator();
-        }
-
+        public FileCabinetCustomService()
+            : base (new CustomValidator())
+        {}
     }
 }

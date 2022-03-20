@@ -8,6 +8,8 @@ namespace FileCabinetApp
 {
     public class DefaultValidator : IRecordValidator
     {
+        private readonly string rules = "default";
+
         public bool ValidateParametrs(FileCabinetRecord newRecord)
         {
             if (string.IsNullOrEmpty(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
@@ -42,6 +44,11 @@ namespace FileCabinetApp
             }
 
             return true;
+        }
+
+        public string ValidateInfo()
+        {
+            return this.rules;
         }
     }
 }

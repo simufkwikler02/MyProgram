@@ -5,15 +5,25 @@ namespace FileCabinetApp
     public abstract class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+        private readonly IRecordValidator validator;
 
         private readonly Dictionary<string, List<FileCabinetRecord>> FirstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> LastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> DateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
+        protected FileCabinetService(IRecordValidator validator)
+        {
+            this.validator = validator;
+        }
+
+        public string ValidateInfo()
+        {
+            return this.validator.ValidateInfo();
+        }
+
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            var validator = this.CreateValidator();
-            if (!validator.ValidateParametrs(newRecord))
+            if (!this.validator.ValidateParametrs(newRecord))
             {
                 throw new ArgumentException("incorrect format", nameof(newRecord));
             }
@@ -70,8 +80,7 @@ namespace FileCabinetApp
 
         public void EditRecord(int id, FileCabinetRecord recordEdit)
         {
-            var validator = this.CreateValidator();
-            if (!validator.ValidateParametrs(recordEdit))
+            if (!this.validator.ValidateParametrs(recordEdit))
             {
                 throw new ArgumentException("incorrect format", nameof(recordEdit));
             }
@@ -125,9 +134,5 @@ namespace FileCabinetApp
 
             return this.DateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)].ToArray();
         }
-
-        public abstract string GetRules();
-
-        protected abstract IRecordValidator CreateValidator();
     }
 }

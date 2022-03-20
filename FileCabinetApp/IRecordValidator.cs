@@ -9,5 +9,7 @@ namespace FileCabinetApp
     public interface IRecordValidator
     {
         public bool ValidateParametrs(FileCabinetRecord newRecord);
+
+        public string ValidateInfo();
     }
 }
