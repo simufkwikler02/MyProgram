@@ -12,7 +12,7 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
-        private static FileCabinetService fileCabinetService = new FileCabinetDefaultService();
+        private static FileCabinetService fileCabinetService = new FileCabinetService(new DefaultValidator());
         private static bool isRunning = true;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
@@ -39,7 +39,7 @@ namespace FileCabinetApp
 
         public static void Main(string[] args)
         {
-            fileCabinetService = args.Length == 0 ? new FileCabinetDefaultService() : Program.ValidationRules(args);
+            fileCabinetService = new FileCabinetService(args.Length == 0 ? new DefaultValidator() : Program.ValidationRules(args));
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {Program.fileCabinetService.ValidateInfo()} validation rules.");
             Console.WriteLine(Program.HintMessage);
@@ -276,7 +276,7 @@ namespace FileCabinetApp
             }
         }
 
-        private static FileCabinetService ValidationRules(string[] input)
+        private static IRecordValidator ValidationRules(string[] input)
         {
             var inputs = new string[] { string.Empty, string.Empty };
             if (input.Length == 1)
@@ -295,23 +295,23 @@ namespace FileCabinetApp
             var rules = inputs[commandrules];
             if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
             {
-                return new FileCabinetDefaultService();
+                return new DefaultValidator();
             }
 
             if (command == "-v" || command == "--validation-rules")
             {
                 if (rules.Equals("custom", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new FileCabinetCustomService();
+                    return new CustomValidator();
                 }
 
                 if (rules.Equals("default", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new FileCabinetDefaultService();
+                    return new DefaultValidator();
                 }
             }
 
-            return new FileCabinetDefaultService();
+            return new DefaultValidator();
         }
     }
 }
