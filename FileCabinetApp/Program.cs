@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -162,11 +163,11 @@ namespace FileCabinetApp
             }
         }
 
-        private static void PrintRecords(FileCabinetRecord[] records)
+        private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
-            if (records.Length == 0)
+            if (records.Count == 0)
             {
-                throw new ArgumentException("records.Length == 0", nameof(records));
+                throw new ArgumentException("records.Count == 0", nameof(records));
             }
             else
             {
@@ -248,11 +249,11 @@ namespace FileCabinetApp
                 return;
             }
 
-            var commandsForFind = new Tuple<string, Func<string, FileCabinetRecord[]>>[]
+            var commandsForFind = new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>[]
             {
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("firstName", Program.fileCabinetService.FindByFirstName),
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("lastName", Program.fileCabinetService.FindByLastName),
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("dateofbirth", Program.fileCabinetService.FindByDateoOfBirth),
+            new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("firstName", Program.fileCabinetService.FindByFirstName),
+            new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("lastName", Program.fileCabinetService.FindByLastName),
+            new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("dateofbirth", Program.fileCabinetService.FindByDateoOfBirth),
             };
 
             var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
