@@ -27,6 +27,19 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
         };
 
+        private static Func<string, Tuple<bool, string, string>> stringConverter = StringConverterFunc;
+        private static Func<string, Tuple<bool, string, DateTime>> dateConverter = DateConverterFunc;
+        private static Func<string, Tuple<bool, string, short>> property1Converter = Property1ConverterFunc;
+        private static Func<string, Tuple<bool, string, decimal>> property2Converter = Property2ConverterFunc;
+        private static Func<string, Tuple<bool, string, char>> property3Converter = Property3ConverterFunc;
+
+        private static Func<string, Tuple<bool, string>> firstNameValidator = StringValidatorFunc;
+        private static Func<string, Tuple<bool, string>> lastNameValidator = StringValidatorFunc;
+        private static Func<DateTime, Tuple<bool, string>> dateOfBirthValidator = DateValidatorFunc;
+        private static Func<short, Tuple<bool, string>> property1Validator = Property1ValidatorFunc;
+        private static Func<decimal, Tuple<bool, string>> property2Validator = Property2ValidatorFunc;
+        private static Func<char, Tuple<bool, string>> property3Validator = Property3ValidatorFunc;
+
         private static string[][] helpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
@@ -123,26 +136,22 @@ namespace FileCabinetApp
         private static FileCabinetRecord EnterData()
         {
             Console.Write("First name: ");
-            var firstName = Console.ReadLine() ?? string.Empty;
+            var firstName = ReadInput(stringConverter, firstNameValidator);
 
             Console.Write("Last name: ");
-            var lastName = Console.ReadLine() ?? string.Empty;
+            var lastName = ReadInput(stringConverter, lastNameValidator);
 
             Console.Write("Date of birth: ");
-            var line = Console.ReadLine() ?? string.Empty;
-            var dateOfBirth = DateTime.Parse(line, CultureInfo.CurrentCulture);
+            var dateOfBirth = ReadInput(dateConverter, dateOfBirthValidator);
 
             Console.Write("property1 (short): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property1 = Convert.ToInt16(line, CultureInfo.CurrentCulture);
+            var property1 = ReadInput(property1Converter, property1Validator);
 
             Console.Write("property2 (decimal): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property2 = Convert.ToDecimal(line, CultureInfo.CurrentCulture);
+            var property2 = ReadInput(property2Converter, property2Validator);
 
             Console.Write("property3 (char): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property3 = Convert.ToChar(line, CultureInfo.CurrentCulture);
+            var property3 = ReadInput(property3Converter, property3Validator);
 
             var data = new FileCabinetRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
             return data;
@@ -313,6 +322,129 @@ namespace FileCabinetApp
             }
 
             return new DefaultValidator();
+        }
+
+        private static Tuple<bool, string, string> StringConverterFunc(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return new Tuple<bool, string, string>(false, input, string.Empty);
+            }
+            else
+            {
+                return new Tuple<bool, string, string>(true, input, input);
+            }
+        }
+
+        private static Tuple<bool, string, DateTime> DateConverterFunc(string input)
+        {
+            DateTime result;
+            if (DateTime.TryParse(input, out result))
+            {
+                return new Tuple<bool, string, DateTime>(true, input, result);
+            }
+            else
+            {
+                return new Tuple<bool, string, DateTime>(false, input, result);
+            }
+        }
+
+        private static Tuple<bool, string, short> Property1ConverterFunc(string input)
+        {
+            short result;
+            if (short.TryParse(input, out result))
+            {
+                return new Tuple<bool, string, short>(true, input, result);
+            }
+            else
+            {
+                return new Tuple<bool, string, short>(false, input, result);
+            }
+        }
+
+        private static Tuple<bool, string, decimal> Property2ConverterFunc(string input)
+        {
+            decimal result;
+            if (decimal.TryParse(input, out result))
+            {
+                return new Tuple<bool, string, decimal>(true, input, result);
+            }
+            else
+            {
+                return new Tuple<bool, string, decimal>(false, input, result);
+            }
+        }
+
+        private static Tuple<bool, string, char> Property3ConverterFunc(string input)
+        {
+            char result;
+            if (char.TryParse(input, out result))
+            {
+                return new Tuple<bool, string, char>(true, input, result);
+            }
+            else
+            {
+                return new Tuple<bool, string, char>(false, input, result);
+            }
+        }
+
+        private static Tuple<bool, string> StringValidatorFunc(string input)
+        {
+            var validate = fileCabinetService.ValidateParametrString(input);
+            return new Tuple<bool, string>(validate, input);
+        }
+
+        private static Tuple<bool, string> DateValidatorFunc(DateTime input)
+        {
+            var validate = fileCabinetService.ValidateParametrDate(input);
+            return new Tuple<bool, string>(validate, input.ToString(CultureInfo.CurrentCulture));
+        }
+
+        private static Tuple<bool, string> Property1ValidatorFunc(short input)
+        {
+            var validate = fileCabinetService.ValidateParametrProperty1(input);
+            return new Tuple<bool, string>(validate, input.ToString(CultureInfo.CurrentCulture));
+        }
+
+        private static Tuple<bool, string> Property2ValidatorFunc(decimal input)
+        {
+            var validate = fileCabinetService.ValidateParametrProperty2(input);
+            return new Tuple<bool, string>(validate, input.ToString(CultureInfo.CurrentCulture));
+        }
+
+        private static Tuple<bool, string> Property3ValidatorFunc(char input)
+        {
+            var validate = fileCabinetService.ValidateParametrProperty3(input);
+            return new Tuple<bool, string>(validate, input.ToString(CultureInfo.CurrentCulture));
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine() ?? string.Empty;
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
     }
 }

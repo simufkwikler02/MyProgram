@@ -11,5 +11,15 @@ namespace FileCabinetApp
         public bool ValidateParametrs(FileCabinetRecord newRecord);
 
         public string ValidateInfo();
+
+        public bool ValidateParametrString(string input);
+
+        public bool ValidateParametrDate(DateTime input);
+
+        public bool ValidateParametrProperty1(short input);
+
+        public bool ValidateParametrProperty2(decimal input);
+
+        public bool ValidateParametrProperty3(char input);
     }
 }

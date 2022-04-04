@@ -17,6 +17,31 @@ namespace FileCabinetApp
             this.validator = validator;
         }
 
+        public bool ValidateParametrString(string input)
+        {
+            return this.validator.ValidateParametrString(input);
+        }
+
+        public bool ValidateParametrDate(DateTime input)
+        {
+            return this.validator.ValidateParametrDate(input);
+        }
+
+        public bool ValidateParametrProperty1(short input)
+        {
+            return this.validator.ValidateParametrProperty1(input);
+        }
+
+        public bool ValidateParametrProperty2(decimal input)
+        {
+            return this.validator.ValidateParametrProperty2(input);
+        }
+
+        public bool ValidateParametrProperty3(char input)
+        {
+            return this.validator.ValidateParametrProperty3(input);
+        }
+
         public string ValidateInfo()
         {
             return this.validator.ValidateInfo();
