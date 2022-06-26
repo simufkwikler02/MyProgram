@@ -12,7 +12,7 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
-        private static FileCabinetService fileCabinetService = new FileCabinetCustomService();
+        private static FileCabinetService? fileCabinetService;
         private static bool isRunning = true;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
@@ -39,8 +39,9 @@ namespace FileCabinetApp
 
         public static void Main(string[] args)
         {
-            fileCabinetService = args.Length == 0 ? new FileCabinetDefaultService() : 
+            fileCabinetService = args.Length == 0 ? new FileCabinetDefaultService() : Validate(args);
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
+            Console.WriteLine($"Using {Program.fileCabinetService} validstion rules");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 
@@ -275,9 +276,42 @@ namespace FileCabinetApp
             }
         }
 
-        private static FileCabinetService Validate(string[] arg)
+        private static FileCabinetService Validate(string[] input)
         {
+            var inputs = new string[] { string.Empty, string.Empty };
+            if (input.Length == 1)
+            {
+                inputs = input[0].Split('=', 2);
+            }
+            else
+            {
+                inputs[0] = input[0];
+                inputs[1] = input[1];
+            }
 
+            const int commandIndex = 0;
+            const int commandrules = 1;
+            var command = inputs[commandIndex];
+            var rules = inputs[commandrules];
+            if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
+            {
+                return new FileCabinetDefaultService();
+            }
+
+            if (command == "-v" || command == "--validation-rules")
+            {
+                if (rules.Equals("custom", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new FileCabinetCustomService();
+                }
+
+                if (rules.Equals("default", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new FileCabinetDefaultService();
+                }
+            }
+
+            return new FileCabinetDefaultService();
         }
     }
 }

@@ -8,6 +8,8 @@ namespace FileCabinetApp
 {
     public class FileCabinetCustomService : FileCabinetService
     {
+        public const string validator = "custom";
+
         protected override bool ValidateParameters(FileCabinetRecord newRecord)
         {
             if (string.IsNullOrEmpty(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
