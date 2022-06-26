@@ -13,6 +13,7 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
+        private static IRecordValidator? recordValidator;
         private static FileCabinetService? fileCabinetService;
         private static bool isRunning = true;
 
@@ -40,7 +41,8 @@ namespace FileCabinetApp
 
         public static void Main(string[] args)
         {
-            fileCabinetService = new FileCabinetService(args.Length == 0 ? new DefaultValidator() : Program.ValidationRules(args));
+            recordValidator = args.Length == 0 ? new DefaultValidator() : Program.ValidationRules(args);
+            fileCabinetService = new FileCabinetService(recordValidator);
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {Program.fileCabinetService.ValidateInfo()} validation rules.");
             Console.WriteLine(Program.HintMessage);
@@ -123,7 +125,7 @@ namespace FileCabinetApp
         private static FileCabinetRecord EnterData()
         {
             Console.Write("First name: ");
-            var firstName = Console.ReadLine() ?? string.Empty;
+            var firstName = ReadInput(StringConverter, FirstNameValidator);
 
             Console.Write("Last name: ");
             var lastName = Console.ReadLine() ?? string.Empty;
@@ -313,6 +315,50 @@ namespace FileCabinetApp
             }
 
             return new DefaultValidator();
+        }
+
+        private static Tuple<bool, string, string> StringConverter(string input)
+        {
+            var resurt = input ?? string.Empty;
+            bool conversion = string.IsNullOrEmpty(resurt) ? false : true;
+            input = conversion ? resurt : string.Empty;
+            return Tuple.Create<bool, string, string>(conversion, input, resurt);
+        }
+
+        private static Tuple<bool, string> FirstNameValidator(string input)
+        {
+            var resurt = input ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsFirstName(resurt);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine();
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
     }
 }
