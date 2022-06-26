@@ -39,6 +39,7 @@ namespace FileCabinetApp
 
         public static void Main(string[] args)
         {
+            fileCabinetService = args.Length == 0 ? new FileCabinetDefaultService() : 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
@@ -272,6 +273,11 @@ namespace FileCabinetApp
             {
                 PrintMissedCommandInfo(command);
             }
+        }
+
+        private static FileCabinetService Validate(string[] arg)
+        {
+
         }
     }
 }
