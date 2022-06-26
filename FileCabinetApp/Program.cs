@@ -41,7 +41,7 @@ namespace FileCabinetApp
         {
             fileCabinetService = args.Length == 0 ? new FileCabinetDefaultService() : Validate(args);
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine($"Using {Program.fileCabinetService} validstion rules");
+            Console.WriteLine($"Using {Program.fileCabinetService.ValidateInfo()} validstion rules");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 

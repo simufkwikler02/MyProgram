@@ -10,6 +10,8 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> LastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> DateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
+        public abstract string ValidateInfo();
+
         public int CreateRecord(FileCabinetRecord newRecord)
         {
             if (!this.ValidateParameters(newRecord))

@@ -8,7 +8,10 @@ namespace FileCabinetApp
 {
     public class FileCabinetDefaultService : FileCabinetService
     {
-        public string validator { get; set; }
+        public override string ValidateInfo()
+        {
+            return "default";
+        }
 
         protected override bool ValidateParameters(FileCabinetRecord newRecord)
         {

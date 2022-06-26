@@ -8,7 +8,10 @@ namespace FileCabinetApp
 {
     public class FileCabinetCustomService : FileCabinetService
     {
-        public const string validator = "custom";
+        public override string ValidateInfo()
+        {
+            return "custom";
+        }
 
         protected override bool ValidateParameters(FileCabinetRecord newRecord)
         {
