@@ -125,5 +125,7 @@ namespace FileCabinetApp
 
             return this.DateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)].ToArray();
         }
+
+        protected abstract bool ValidateParameters(FileCabinetRecord newRecord);
     }
 }
