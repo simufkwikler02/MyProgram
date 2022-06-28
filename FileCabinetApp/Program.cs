@@ -128,23 +128,19 @@ namespace FileCabinetApp
             var firstName = ReadInput(StringConverter, FirstNameValidator);
 
             Console.Write("Last name: ");
-            var lastName = Console.ReadLine() ?? string.Empty;
+            var lastName = ReadInput(StringConverter, LastNameValidator);
 
             Console.Write("Date of birth: ");
-            var line = Console.ReadLine() ?? string.Empty;
-            var dateOfBirth = DateTime.Parse(line, CultureInfo.CurrentCulture);
+            var dateOfBirth = ReadInput(DateTimeConverter, DateOfBirthValidator);
 
             Console.Write("property1 (short): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property1 = Convert.ToInt16(line, CultureInfo.CurrentCulture);
+            var property1 = ReadInput(Property1Converter, Property1Validator);
 
             Console.Write("property2 (decimal): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property2 = Convert.ToDecimal(line, CultureInfo.CurrentCulture);
+            var property2 = ReadInput(Property2Converter, Property2Validator);
 
             Console.Write("property3 (char): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property3 = Convert.ToChar(line, CultureInfo.CurrentCulture);
+            var property3 = ReadInput(Property3Converter, Property3Validator);
 
             var data = new FileCabinetRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
             return data;
@@ -325,10 +321,73 @@ namespace FileCabinetApp
             return Tuple.Create<bool, string, string>(conversion, input, resurt);
         }
 
+        private static Tuple<bool, string, DateTime> DateTimeConverter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = DateTime.TryParse(input, out var result);
+            return Tuple.Create<bool, string, DateTime>(conversion, input, result);
+        }
+
+        private static Tuple<bool, string, short> Property1Converter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = short.TryParse(input, out var result);
+            return Tuple.Create<bool, string, short>(conversion, input, result);
+        }
+
+        private static Tuple<bool, string, decimal> Property2Converter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = decimal.TryParse(input, out var result);
+            return Tuple.Create<bool, string, decimal>(conversion, input, result);
+        }
+
+        private static Tuple<bool, string, char> Property3Converter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = char.TryParse(input, out var result);
+            return Tuple.Create<bool, string, char>(conversion, input, result);
+        }
+
         private static Tuple<bool, string> FirstNameValidator(string input)
         {
             var resurt = input ?? string.Empty;
             bool validator = recordValidator.ValidateParametrsFirstName(resurt);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> LastNameValidator(string input)
+        {
+            var resurt = input ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsLastName(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> DateOfBirthValidator(DateTime input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsDateOfBirth(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> Property1Validator(short input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsProperty1(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> Property2Validator(decimal input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsProperty2(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> Property3Validator(char input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsProperty3(input);
             return Tuple.Create<bool, string>(validator, resurt);
         }
 
