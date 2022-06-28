@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -12,6 +13,7 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
+        private static IRecordValidator? recordValidator;
         private static FileCabinetService? fileCabinetService;
         private static bool isRunning = true;
 
@@ -39,9 +41,10 @@ namespace FileCabinetApp
 
         public static void Main(string[] args)
         {
-            fileCabinetService = args.Length == 0 ? new FileCabinetDefaultService() : Validate(args);
+            recordValidator = args.Length == 0 ? new DefaultValidator() : Program.ValidationRules(args);
+            fileCabinetService = new FileCabinetService(recordValidator);
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine($"Using {Program.fileCabinetService.ValidateInfo()} validstion rules");
+            Console.WriteLine($"Using {Program.fileCabinetService.ValidateInfo()} validation rules.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 
@@ -122,26 +125,22 @@ namespace FileCabinetApp
         private static FileCabinetRecord EnterData()
         {
             Console.Write("First name: ");
-            var firstName = Console.ReadLine() ?? string.Empty;
+            var firstName = ReadInput(StringConverter, FirstNameValidator);
 
             Console.Write("Last name: ");
-            var lastName = Console.ReadLine() ?? string.Empty;
+            var lastName = ReadInput(StringConverter, LastNameValidator);
 
             Console.Write("Date of birth: ");
-            var line = Console.ReadLine() ?? string.Empty;
-            var dateOfBirth = DateTime.Parse(line, CultureInfo.CurrentCulture);
+            var dateOfBirth = ReadInput(DateTimeConverter, DateOfBirthValidator);
 
             Console.Write("property1 (short): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property1 = Convert.ToInt16(line, CultureInfo.CurrentCulture);
+            var property1 = ReadInput(Property1Converter, Property1Validator);
 
             Console.Write("property2 (decimal): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property2 = Convert.ToDecimal(line, CultureInfo.CurrentCulture);
+            var property2 = ReadInput(Property2Converter, Property2Validator);
 
             Console.Write("property3 (char): ");
-            line = Console.ReadLine() ?? string.Empty;
-            var property3 = Convert.ToChar(line, CultureInfo.CurrentCulture);
+            var property3 = ReadInput(Property3Converter, Property3Validator);
 
             var data = new FileCabinetRecord(firstName, lastName, dateOfBirth, property1, property2, property3);
             return data;
@@ -162,11 +161,11 @@ namespace FileCabinetApp
             }
         }
 
-        private static void PrintRecords(FileCabinetRecord[] records)
+        private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
-            if (records.Length == 0)
+            if (records.Count == 0)
             {
-                throw new ArgumentException("records.Length == 0", nameof(records));
+                throw new ArgumentException("records.Count == 0", nameof(records));
             }
             else
             {
@@ -248,11 +247,11 @@ namespace FileCabinetApp
                 return;
             }
 
-            var commandsForFind = new Tuple<string, Func<string, FileCabinetRecord[]>>[]
+            var commandsForFind = new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>[]
             {
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("firstName", Program.fileCabinetService.FindByFirstName),
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("lastName", Program.fileCabinetService.FindByLastName),
-            new Tuple<string, Func<string, FileCabinetRecord[]>>("dateofbirth", Program.fileCabinetService.FindByDateoOfBirth),
+            new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("firstName", Program.fileCabinetService.FindByFirstName),
+            new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("lastName", Program.fileCabinetService.FindByLastName),
+            new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("dateofbirth", Program.fileCabinetService.FindByDateoOfBirth),
             };
 
             var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
@@ -276,7 +275,7 @@ namespace FileCabinetApp
             }
         }
 
-        private static FileCabinetService Validate(string[] input)
+        private static IRecordValidator ValidationRules(string[] input)
         {
             var inputs = new string[] { string.Empty, string.Empty };
             if (input.Length == 1)
@@ -295,23 +294,130 @@ namespace FileCabinetApp
             var rules = inputs[commandrules];
             if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
             {
-                return new FileCabinetDefaultService();
+                return new DefaultValidator();
             }
 
             if (command == "-v" || command == "--validation-rules")
             {
                 if (rules.Equals("custom", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new FileCabinetCustomService();
+                    return new CustomValidator();
                 }
 
                 if (rules.Equals("default", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new FileCabinetDefaultService();
+                    return new DefaultValidator();
                 }
             }
 
-            return new FileCabinetDefaultService();
+            return new DefaultValidator();
+        }
+
+        private static Tuple<bool, string, string> StringConverter(string input)
+        {
+            var resurt = input ?? string.Empty;
+            bool conversion = string.IsNullOrEmpty(resurt) ? false : true;
+            input = conversion ? resurt : string.Empty;
+            return Tuple.Create<bool, string, string>(conversion, input, resurt);
+        }
+
+        private static Tuple<bool, string, DateTime> DateTimeConverter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = DateTime.TryParse(input, out var result);
+            return Tuple.Create<bool, string, DateTime>(conversion, input, result);
+        }
+
+        private static Tuple<bool, string, short> Property1Converter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = short.TryParse(input, out var result);
+            return Tuple.Create<bool, string, short>(conversion, input, result);
+        }
+
+        private static Tuple<bool, string, decimal> Property2Converter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = decimal.TryParse(input, out var result);
+            return Tuple.Create<bool, string, decimal>(conversion, input, result);
+        }
+
+        private static Tuple<bool, string, char> Property3Converter(string input)
+        {
+            input = input ?? string.Empty;
+            bool conversion = char.TryParse(input, out var result);
+            return Tuple.Create<bool, string, char>(conversion, input, result);
+        }
+
+        private static Tuple<bool, string> FirstNameValidator(string input)
+        {
+            var resurt = input ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsFirstName(resurt);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> LastNameValidator(string input)
+        {
+            var resurt = input ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsLastName(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> DateOfBirthValidator(DateTime input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsDateOfBirth(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> Property1Validator(short input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsProperty1(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> Property2Validator(decimal input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsProperty2(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static Tuple<bool, string> Property3Validator(char input)
+        {
+            var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            bool validator = recordValidator.ValidateParametrsProperty3(input);
+            return Tuple.Create<bool, string>(validator, resurt);
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine() ?? string.Empty;
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
     }
 }
