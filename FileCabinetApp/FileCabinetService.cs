@@ -22,8 +22,6 @@ namespace FileCabinetApp
             return this.validator.ValidateInfo();
         }
 
-        public abstract string ValidateInfo();
-
         public int CreateRecord(FileCabinetRecord newRecord)
         {
             if (!this.validator.ValidateParametrs(newRecord))
