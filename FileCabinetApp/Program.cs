@@ -397,7 +397,7 @@ namespace FileCabinetApp
             {
                 T value;
 
-                var input = Console.ReadLine();
+                var input = Console.ReadLine() ?? string.Empty;
                 var conversionResult = converter(input);
 
                 if (!conversionResult.Item1)
