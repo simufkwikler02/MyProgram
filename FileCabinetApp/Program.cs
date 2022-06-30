@@ -280,7 +280,7 @@ namespace FileCabinetApp
 
         private static void Export(string parameters)
         {
-            var inputs = parameters != null ? parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
+            var inputs = parameters != null && parameters != string.Empty ? parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
             const int commandIndex = 0;
             const int pathIndex = 1;
             var command = inputs[commandIndex];
@@ -321,6 +321,7 @@ namespace FileCabinetApp
             catch
             {
                 Console.WriteLine($"Export failed: can't open file {path}.");
+                Console.WriteLine(HintMessageExport);
                 return;
             }
 
