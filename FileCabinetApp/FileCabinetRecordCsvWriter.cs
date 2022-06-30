@@ -8,9 +8,9 @@ namespace FileCabinetApp
 {
     public class FileCabinetRecordCsvWriter
     {
-        private readonly StreamWriter? writer;
+        private readonly TextWriter? writer;
 
-        public FileCabinetRecordCsvWriter(StreamWriter fstream)
+        public FileCabinetRecordCsvWriter(TextWriter fstream)
         {
             this.writer = fstream;
         }

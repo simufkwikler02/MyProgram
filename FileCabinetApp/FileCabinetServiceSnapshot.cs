@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,15 @@ namespace FileCabinetApp
         public void SaveToCsv(StreamWriter fstream)
         {
             var scv = new FileCabinetRecordCsvWriter(fstream);
+            scv.Write(this.records);
+        }
+
+        public void SaveToXml(StreamWriter fstream)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "    ";
+            var scv = new FileCabinetRecordXmlWriter(XmlWriter.Create(fstream, settings));
             scv.Write(this.records);
         }
     }

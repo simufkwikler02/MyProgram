@@ -324,10 +324,22 @@ namespace FileCabinetApp
                 return;
             }
 
-
             fstream = new StreamWriter(path, false);
             var snapshot = fileCabinetService.MakeSnapshot();
-            snapshot.SaveToCsv(fstream);
+            switch (command)
+            {
+                case "csv":
+                    snapshot.SaveToCsv(fstream);
+                    break;
+                case "xml":
+                    snapshot.SaveToXml(fstream);
+                    break;
+                default:
+                    PrintMissedCommandInfo(command);
+                    fstream.Close();
+                    return;
+            }
+
             Console.WriteLine($"All records are exported to file {path}.");
             fstream.Close();
         }
