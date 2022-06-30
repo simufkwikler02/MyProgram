@@ -135,5 +135,10 @@ namespace FileCabinetApp
 
             return new ReadOnlyCollection<FileCabinetRecord>(this.dateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)]);
         }
+
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            return new FileCabinetServiceSnapshot(this.list);
+        }
     }
 }

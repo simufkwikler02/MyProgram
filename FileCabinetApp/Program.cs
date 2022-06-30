@@ -9,6 +9,7 @@ namespace FileCabinetApp
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
         private const string HintMessageEdit = "Use: edit [number]";
+        private const string HintMessageExport = "Use: export [csv | xml] [directory]";
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
@@ -26,6 +27,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
+            new Tuple<string, Action<string>>("export", Export),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -37,6 +39,7 @@ namespace FileCabinetApp
             new string[] { "list", "prints a list of records", "The 'list' command prints a list of records" },
             new string[] { "edit", "edits records", "The 'edit' command edits records" },
             new string[] { "find", "find records", "The 'find' command finds and prints records" },
+            new string[] { "export", "export records", "The 'export' command exports records from the directory" },
         };
 
         public static void Main(string[] args)
@@ -273,6 +276,60 @@ namespace FileCabinetApp
             {
                 PrintMissedCommandInfo(command);
             }
+        }
+
+        private static void Export(string parameters)
+        {
+            var inputs = parameters != null ? parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
+            const int commandIndex = 0;
+            const int pathIndex = 1;
+            var command = inputs[commandIndex];
+            var path = inputs[pathIndex];
+            StreamWriter? fstream;
+            FileInfo? fileInfo;
+            DirectoryInfo? directory;
+            try
+            {
+                fileInfo = new FileInfo(path);
+                directory = fileInfo.Directory;
+                if (!directory.Exists)
+                {
+                    throw new ArgumentException(nameof(directory));
+                }
+
+                if (fileInfo.Exists)
+                {
+                    Console.WriteLine($"File is exist - rewrite {path}? [Y/N]");
+                    var com = Console.ReadLine() ?? string.Empty;
+                    switch (com)
+                    {
+                        case "y":
+                            goto case "Y";
+                        case "Y":
+                            break;
+                        case "n":
+                            goto case "N";
+                        case "N":
+                            Console.WriteLine("Export canceled");
+                            return;
+                        default:
+                            PrintMissedCommandInfo(com);
+                            return;
+                    }
+                }
+            }
+            catch
+            {
+                Console.WriteLine($"Export failed: can't open file {path}.");
+                return;
+            }
+
+
+            fstream = new StreamWriter(path, false);
+            var snapshot = fileCabinetService.MakeSnapshot();
+            snapshot.SaveToCsv(fstream);
+            Console.WriteLine($"All records are exported to file {path}.");
+            fstream.Close();
         }
 
         private static IRecordValidator ValidationRules(string[] input)
