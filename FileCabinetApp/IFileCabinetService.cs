@@ -8,8 +8,6 @@ namespace FileCabinetApp
     {
         public int CreateRecord(FileCabinetRecord newRecord);
 
-        public string ValidateInfo();
-
         public void EditRecord(int id, FileCabinetRecord recordEdit);
 
         public ReadOnlyCollection<FileCabinetRecord> GetRecords();

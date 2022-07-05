@@ -15,7 +15,7 @@ namespace FileCabinetApp
         private const int ExplanationHelpIndex = 2;
 
         private static IRecordValidator? recordValidator;
-        private static FileCabinetService? fileCabinetService;
+        private static FileCabinetMemoryService? fileCabinetService;
         private static bool isRunning = true;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
@@ -45,7 +45,7 @@ namespace FileCabinetApp
         public static void Main(string[] args)
         {
             recordValidator = args.Length == 0 ? new DefaultValidator() : Program.ValidationRules(args);
-            fileCabinetService = new FileCabinetService(recordValidator);
+            fileCabinetService = new FileCabinetMemoryService(recordValidator);
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {Program.fileCabinetService.ValidateInfo()} validation rules.");
             Console.WriteLine(Program.HintMessage);
@@ -281,6 +281,13 @@ namespace FileCabinetApp
         private static void Export(string parameters)
         {
             var inputs = parameters != null && parameters != string.Empty ? parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
+            if (inputs.Length <= 1)
+            {
+                PrintMissedCommandInfo(parameters);
+                Console.WriteLine(HintMessageExport);
+                return;
+            }
+
             const int commandIndex = 0;
             const int pathIndex = 1;
             var command = inputs[commandIndex];
