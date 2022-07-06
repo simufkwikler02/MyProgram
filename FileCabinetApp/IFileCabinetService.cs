@@ -8,6 +8,10 @@ namespace FileCabinetApp
     {
         public int CreateRecord(FileCabinetRecord newRecord);
 
+        public string ValidateInfo();
+
+        public string ServiceInfo();
+
         public void EditRecord(int id, FileCabinetRecord recordEdit);
 
         public ReadOnlyCollection<FileCabinetRecord> GetRecords();
@@ -19,5 +23,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);
 
         public ReadOnlyCollection<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth);
+
+        public FileCabinetServiceSnapshot MakeSnapshot();
     }
 }

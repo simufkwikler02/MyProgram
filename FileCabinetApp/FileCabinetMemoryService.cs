@@ -7,6 +7,7 @@ namespace FileCabinetApp
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly IRecordValidator validator;
+        private readonly string serviceRules = "memory";
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
@@ -20,6 +21,11 @@ namespace FileCabinetApp
         public string ValidateInfo()
         {
             return this.validator.ValidateInfo();
+        }
+
+        public string ServiceInfo()
+        {
+            return this.serviceRules;
         }
 
         public int CreateRecord(FileCabinetRecord newRecord)
