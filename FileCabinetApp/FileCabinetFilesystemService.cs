@@ -35,47 +35,7 @@ namespace FileCabinetApp
             var poz = fileStream.Seek(0, SeekOrigin.End);
             newRecord.Id = (Convert.ToInt32(poz) / this.recordSize) + 1;
             short status = 0;
-
-            byte[] buffer = Encoding.Default.GetBytes(status.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 2);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.Id.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.FirstName.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 120);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.LastName.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 120);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Year.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Month.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Day.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.Property1.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 2);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.Property2.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 16);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            buffer = Encoding.Default.GetBytes(newRecord.Property3.ToString(CultureInfo.CurrentCulture));
-            Array.Resize(ref buffer, 2);
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
+            this.WriteRecord(status, newRecord);
             return newRecord.Id;
         }
 
@@ -213,7 +173,20 @@ namespace FileCabinetApp
 
         public void EditRecord(int id, FileCabinetRecord recordEdit)
         {
-            throw new NotImplementedException();
+            if (!this.validator.ValidateParametrs(recordEdit))
+            {
+                throw new ArgumentException("incorrect format", nameof(recordEdit));
+            }
+
+            var poz = this.fileStream.Seek((id - 1) * this.recordSize, SeekOrigin.Begin);
+            byte[] buffer = new byte[this.recordSize];
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            poz = this.fileStream.Seek((id - 1) * this.recordSize, SeekOrigin.Begin);
+            short status = 0;
+            recordEdit.Id = id;
+            this.WriteRecord(status, recordEdit);
+            Console.WriteLine($"Record #{id} is updated.");
         }
 
         public int GetStat()
@@ -245,6 +218,49 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
+        }
+
+        private void WriteRecord(short status, FileCabinetRecord newRecord)
+        {
+            byte[] buffer = Encoding.Default.GetBytes(status.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 2);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.Id.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 4);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.FirstName.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 120);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.LastName.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 120);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Year.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 4);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Month.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 4);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Day.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 4);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.Property1.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 2);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.Property2.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 16);
+            this.fileStream.Write(buffer, 0, buffer.Length);
+
+            buffer = Encoding.Default.GetBytes(newRecord.Property3.ToString(CultureInfo.CurrentCulture));
+            Array.Resize(ref buffer, 2);
+            this.fileStream.Write(buffer, 0, buffer.Length);
         }
     }
 }
