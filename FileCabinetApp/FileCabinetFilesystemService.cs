@@ -49,126 +49,13 @@ namespace FileCabinetApp
             var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
             var numberRecords = this.fileStream.Length / this.recordSize;
 
-            FileCabinetRecord[] records = new FileCabinetRecord[numberRecords];
+            List<FileCabinetRecord> list = new List<FileCabinetRecord>();
             for (int i = 0; i < numberRecords; i++)
             {
-                FileCabinetRecord record = new FileCabinetRecord();
-                byte[] buffer = new byte[2];
-
-                this.fileStream.Read(buffer, 0, 2);
-                int num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                short status = Convert.ToInt16(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                buffer = new byte[4];
-
-                this.fileStream.Read(buffer, 0, 4);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                record.Id = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                buffer = new byte[120];
-
-                this.fileStream.Read(buffer, 0, 120);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                record.FirstName = Encoding.Default.GetString(buffer);
-
-                buffer = new byte[120];
-
-                this.fileStream.Read(buffer, 0, 120);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                record.LastName = Encoding.Default.GetString(buffer);
-
-                buffer = new byte[4];
-
-                this.fileStream.Read(buffer, 0, 4);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                var year = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                buffer = new byte[4];
-
-                this.fileStream.Read(buffer, 0, 4);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                var month = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                buffer = new byte[4];
-
-                this.fileStream.Read(buffer, 0, 4);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                var day = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                record.DateOfBirth = new DateTime(year, month, day);
-
-                buffer = new byte[2];
-
-                this.fileStream.Read(buffer, 0, 2);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                record.Property1 = Convert.ToInt16(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                buffer = new byte[16];
-
-                this.fileStream.Read(buffer, 0, 16);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                record.Property2 = Convert.ToDecimal(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                buffer = new byte[2];
-
-                this.fileStream.Read(buffer, 0, 2);
-                num = Array.IndexOf(buffer, (byte)0);
-                if (num > 0)
-                {
-                    Array.Resize(ref buffer, num);
-                }
-
-                record.Property3 = Convert.ToChar(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-                records[i] = record;
+                list.Add(this.ReadRecord());
             }
 
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
+            return new ReadOnlyCollection<FileCabinetRecord>(list);
         }
 
         public void EditRecord(int id, FileCabinetRecord recordEdit)
@@ -179,10 +66,6 @@ namespace FileCabinetApp
             }
 
             var poz = this.fileStream.Seek((id - 1) * this.recordSize, SeekOrigin.Begin);
-            byte[] buffer = new byte[this.recordSize];
-            this.fileStream.Write(buffer, 0, buffer.Length);
-
-            poz = this.fileStream.Seek((id - 1) * this.recordSize, SeekOrigin.Begin);
             short status = 0;
             recordEdit.Id = id;
             this.WriteRecord(status, recordEdit);
@@ -202,17 +85,56 @@ namespace FileCabinetApp
 
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            throw new NotImplementedException();
+            var nuumber = this.GetStat();
+            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+
+            for (int i = 0; i < nuumber; i++)
+            {
+                var record = this.ReadRecord();
+                if (record.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase))
+                {
+                    list.Add(record);
+                }
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(list);
         }
 
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
-            throw new NotImplementedException();
+            var nuumber = this.GetStat();
+            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+
+            for (int i = 0; i < nuumber; i++)
+            {
+                var record = this.ReadRecord();
+                if (record.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase))
+                {
+                    list.Add(record);
+                }
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(list);
         }
 
         public ReadOnlyCollection<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
-            throw new NotImplementedException();
+            var nuumber = this.GetStat();
+            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+
+            for (int i = 0; i < nuumber; i++)
+            {
+                var record = this.ReadRecord();
+                if (record.DateOfBirth == DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture))
+                {
+                    list.Add(record);
+                }
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(list);
         }
 
         public FileCabinetServiceSnapshot MakeSnapshot()
@@ -261,6 +183,123 @@ namespace FileCabinetApp
             buffer = Encoding.Default.GetBytes(newRecord.Property3.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 2);
             this.fileStream.Write(buffer, 0, buffer.Length);
+        }
+
+        private FileCabinetRecord ReadRecord()
+        {
+            FileCabinetRecord record = new FileCabinetRecord();
+            byte[] buffer = new byte[2];
+
+            this.fileStream.Read(buffer, 0, 2);
+            int num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            short status = Convert.ToInt16(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+            buffer = new byte[4];
+
+            this.fileStream.Read(buffer, 0, 4);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            record.Id = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+            buffer = new byte[120];
+
+            this.fileStream.Read(buffer, 0, 120);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            record.FirstName = Encoding.Default.GetString(buffer);
+
+            buffer = new byte[120];
+
+            this.fileStream.Read(buffer, 0, 120);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            record.LastName = Encoding.Default.GetString(buffer);
+
+            buffer = new byte[4];
+
+            this.fileStream.Read(buffer, 0, 4);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            var year = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+            buffer = new byte[4];
+
+            this.fileStream.Read(buffer, 0, 4);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            var month = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+            buffer = new byte[4];
+
+            this.fileStream.Read(buffer, 0, 4);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            var day = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+            record.DateOfBirth = new DateTime(year, month, day);
+
+            buffer = new byte[2];
+
+            this.fileStream.Read(buffer, 0, 2);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            record.Property1 = Convert.ToInt16(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+            buffer = new byte[16];
+
+            this.fileStream.Read(buffer, 0, 16);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            record.Property2 = Convert.ToDecimal(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+            buffer = new byte[2];
+
+            this.fileStream.Read(buffer, 0, 2);
+            num = Array.IndexOf(buffer, (byte)0);
+            if (num > 0)
+            {
+                Array.Resize(ref buffer, num);
+            }
+
+            record.Property3 = Convert.ToChar(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+            return record;
         }
     }
 }
