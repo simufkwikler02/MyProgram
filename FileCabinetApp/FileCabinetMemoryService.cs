@@ -3,16 +3,17 @@ using System.Globalization;
 
 namespace FileCabinetApp
 {
-    public class FileCabinetService : IFileCabinetService
+    public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly IRecordValidator validator;
+        private readonly string serviceRules = "memory";
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
-        public FileCabinetService(IRecordValidator validator)
+        public FileCabinetMemoryService(IRecordValidator validator)
         {
             this.validator = validator;
         }
@@ -20,6 +21,11 @@ namespace FileCabinetApp
         public string ValidateInfo()
         {
             return this.validator.ValidateInfo();
+        }
+
+        public string ServiceInfo()
+        {
+            return this.serviceRules;
         }
 
         public int CreateRecord(FileCabinetRecord newRecord)

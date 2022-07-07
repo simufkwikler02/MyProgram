@@ -15,7 +15,7 @@ namespace FileCabinetApp
         private const int ExplanationHelpIndex = 2;
 
         private static IRecordValidator? recordValidator;
-        private static FileCabinetService? fileCabinetService;
+        private static IFileCabinetService? fileCabinetService;
         private static bool isRunning = true;
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
@@ -44,10 +44,14 @@ namespace FileCabinetApp
 
         public static void Main(string[] args)
         {
-            recordValidator = args.Length == 0 ? new DefaultValidator() : Program.ValidationRules(args);
-            fileCabinetService = new FileCabinetService(recordValidator);
+
+            Program.FileCabinetServiceCreate(args);
+            //recordValidator = recordValidator ?? new DefaultValidator();
+            //fileCabinetService =  new FileCabinetMemoryService(recordValidator);
+
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine($"Using {Program.fileCabinetService.ValidateInfo()} validation rules.");
+            Console.WriteLine($"Using '{Program.recordValidator.ValidateInfo()}' validation rules.");
+            Console.WriteLine($"Using '{Program.fileCabinetService.ServiceInfo()}' type of service.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 
@@ -78,6 +82,45 @@ namespace FileCabinetApp
                 }
             }
             while (isRunning);
+        }
+
+        private static void FileCabinetServiceCreate(string[] args)
+        {
+            if (args.Length == 0)
+            {
+                recordValidator = new DefaultValidator();
+                fileCabinetService = new FileCabinetMemoryService(recordValidator);
+            }
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Split('=', 2)[0].Equals("--validation-rules", StringComparison.OrdinalIgnoreCase))
+                {
+                    recordValidator = Program.ValidationRules(new string[] { args[i] });
+                }
+                else if (string.Equals(args[i], "-v", StringComparison.OrdinalIgnoreCase))
+                {
+                    i++;
+                    recordValidator = i >= args.Length ? new DefaultValidator() : Program.ValidationRules(new string[] { args[i - 1], args[i] });
+                }
+            }
+
+            recordValidator = recordValidator ?? new DefaultValidator();
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Split('=', 2)[0].Equals("--storage", StringComparison.OrdinalIgnoreCase))
+                {
+                    fileCabinetService = Program.FileCabinetServiceRules(new string[] { args[i] });
+                }
+                else if (string.Equals(args[i], "-s", StringComparison.OrdinalIgnoreCase))
+                {
+                    i++;
+                    fileCabinetService = i >= args.Length ? new FileCabinetMemoryService(recordValidator) : Program.FileCabinetServiceRules(new string[] { args[i - 1], args[i] });
+                }
+            }
+
+            fileCabinetService = fileCabinetService ?? new FileCabinetMemoryService(recordValidator);
         }
 
         private static void PrintMissedCommandInfo(string command)
@@ -281,6 +324,13 @@ namespace FileCabinetApp
         private static void Export(string parameters)
         {
             var inputs = parameters != null && parameters != string.Empty ? parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
+            if (inputs.Length <= 1)
+            {
+                PrintMissedCommandInfo(parameters);
+                Console.WriteLine(HintMessageExport);
+                return;
+            }
+
             const int commandIndex = 0;
             const int pathIndex = 1;
             var command = inputs[commandIndex];
@@ -381,6 +431,46 @@ namespace FileCabinetApp
             }
 
             return new DefaultValidator();
+        }
+
+        private static IFileCabinetService FileCabinetServiceRules(string[] input)
+        {
+            var inputs = new string[] { string.Empty, string.Empty };
+            if (input.Length == 1)
+            {
+                inputs = input[0].Split('=', 2);
+            }
+            else
+            {
+                inputs[0] = input[0];
+                inputs[1] = input[1];
+            }
+
+            const int commandIndex = 0;
+            const int commandrules = 1;
+            var command = inputs[commandIndex];
+            var rules = inputs[commandrules];
+
+            recordValidator = recordValidator ?? new DefaultValidator();
+            if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
+            {
+                return new FileCabinetMemoryService(recordValidator);
+            }
+
+            if (command == "-s" || command == "--storage")
+            {
+                if (rules.Equals("file", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new FileCabinetFilesystemService(recordValidator);
+                }
+
+                if (rules.Equals("memory", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new FileCabinetMemoryService(recordValidator);
+                }
+            }
+
+            return new FileCabinetMemoryService(recordValidator);
         }
 
         private static Tuple<bool, string, string> StringConverter(string input)
