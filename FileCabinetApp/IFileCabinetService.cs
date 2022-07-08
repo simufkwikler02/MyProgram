@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    internal interface IFileCabinetService
+    public interface IFileCabinetService
     {
         public int CreateRecord(FileCabinetRecord newRecord);
 
