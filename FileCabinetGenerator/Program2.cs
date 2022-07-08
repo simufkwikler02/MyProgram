@@ -16,6 +16,9 @@ namespace FileCabinetGenerator
         public static void Main(string[] args)
         {
             ReadParametrs(args);
+            format = format ?? string.Empty;
+            path = path ?? string.Empty;
+
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
             for (int i = id; i < id + amount; i++)
             {
@@ -23,6 +26,64 @@ namespace FileCabinetGenerator
                 record.Id = i;
                 list.Add(record);
             }
+
+            StreamWriter? fstream;
+            FileInfo? fileInfo;
+            DirectoryInfo? directory;
+            try
+            {
+                fileInfo = new FileInfo(path);
+                directory = fileInfo.Directory;
+                if (!directory.Exists)
+                {
+                    throw new ArgumentException(nameof(directory));
+                }
+
+                if (fileInfo.Exists)
+                {
+                    Console.WriteLine($"File is exist - rewrite {path}? [Y/N]");
+                    var com = Console.ReadLine() ?? string.Empty;
+                    switch (com)
+                    {
+                        case "y":
+                            goto case "Y";
+                        case "Y":
+                            break;
+                        case "n":
+                            goto case "N";
+                        case "N":
+                            Console.WriteLine("Export canceled");
+                            return;
+                        default:
+                            Console.WriteLine($"There is no '{com}' command.");
+                            return;
+                    }
+                }
+            }
+            catch
+            {
+                Console.WriteLine($"Export failed: can't open file {path}.");
+                return;
+            }
+
+            fstream = new StreamWriter(path, false);
+            var snapshot = new FileCabinetServiceSnapshot(list);
+            switch (format)
+            {
+                case "csv":
+                    snapshot.SaveToCsv(fstream);
+                    break;
+                case "xml":
+                    snapshot.SaveToXml(fstream);
+                    break;
+                default:
+                    Console.WriteLine($"There is no '{format}' command.");
+                    fstream.Close();
+                    return;
+            }
+
+            Console.WriteLine($"All records are exported to file {path}.");
+            fstream.Close();
 
         }
 
