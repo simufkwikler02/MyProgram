@@ -44,7 +44,6 @@ namespace FileCabinetApp
 
         public static void Main(string[] args)
         {
-
             Program.FileCabinetServiceCreate(args);
             //recordValidator = recordValidator ?? new DefaultValidator();
             //fileCabinetService =  new FileCabinetMemoryService(recordValidator);
