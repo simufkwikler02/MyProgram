@@ -166,12 +166,39 @@ namespace FileCabinetApp
                 if (index >= 0)
                 {
                     newlist.Remove(record);
+                    this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
+                    this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
+                    this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
                     this.list.Insert(index, record);
+
                     this.list.RemoveAt(index + 1);
                     continue;
                 }
+                else
+                {
+                    this.list.Add(record);
+                }
 
-                this.list.Add(record);
+                if (!this.firstNameDictionary.ContainsKey(record.FirstName))
+                {
+                    this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>());
+                }
+
+                this.firstNameDictionary[record.FirstName].Add(record);
+
+                if (!this.lastNameDictionary.ContainsKey(record.LastName))
+                {
+                    this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>());
+                }
+
+                this.lastNameDictionary[record.LastName].Add(record);
+
+                if (!this.dateOfBirthDictionary.ContainsKey(record.DateOfBirth))
+                {
+                    this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>());
+                }
+
+                this.dateOfBirthDictionary[record.DateOfBirth].Add(record);
             }
 
             Console.Write($"{newlist.Count} records were imported");
