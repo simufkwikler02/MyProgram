@@ -142,6 +142,11 @@ namespace FileCabinetApp
             throw new NotImplementedException();
         }
 
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            throw new NotImplementedException();
+        }
+
         private void WriteRecord(short status, FileCabinetRecord newRecord)
         {
             byte[] buffer = Encoding.Default.GetBytes(status.ToString(CultureInfo.CurrentCulture));

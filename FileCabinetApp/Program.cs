@@ -10,6 +10,7 @@ namespace FileCabinetApp
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
         private const string HintMessageEdit = "Use: edit [number]";
         private const string HintMessageExport = "Use: export [csv | xml] [directory]";
+        private const string HintMessageImport = "Use: import [csv | xml] [directory]";
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
@@ -28,6 +29,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
+            new Tuple<string, Action<string>>("import", Import),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -39,7 +41,8 @@ namespace FileCabinetApp
             new string[] { "list", "prints a list of records", "The 'list' command prints a list of records" },
             new string[] { "edit", "edits records", "The 'edit' command edits records" },
             new string[] { "find", "find records", "The 'find' command finds and prints records" },
-            new string[] { "export", "export records", "The 'export' command exports records from the directory" },
+            new string[] { "export", "export records", "The 'export' command exports records to the directory" },
+            new string[] { "import", "import records", "The 'import' command imports records from the directory" },
         };
 
         public static void Main(string[] args)
@@ -392,6 +395,37 @@ namespace FileCabinetApp
 
             Console.WriteLine($"All records are exported to file {path}.");
             fstream.Close();
+        }
+
+        private static void Import(string parameters)
+        {
+            var inputs = parameters != null && parameters != string.Empty ? parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
+            if (inputs.Length <= 1)
+            {
+                PrintMissedCommandInfo(parameters);
+                Console.WriteLine(HintMessageExport);
+                return;
+            }
+
+            const int commandIndex = 0;
+            const int pathIndex = 1;
+            var command = inputs[commandIndex];
+            var path = inputs[pathIndex];
+            FileStream? fstream;
+            try
+            {
+                fstream = new FileStream(path, FileMode.Open);
+                var snapshot = new FileCabinetServiceSnapshot();
+                snapshot.LoadFromCsv(new StreamReader(fstream));
+                fileCabinetService.Restore(snapshot);
+                Console.WriteLine($"from {path}");
+            }
+            catch
+            {
+                Console.WriteLine($"Import failed: can't open file {path}.");
+                Console.WriteLine(HintMessageImport);
+                return;
+            }
         }
 
         private static IRecordValidator ValidationRules(string[] input)

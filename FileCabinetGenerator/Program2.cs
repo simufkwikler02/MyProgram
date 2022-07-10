@@ -93,17 +93,18 @@ namespace FileCabinetGenerator
             var record = new FileCabinetRecord();
             record.Id = 0;
             Random random = new Random();
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder? stringBuilder= new StringBuilder();
 
             do
             {
+                stringBuilder.Clear();
                 for (int i = 0; i < 10; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
                 }
                 record.FirstName = stringBuilder.ToString();
 
-                stringBuilder = new StringBuilder();
+                stringBuilder.Clear();
                 for (int i = 0; i < 10; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
@@ -116,7 +117,7 @@ namespace FileCabinetGenerator
                 }
                 catch
                 {
-                    record.DateOfBirth = new DateTime(0,0,0);
+                    record.DateOfBirth = new DateTime(1000,1,1);
                 }
                 
                 record.Property1 = (short)random.Next(1, 100);

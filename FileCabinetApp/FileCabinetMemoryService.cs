@@ -70,10 +70,10 @@ namespace FileCabinetApp
             }
             else
             {
-                var records = new FileCabinetRecord[this.list.Count];
+                var records = new List<FileCabinetRecord>();
                 foreach (var record in this.list)
                 {
-                    records[record.Id - 1] = record;
+                    records.Add(record);
                 }
 
                 return new ReadOnlyCollection<FileCabinetRecord>(records);
@@ -145,6 +145,36 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             return new FileCabinetServiceSnapshot(this.list);
+        }
+
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            var records = snapshot.GetRecords();
+            var newlist = new List<FileCabinetRecord>(records);
+            foreach (var record in newlist)
+            {
+                if (!this.validator.ValidateParametrs(record))
+                {
+                    Console.WriteLine($"Record validation error with id number {record.Id},record skipped");
+                    newlist.Remove(record);
+                }
+            }
+
+            foreach (var record in newlist)
+            {
+                var index = this.list.FindIndex(x => x.Id == record.Id);
+                if (index >= 0)
+                {
+                    newlist.Remove(record);
+                    this.list.Insert(index, record);
+                    this.list.RemoveAt(index + 1);
+                    continue;
+                }
+
+                this.list.Add(record);
+            }
+
+            Console.Write($"{newlist.Count} records were imported");
         }
     }
 }
