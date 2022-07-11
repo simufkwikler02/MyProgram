@@ -16,7 +16,7 @@ namespace FileCabinetApp
 
         public FileCabinetFilesystemService(IRecordValidator validator)
         {
-            this.fileStream = new FileStream("cabinet-records.db", FileMode.Create);
+            this.fileStream = new FileStream("cabinet-records.db", FileMode.Create); //поправить способ открытия файла
             this.validator = validator;
         }
 
@@ -65,11 +65,24 @@ namespace FileCabinetApp
                 throw new ArgumentException("incorrect format", nameof(recordEdit));
             }
 
-            var poz = this.fileStream.Seek((id - 1) * this.recordSize, SeekOrigin.Begin);
-            short status = 0;
-            recordEdit.Id = id;
-            this.WriteRecord(status, recordEdit);
-            Console.WriteLine($"Record #{id} is updated.");
+            var nuumber = this.GetStat();
+            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+
+            for (int i = 0; i < nuumber; i++)
+            {
+                var record = this.ReadRecord();
+                if (record.Id == id)
+                {
+                    short status = 0;
+                    recordEdit.Id = id;
+                    poz = this.fileStream.Seek(i * this.recordSize, SeekOrigin.Begin);
+                    this.WriteRecord(status, recordEdit);
+                    Console.WriteLine($"Record #{id} is updated.");
+                    return;
+                }
+            }
+
+            Console.WriteLine($"Record #{id} is not found");
         }
 
         public int GetStat()
@@ -139,12 +152,50 @@ namespace FileCabinetApp
 
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
+            var records = new List<FileCabinetRecord>(this.GetRecords());
+            var snapshot = new FileCabinetServiceSnapshot(records);
             throw new NotImplementedException();
         }
 
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
-            throw new NotImplementedException();
+            var records = snapshot.GetRecords();
+            var newlist = new List<FileCabinetRecord>(records);
+            foreach (var record in newlist)
+            {
+                if (!this.validator.ValidateParametrs(record))
+                {
+                    Console.WriteLine($"Record validation error with id number {record.Id},record skipped");
+                    newlist.Remove(record);
+                }
+            }
+
+            var oldlist = new List<FileCabinetRecord>(this.GetRecords());
+            foreach (var record in newlist)
+            {
+                var index = oldlist.FindIndex(x => x.Id == record.Id);
+                if (index >= 0)
+                {
+                    newlist.Remove(record);
+                    oldlist.Insert(index, record);
+
+                    oldlist.RemoveAt(index + 1);
+                    continue;
+                }
+                else
+                {
+                    oldlist.Add(record);
+                }
+            }
+
+            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            foreach (var record in oldlist)
+            {
+                short status = 0;
+                this.WriteRecord(status, record);
+            }
+
+            Console.Write($"{newlist.Count} records were imported");
         }
 
         private void WriteRecord(short status, FileCabinetRecord newRecord)
