@@ -9,6 +9,7 @@ namespace FileCabinetApp
     public class CustomValidator : IRecordValidator
     {
         private readonly string rules = "custom";
+        private readonly DateTime minDate = new DateTime(1950, 6, 1);
 
         public bool ValidateParametrsFirstName(string input)
         {
@@ -32,8 +33,7 @@ namespace FileCabinetApp
 
         public bool ValidateParametrsDateOfBirth(DateTime input)
         {
-            DateTime minDate = new DateTime(1950, 6, 1);
-            if (minDate > input || DateTime.Now < input)
+            if (this.minDate > input || DateTime.Now < input)
             {
                 return false;
             }
@@ -80,6 +80,11 @@ namespace FileCabinetApp
         public string ValidateInfo()
         {
             return this.rules;
+        }
+
+        public DateTime DateTimeMin()
+        {
+            return this.minDate;
         }
     }
 }

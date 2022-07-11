@@ -12,6 +12,8 @@ namespace FileCabinetApp
 
         public string ValidateInfo();
 
+        public DateTime DateTimeMin();
+
         public bool ValidateParametrsFirstName(string input);
 
         public bool ValidateParametrsLastName(string input);

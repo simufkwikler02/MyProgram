@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FileCabinetGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "--output-type=xml --output=d:\\records.xml --records-amount=100 --start-id=20"
+    }
+  }
+}

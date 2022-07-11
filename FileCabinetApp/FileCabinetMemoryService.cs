@@ -70,10 +70,10 @@ namespace FileCabinetApp
             }
             else
             {
-                var records = new FileCabinetRecord[this.list.Count];
+                var records = new List<FileCabinetRecord>();
                 foreach (var record in this.list)
                 {
-                    records[record.Id - 1] = record;
+                    records.Add(record);
                 }
 
                 return new ReadOnlyCollection<FileCabinetRecord>(records);
@@ -145,6 +145,64 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             return new FileCabinetServiceSnapshot(this.list);
+        }
+
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            var records = snapshot.GetRecords();
+            var newlist = new List<FileCabinetRecord>(records);
+            foreach (var record in newlist)
+            {
+                if (!this.validator.ValidateParametrs(record))
+                {
+                    Console.WriteLine($"Record validation error with id number {record.Id},record skipped");
+                    newlist.Remove(record);
+                }
+            }
+
+            var newlistconst = new List<FileCabinetRecord>(newlist);
+            foreach (var record in newlistconst)
+            {
+                var index = this.list.FindIndex(x => x.Id == record.Id);
+                if (index >= 0)
+                {
+                    newlist.Remove(record);
+                    this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
+                    this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
+                    this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
+                    this.list.Insert(index, record);
+
+                    this.list.RemoveAt(index + 1);
+                    continue;
+                }
+                else
+                {
+                    this.list.Add(record);
+                }
+
+                if (!this.firstNameDictionary.ContainsKey(record.FirstName))
+                {
+                    this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>());
+                }
+
+                this.firstNameDictionary[record.FirstName].Add(record);
+
+                if (!this.lastNameDictionary.ContainsKey(record.LastName))
+                {
+                    this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>());
+                }
+
+                this.lastNameDictionary[record.LastName].Add(record);
+
+                if (!this.dateOfBirthDictionary.ContainsKey(record.DateOfBirth))
+                {
+                    this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>());
+                }
+
+                this.dateOfBirthDictionary[record.DateOfBirth].Add(record);
+            }
+
+            Console.Write($"{newlist.Count} records were imported");
         }
     }
 }
