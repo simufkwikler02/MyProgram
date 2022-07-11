@@ -171,7 +171,8 @@ namespace FileCabinetApp
             }
 
             var oldlist = new List<FileCabinetRecord>(this.GetRecords());
-            foreach (var record in newlist)
+            var newlistconst = new List<FileCabinetRecord>(newlist);
+            foreach (var record in newlistconst)
             {
                 var index = oldlist.FindIndex(x => x.Id == record.Id);
                 if (index >= 0)

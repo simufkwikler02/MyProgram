@@ -379,7 +379,7 @@ namespace FileCabinetApp
 
             fstream = new StreamWriter(path, false);
             var snapshot = fileCabinetService.MakeSnapshot();
-            switch (command)
+            switch (command.ToLower(CultureInfo.CurrentCulture))
             {
                 case "csv":
                     snapshot.SaveToCsv(fstream);
@@ -392,7 +392,7 @@ namespace FileCabinetApp
                     fstream.Close();
                     return;
             }
-
+            fstream.Close();
             Console.WriteLine($"All records are exported to file {path}.");
             fstream.Close();
         }
@@ -416,8 +416,24 @@ namespace FileCabinetApp
             {
                 fstream = new FileStream(path, FileMode.Open);
                 var snapshot = new FileCabinetServiceSnapshot();
-                snapshot.LoadFromCsv(new StreamReader(fstream));
-                fileCabinetService.Restore(snapshot);
+
+                switch (command.ToLower(CultureInfo.CurrentCulture))
+                {
+                    case "csv":
+                        snapshot.LoadFromCsv(new StreamReader(fstream));
+                        fileCabinetService.Restore(snapshot);
+                        break;
+                    case "xml":
+                        snapshot.LoadFromXml(new StreamReader(fstream));
+                        fileCabinetService.Restore(snapshot);
+                        break;
+                    default:
+                        PrintMissedCommandInfo(command);
+                        fstream.Close();
+                        return;
+                }
+
+                fstream.Close();
                 Console.WriteLine($"from {path}");
             }
             catch

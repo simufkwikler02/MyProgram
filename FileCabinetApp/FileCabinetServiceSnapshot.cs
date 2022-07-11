@@ -47,5 +47,15 @@ namespace FileCabinetApp
 
             this.Records = (List<FileCabinetRecord>)list;
         }
+
+        public void LoadFromXml(StreamReader fstream)
+        {
+            XmlReaderSettings settings = new XmlReaderSettings();
+
+            var xml = new FileCabinetRecordXmlReader(XmlReader.Create(fstream, settings));
+            var list = xml.ReadAll();
+
+            this.Records = (List<FileCabinetRecord>)list;
+        }
     }
 }

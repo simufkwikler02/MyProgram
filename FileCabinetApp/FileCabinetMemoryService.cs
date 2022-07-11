@@ -160,7 +160,8 @@ namespace FileCabinetApp
                 }
             }
 
-            foreach (var record in newlist)
+            var newlistconst = new List<FileCabinetRecord>(newlist);
+            foreach (var record in newlistconst)
             {
                 var index = this.list.FindIndex(x => x.Id == record.Id);
                 if (index >= 0)
