@@ -80,6 +80,17 @@ namespace FileCabinetApp
             }
         }
 
+        public bool IdExist(int id)
+        {
+            var index = this.list.FindIndex(x => x.Id == id);
+            if (index == -1)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public int GetStat()
         {
             return this.list.Count;
@@ -110,6 +121,17 @@ namespace FileCabinetApp
             }
 
             throw new ArgumentException("index is not exsist.", nameof(id));
+        }
+
+        public void RemoveRecord(int id)
+        {
+            var index = this.list.FindIndex(x => x.Id == id);
+            var record = this.list[index];
+            this.list.RemoveAt(index);
+            this.firstNameDictionary[record.FirstName].Remove(record);
+            this.lastNameDictionary[record.LastName].Remove(record);
+            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
+            Console.WriteLine($"Record #{id} is removed.");
         }
 
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)

@@ -12,6 +12,7 @@ namespace FileCabinetApp
         private readonly string serviceRules = "file";
         private readonly IRecordValidator validator;
         private readonly int recordSize = 278;
+        private int deleteRecords = 0;
         private FileStream? fileStream;
 
         public FileCabinetFilesystemService(IRecordValidator validator)
@@ -47,7 +48,7 @@ namespace FileCabinetApp
             }
 
             var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
-            var numberRecords = this.fileStream.Length / this.recordSize;
+            var numberRecords = this.GetStat();
 
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
             for (int i = 0; i < numberRecords; i++)
@@ -75,7 +76,7 @@ namespace FileCabinetApp
                 {
                     short status = 0;
                     recordEdit.Id = id;
-                    poz = this.fileStream.Seek(i * this.recordSize, SeekOrigin.Begin);
+                    poz = this.fileStream.Seek(-this.recordSize, SeekOrigin.Current);
                     this.WriteRecord(status, recordEdit);
                     Console.WriteLine($"Record #{id} is updated.");
                     return;
@@ -83,6 +84,27 @@ namespace FileCabinetApp
             }
 
             Console.WriteLine($"Record #{id} is not found");
+        }
+
+        public void RemoveRecord(int id)
+        {
+            var nuumber = this.GetStat();
+            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+
+            for (int i = 0; i < nuumber; i++)
+            {
+                var record = this.ReadRecord();
+                if (record.Id == id)
+                {
+                    var recordEdit = record;
+                    short status = 1;
+                    poz = this.fileStream.Seek(-this.recordSize, SeekOrigin.Current);
+                    this.WriteRecord(status, recordEdit);
+                    Console.WriteLine($"Record #{id} is removed.");
+                    this.deleteRecords++;
+                    return;
+                }
+            }
         }
 
         public int GetStat()
@@ -93,7 +115,19 @@ namespace FileCabinetApp
             }
 
             int numberRecords = (int)this.fileStream.Length / this.recordSize;
-            return numberRecords;
+            return numberRecords - this.deleteRecords;
+        }
+
+        public bool IdExist(int id)
+        {
+            var records = new List<FileCabinetRecord>(this.GetRecords());
+            var index = records.FindIndex(x => x.Id == id);
+            if (index == -1)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
@@ -154,7 +188,7 @@ namespace FileCabinetApp
         {
             var records = new List<FileCabinetRecord>(this.GetRecords());
             var snapshot = new FileCabinetServiceSnapshot(records);
-            throw new NotImplementedException();
+            return snapshot;
         }
 
         public void Restore(FileCabinetServiceSnapshot snapshot)
@@ -246,7 +280,6 @@ namespace FileCabinetApp
         {
             FileCabinetRecord record = new FileCabinetRecord();
             byte[] buffer = new byte[2];
-
             this.fileStream.Read(buffer, 0, 2);
             int num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
@@ -356,6 +389,7 @@ namespace FileCabinetApp
             }
 
             record.Property3 = Convert.ToChar(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+            record = status == 0 ? record : this.ReadRecord();
             return record;
         }
     }

@@ -9,6 +9,7 @@ namespace FileCabinetApp
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
         private const string HintMessageEdit = "Use: edit [number]";
+        private const string HintMessageRemove = "Use: remove [number]";
         private const string HintMessageExport = "Use: export [csv | xml] [directory]";
         private const string HintMessageImport = "Use: import [csv | xml] [directory]";
         private const int CommandHelpIndex = 0;
@@ -30,6 +31,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
+            new Tuple<string, Action<string>>("remove", Remove),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -43,6 +45,7 @@ namespace FileCabinetApp
             new string[] { "find", "find records", "The 'find' command finds and prints records" },
             new string[] { "export", "export records", "The 'export' command exports records to the directory" },
             new string[] { "import", "import records", "The 'import' command imports records from the directory" },
+            new string[] { "remove", "remove record", "The 'remove' command delete record from cabinet" },
         };
 
         public static void Main(string[] args)
@@ -268,7 +271,7 @@ namespace FileCabinetApp
             try
             {
                 int id = Convert.ToInt32(command, CultureInfo.CurrentCulture);
-                if (id < 1 || id > Program.fileCabinetService.GetStat())
+                if (!Program.fileCabinetService.IdExist(id))
                 {
                     Console.WriteLine($"record with number {id} is not exist.");
                     return;
@@ -441,6 +444,33 @@ namespace FileCabinetApp
                 Console.WriteLine($"Import failed: can't open file {path}.");
                 Console.WriteLine(HintMessageImport);
                 return;
+            }
+        }
+
+        private static void Remove(string parameters)
+        {
+            var command = parameters != null ? parameters : string.Empty;
+
+            if (string.IsNullOrEmpty(command))
+            {
+                Console.WriteLine(Program.HintMessageRemove);
+                return;
+            }
+
+            try
+            {
+                int id = Convert.ToInt32(command, CultureInfo.CurrentCulture);
+                if (!Program.fileCabinetService.IdExist(id))
+                {
+                    Console.WriteLine($"record with number {id} is not exist.");
+                    return;
+                }
+
+                Program.fileCabinetService.RemoveRecord(id);
+            }
+            catch
+            {
+                Console.WriteLine("incorrect format");
             }
         }
 
