@@ -170,7 +170,8 @@ namespace FileCabinetApp
         private static void Stat(string parameters)
         {
             var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
+            var recordsIsDelete = Program.fileCabinetService.GetStatDelete();
+            Console.WriteLine($"{recordsCount} record(s). {recordsIsDelete} delete record(s)");
         }
 
         private static FileCabinetRecord EnterData()

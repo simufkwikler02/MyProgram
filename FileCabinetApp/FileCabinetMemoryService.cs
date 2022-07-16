@@ -8,6 +8,7 @@ namespace FileCabinetApp
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
         private readonly IRecordValidator validator;
         private readonly string serviceRules = "memory";
+        private readonly int deleteRecords;
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
@@ -94,6 +95,11 @@ namespace FileCabinetApp
         public int GetStat()
         {
             return this.list.Count;
+        }
+
+        public int GetStatDelete()
+        {
+            return this.deleteRecords;
         }
 
         public void EditRecord(int id, FileCabinetRecord recordEdit)

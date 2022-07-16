@@ -124,6 +124,11 @@ namespace FileCabinetApp
             }
         }
 
+        public int GetStatDelete()
+        {
+            return this.deleteRecords;
+        }
+
         public int GetStat()
         {
             if (this.fileStream.Length == 0)
