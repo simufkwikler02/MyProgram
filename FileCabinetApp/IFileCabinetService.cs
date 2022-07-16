@@ -22,6 +22,8 @@ namespace FileCabinetApp
 
         public void RemoveRecord(int id);
 
+        public void PurgeRecords();
+
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName);
 
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);

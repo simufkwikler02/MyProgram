@@ -32,6 +32,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
             new Tuple<string, Action<string>>("remove", Remove),
+            new Tuple<string, Action<string>>("purge", Purge),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -46,13 +47,12 @@ namespace FileCabinetApp
             new string[] { "export", "export records", "The 'export' command exports records to the directory" },
             new string[] { "import", "import records", "The 'import' command imports records from the directory" },
             new string[] { "remove", "remove record", "The 'remove' command delete record from cabinet" },
+            new string[] { "purge", "purge record", "The 'purge' command performs defragmentation of the data in the file (only 'file' type of service)" },
         };
 
         public static void Main(string[] args)
         {
             Program.FileCabinetServiceCreate(args);
-            //recordValidator = recordValidator ?? new DefaultValidator();
-            //fileCabinetService =  new FileCabinetMemoryService(recordValidator);
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using '{Program.recordValidator.ValidateInfo()}' validation rules.");
@@ -472,6 +472,11 @@ namespace FileCabinetApp
             {
                 Console.WriteLine("incorrect format");
             }
+        }
+
+        private static void Purge(string parametrs)
+        {
+            Program.fileCabinetService.PurgeRecords();
         }
 
         private static IRecordValidator ValidationRules(string[] input)

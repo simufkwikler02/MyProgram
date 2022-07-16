@@ -134,6 +134,12 @@ namespace FileCabinetApp
             Console.WriteLine($"Record #{id} is removed.");
         }
 
+        public void PurgeRecords()
+        {
+            Console.WriteLine("Error -> This command works only with 'file' type of service");
+            return;
+        }
+
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             if (firstName is null)

@@ -12,12 +12,12 @@ namespace FileCabinetApp
         private readonly string serviceRules = "file";
         private readonly IRecordValidator validator;
         private readonly int recordSize = 278;
-        private int deleteRecords = 0;
+        private int deleteRecords;
         private FileStream? fileStream;
 
         public FileCabinetFilesystemService(IRecordValidator validator)
         {
-            this.fileStream = new FileStream("cabinet-records.db", FileMode.Create); //поправить способ открытия файла
+            this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
         }
 
@@ -38,6 +38,23 @@ namespace FileCabinetApp
             short status = 0;
             this.WriteRecord(status, newRecord);
             return newRecord.Id;
+        }
+
+        public void PurgeRecords()
+        {
+            var records = this.GetRecords();
+            var length = this.fileStream.Length;
+
+            this.fileStream.Close();
+            this.fileStream = new FileStream("cabinet-records.db", FileMode.Create);
+            short status = 0;
+            foreach (var record in records)
+            {
+                this.WriteRecord(status, record);
+            }
+
+            Console.WriteLine($"Data file processing is completed: {this.deleteRecords} of {length / this.recordSize} records were purged.");
+            this.deleteRecords = 0;
         }
 
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
