@@ -18,6 +18,14 @@ namespace FileCabinetApp
 
         public int GetStat();
 
+        public bool IdExist(int id);
+
+        public void RemoveRecord(int id);
+
+        public int GetStatDelete();
+
+        public void PurgeRecords();
+
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName);
 
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);
