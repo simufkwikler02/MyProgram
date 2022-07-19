@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using FileCabinetApp.CommandHandlers;
 
 namespace FileCabinetApp
 {
@@ -15,6 +16,8 @@ namespace FileCabinetApp
         public static void Main(string[] args)
         {
             Program.FileCabinetServiceCreate(args);
+            recordValidator = recordValidator ?? new DefaultValidator();
+            fileCabinetService = fileCabinetService ?? new FileCabinetMemoryService(recordValidator);
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using '{Program.recordValidator.ValidateInfo()}' validation rules.");
@@ -40,15 +43,29 @@ namespace FileCabinetApp
                 var parameters = inputs.Length > 1 ? inputs[parametersIndex] : string.Empty;
 
                 var commandHandler = CreateCommandHandlers();
-                commandHandler.Handle(new CommandHandlers.AppCommandRequest(command, parameters));
+                commandHandler.Handle(new AppCommandRequest(command, parameters));
             }
             while (isRunning);
         }
 
-        private static CommandHandlers.ICommandHandler CreateCommandHandlers()
+        private static ICommandHandler CreateCommandHandlers()
         {
-            var commandHandler = new CommandHandlers.CommandHandler(recordValidator);
-            return commandHandler;
+            recordValidator = recordValidator ?? new DefaultValidator();
+
+            var helpHander = new HelpCommandHandler(recordValidator);
+            var exitHander = new ExitCommandHandler(recordValidator);
+            var statHander = new StatCommandHandler(recordValidator);
+            var createHander = new CreateCommandHandler(recordValidator);
+            var listHander = new ListCommandHandler(recordValidator);
+            var editHander = new EditCommandHandler(recordValidator);
+            var findHandler = new FindCommandHandler(recordValidator);
+            var exportHandler = new ExportCommandHandler(recordValidator);
+            var importHandler = new ImportCommandHandler(recordValidator);
+            var removeHandler = new RemoveCommandHandler(recordValidator);
+            var purgeHandler = new PurgeCommandHandler(recordValidator);
+
+            helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(listHander).SetNext(editHander).SetNext(findHandler).SetNext(exportHandler).SetNext(importHandler).SetNext(removeHandler).SetNext(purgeHandler);
+            return helpHander;
         }
 
         private static void FileCabinetServiceCreate(string[] args)

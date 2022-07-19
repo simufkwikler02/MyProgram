@@ -8,14 +8,15 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class AppCommandRequest
     {
-        public string? Command { get; }
-
-        public string? Parameters { get; }
-
         public AppCommandRequest(string command, string parametrs)
         {
             this.Command = command;
             this.Parameters = parametrs;
         }
+
+        public string Command { get; }
+
+        public string Parameters { get; }
+
     }
 }

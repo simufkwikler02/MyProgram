@@ -9,16 +9,30 @@ namespace FileCabinetApp.CommandHandlers
 {
     public abstract class CommandHandlerBase : ICommandHandler
     {
+        protected readonly IRecordValidator? recordValidator;
         private ICommandHandler nextHandler;
 
-        public void SetNext(ICommandHandler a)
+        protected CommandHandlerBase(IRecordValidator validate)
         {
-
+            this.recordValidator = validate;
         }
 
-        public void Handle(AppCommandRequest a)
+        public ICommandHandler SetNext(ICommandHandler handler)
         {
+            this.nextHandler = handler;
+            return handler;
+        }
 
+        public virtual void Handle(AppCommandRequest request)
+        {
+            if (this.nextHandler != null)
+            {
+                this.nextHandler.Handle(request);
+            }
+            else
+            {
+                PrintMissedCommandInfo(request.Command);
+            }
         }
 
         protected static void PrintMissedCommandInfo(string command)
