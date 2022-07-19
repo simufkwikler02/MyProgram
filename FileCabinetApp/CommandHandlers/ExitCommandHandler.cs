@@ -8,9 +8,11 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class ExitCommandHandler : CommandHandlerBase
     {
-        public ExitCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
-            : base(fileCabinetService, validate)
+        private Action exit;
+
+        public ExitCommandHandler(Action exit)
         {
+            this.exit = exit;
         }
 
         public override void Handle(AppCommandRequest request)
@@ -18,7 +20,7 @@ namespace FileCabinetApp.CommandHandlers
             if (request.Command.Equals("exit", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("Exiting an application...");
-                Program.isRunning = false;
+                this.exit();
             }
             else
             {

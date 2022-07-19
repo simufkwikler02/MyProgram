@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class StatCommandHandler : CommandHandlerBase
+    public class StatCommandHandler : ServiceCommandHandlerBase
     {
         public StatCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
             : base(fileCabinetService, validate)

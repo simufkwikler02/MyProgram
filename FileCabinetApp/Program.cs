@@ -11,7 +11,7 @@ namespace FileCabinetApp
 
         private static IRecordValidator? recordValidator;
         private static IFileCabinetService? fileCabinetService;
-        public static bool isRunning = true;
+        private static bool isRunning = true;
 
         public static void Main(string[] args)
         {
@@ -52,17 +52,17 @@ namespace FileCabinetApp
         {
             recordValidator = recordValidator ?? new DefaultValidator();
 
-            var helpHander = new HelpCommandHandler(Program.fileCabinetService, recordValidator);
-            var exitHander = new ExitCommandHandler(Program.fileCabinetService, recordValidator);
-            var statHander = new StatCommandHandler(Program.fileCabinetService, recordValidator);
-            var createHander = new CreateCommandHandler(Program.fileCabinetService, recordValidator);
-            var listHander = new ListCommandHandler(Program.fileCabinetService, recordValidator);
-            var editHander = new EditCommandHandler(Program.fileCabinetService, recordValidator);
-            var findHandler = new FindCommandHandler(Program.fileCabinetService, recordValidator);
-            var exportHandler = new ExportCommandHandler(Program.fileCabinetService, recordValidator);
-            var importHandler = new ImportCommandHandler(Program.fileCabinetService, recordValidator);
-            var removeHandler = new RemoveCommandHandler(Program.fileCabinetService, recordValidator);
-            var purgeHandler = new PurgeCommandHandler(Program.fileCabinetService, recordValidator);
+            var helpHander = new HelpCommandHandler();
+            var exitHander = new ExitCommandHandler(() => isRunning = false);
+            var statHander = new StatCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var createHander = new CreateCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var listHander = new ListCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var editHander = new EditCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var findHandler = new FindCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var exportHandler = new ExportCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var importHandler = new ImportCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var removeHandler = new RemoveCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var purgeHandler = new PurgeCommandHandler(Program.fileCabinetService, Program.recordValidator);
 
             helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(listHander).SetNext(editHander).SetNext(findHandler).SetNext(exportHandler).SetNext(importHandler).SetNext(removeHandler).SetNext(purgeHandler);
             return helpHander;

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class EditCommandHandler : CommandHandlerBase
-        {
+    public class EditCommandHandler : ServiceCommandHandlerBase
+    {
         public EditCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
             : base(fileCabinetService, validate)
         {

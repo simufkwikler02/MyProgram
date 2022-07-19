@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class FindCommandHandler : CommandHandlerBase
+    public class FindCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
 

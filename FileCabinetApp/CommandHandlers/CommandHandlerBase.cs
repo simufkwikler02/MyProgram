@@ -9,15 +9,7 @@ namespace FileCabinetApp.CommandHandlers
 {
     public abstract class CommandHandlerBase : ICommandHandler
     {
-        protected readonly IRecordValidator? recordValidator;
-        protected readonly IFileCabinetService service;
         private ICommandHandler nextHandler;
-
-        protected CommandHandlerBase(IFileCabinetService fileCabinetService, IRecordValidator validate)
-        {
-            this.service = fileCabinetService;
-            this.recordValidator = validate;
-        }
 
         public ICommandHandler SetNext(ICommandHandler handler)
         {
