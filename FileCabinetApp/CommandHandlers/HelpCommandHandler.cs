@@ -27,8 +27,8 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "purge", "purge record", "The 'purge' command performs defragmentation of the data in the file (only 'file' type of service)" },
         };
 
-        public HelpCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public HelpCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 

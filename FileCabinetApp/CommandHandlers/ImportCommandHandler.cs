@@ -11,8 +11,8 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageImport = "Use: import [csv | xml] [directory]";
 
-        public ImportCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public ImportCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -42,11 +42,11 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         case "csv":
                             snapshot.LoadFromCsv(new StreamReader(fstream));
-                            Program.fileCabinetService.Restore(snapshot);
+                            this.service.Restore(snapshot);
                             break;
                         case "xml":
                             snapshot.LoadFromXml(new StreamReader(fstream));
-                            Program.fileCabinetService.Restore(snapshot);
+                            this.service.Restore(snapshot);
                             break;
                         default:
                             PrintMissedCommandInfo(command);

@@ -8,8 +8,8 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class ExitCommandHandler : CommandHandlerBase
     {
-        public ExitCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public ExitCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 

@@ -8,8 +8,8 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class ListCommandHandler : CommandHandlerBase
     {
-        public ListCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -17,7 +17,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command.Equals("list", StringComparison.OrdinalIgnoreCase))
             {
-                var records = Program.fileCabinetService.GetRecords();
+                var records = this.service.GetRecords();
                 try
                 {
                     PrintRecords(records);

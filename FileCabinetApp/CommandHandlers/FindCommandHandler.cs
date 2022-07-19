@@ -12,15 +12,8 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
 
-        private Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>[] commandsForFind = new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>[]
-        {
-        new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("firstName", Program.fileCabinetService.FindByFirstName),
-        new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("lastName", Program.fileCabinetService.FindByLastName),
-        new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("dateofbirth", Program.fileCabinetService.FindByDateoOfBirth),
-        };
-
-        public FindCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public FindCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -38,7 +31,14 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                var index = Array.FindIndex(this.commandsForFind, 0, this.commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
+                var commandsForFind = new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>[]
+                {
+                new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("firstName", this.service.FindByFirstName),
+                new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("lastName", this.service.FindByLastName),
+                new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("dateofbirth",this.service.FindByDateoOfBirth),
+                };
+
+                var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)
                 {
                     const int stringIndex = 1;
@@ -46,7 +46,7 @@ namespace FileCabinetApp.CommandHandlers
                     stringFind = stringFind.Trim('"');
                     try
                     {
-                        PrintRecords(this.commandsForFind[index].Item2(stringFind));
+                        PrintRecords(commandsForFind[index].Item2(stringFind));
                     }
                     catch
                     {

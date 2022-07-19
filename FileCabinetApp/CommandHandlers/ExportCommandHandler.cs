@@ -11,8 +11,8 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageExport = "Use: export [csv | xml] [directory]";
 
-        public ExportCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public ExportCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -73,7 +73,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
 
                 fstream = new StreamWriter(path, false);
-                var snapshot = Program.fileCabinetService.MakeSnapshot();
+                var snapshot = this.service.MakeSnapshot();
                 switch (command.ToLower(CultureInfo.CurrentCulture))
                 {
                     case "csv":

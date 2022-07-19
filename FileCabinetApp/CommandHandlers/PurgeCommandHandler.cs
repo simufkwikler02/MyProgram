@@ -8,8 +8,8 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class PurgeCommandHandler : CommandHandlerBase
     {
-        public PurgeCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public PurgeCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -17,7 +17,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command.Equals("purge", StringComparison.OrdinalIgnoreCase))
             {
-                Program.fileCabinetService.PurgeRecords();
+                this.service.PurgeRecords();
             }
             else
             {

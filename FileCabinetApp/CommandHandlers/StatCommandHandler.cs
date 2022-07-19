@@ -8,8 +8,8 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class StatCommandHandler : CommandHandlerBase
     {
-        public StatCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public StatCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -17,8 +17,8 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command.Equals("stat", StringComparison.OrdinalIgnoreCase))
             {
-                var recordsCount = Program.fileCabinetService.GetStat();
-                var recordsIsDelete = Program.fileCabinetService.GetStatDelete();
+                var recordsCount = this.service.GetStat();
+                var recordsIsDelete = this.service.GetStatDelete();
                 Console.WriteLine($"{recordsCount} record(s). {recordsIsDelete} delete record(s)");
             }
             else

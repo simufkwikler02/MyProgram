@@ -9,8 +9,8 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class CreateCommandHandler : CommandHandlerBase
     {
-        public CreateCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public CreateCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -21,7 +21,7 @@ namespace FileCabinetApp.CommandHandlers
                 try
                 {
                     var record = this.EnterData();
-                    var number = Program.fileCabinetService.CreateRecord(record);
+                    var number = this.service.CreateRecord(record);
                     Console.WriteLine($"Record #{number} is created.");
                 }
                 catch

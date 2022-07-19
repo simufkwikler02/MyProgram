@@ -11,8 +11,8 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageRemove = "Use: remove [number]";
 
-        public RemoveCommandHandler(IRecordValidator validate)
-            : base(validate)
+        public RemoveCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+            : base(fileCabinetService, validate)
         {
         }
 
@@ -31,13 +31,13 @@ namespace FileCabinetApp.CommandHandlers
                 try
                 {
                     int id = Convert.ToInt32(command, CultureInfo.CurrentCulture);
-                    if (!Program.fileCabinetService.IdExist(id))
+                    if (!this.service.IdExist(id))
                     {
                         Console.WriteLine($"record with number {id} is not exist.");
                         return;
                     }
 
-                    Program.fileCabinetService.RemoveRecord(id);
+                    this.service.RemoveRecord(id);
                 }
                 catch
                 {
