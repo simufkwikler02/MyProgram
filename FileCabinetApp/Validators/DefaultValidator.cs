@@ -6,19 +6,32 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class DefaultValidator : IRecordValidator
+    public class DefaultValidator : CompositeValidator
     {
-        private readonly string rules = "default";
-        private readonly DateTime minDate = new DateTime(1950, 6, 1);
-        private readonly int minLength = 2;
-        private readonly int maxLength = 60;
-        private readonly DateTime from = new DateTime(1950, 6, 1);
-        private readonly DateTime to = DateTime.Now;
-        private readonly short minProperty1 = -100;
-        private readonly short maxProperty1 = 100;
-        private readonly short minProperty2 = -10;
-        private readonly short maxProperty2 = 10;
-        private readonly char[] banSymbols = new char[] { 'h', 'e', 'l', 'p' };
+        private static readonly string rules = "default";
+        private static readonly DateTime minDate = new DateTime(1950, 6, 1);
+        private static readonly int minLength = 2;
+        private static readonly int maxLength = 60;
+        private static readonly DateTime from = new DateTime(1950, 6, 1);
+        private static readonly DateTime to = DateTime.Now;
+        private static readonly short minProperty1 = -100;
+        private static readonly short maxProperty1 = 100;
+        private static readonly short minProperty2 = -10;
+        private static readonly short maxProperty2 = 10;
+        private static readonly char[] banSymbols = new char[] { 'h', 'e', 'l', 'p' };
+
+        public DefaultValidator()
+            : base(new IRecordValidator[]
+            {
+                new FirstNameValidator(minLength, maxLength),
+                new LastNameValidator(minLength, maxLength),
+                new DateOfBirthValidator(from, to),
+                new Property1Validator(minProperty1, maxProperty1),
+                new Property2Validator(minProperty2, maxProperty2),
+                new Property3Validator(banSymbols),
+            })
+        {
+        }
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
@@ -34,12 +47,12 @@ namespace FileCabinetApp
 
         public string ValidateInfo()
         {
-            return this.rules;
+            return rules;
         }
 
         public DateTime DateTimeMin()
         {
-            return this.minDate;
+            return to; ;
         }
     }
 }

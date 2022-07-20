@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class Property2Validator
+    public class Property2Validator : IRecordValidator
     {
         private int minValue;
         private int maxValue;

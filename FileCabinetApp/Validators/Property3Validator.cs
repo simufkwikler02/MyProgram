@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class Property3Validator
+    public class Property3Validator : IRecordValidator
     {
         private char[] banSymbols;
 
