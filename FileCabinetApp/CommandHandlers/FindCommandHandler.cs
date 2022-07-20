@@ -10,10 +10,10 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class FindCommandHandler : ServiceCommandHandlerBase
     {
-        private IRecordPrinter printer;
+        private Action<IEnumerable<FileCabinetRecord>> printer;
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
 
-        public FindCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate, IRecordPrinter printer)
+        public FindCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(fileCabinetService, validate)
         {
             this.printer = printer;
@@ -46,7 +46,7 @@ namespace FileCabinetApp.CommandHandlers
                     const int stringIndex = 1;
                     var stringFind = inputs.Length > 1 ? inputs[stringIndex] : string.Empty;
                     stringFind = stringFind.Trim('"');
-                    this.printer.Print(commandsForFind[index].Item2(stringFind));
+                    this.printer(commandsForFind[index].Item2(stringFind));
                 }
                 else
                 {

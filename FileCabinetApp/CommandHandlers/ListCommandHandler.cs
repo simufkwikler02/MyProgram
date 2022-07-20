@@ -8,9 +8,9 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class ListCommandHandler : ServiceCommandHandlerBase
     {
-        private IRecordPrinter printer;
+        private Action<IEnumerable<FileCabinetRecord>> printer;
 
-        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate, IRecordPrinter printer)
+        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(fileCabinetService, validate)
         {
             this.printer = printer;
@@ -21,7 +21,7 @@ namespace FileCabinetApp.CommandHandlers
             if (request.Command.Equals("list", StringComparison.OrdinalIgnoreCase))
             {
                 var records = this.service.GetRecords();
-                this.printer.Print(records);
+                this.printer(records);
             }
             else
             {
