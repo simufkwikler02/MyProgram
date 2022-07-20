@@ -51,14 +51,15 @@ namespace FileCabinetApp
         private static ICommandHandler CreateCommandHandlers()
         {
             recordValidator = recordValidator ?? new DefaultValidator();
+            var recordPrinter = new DefaultRecordPrinter();
 
             var helpHander = new HelpCommandHandler();
             var exitHander = new ExitCommandHandler(() => isRunning = false);
             var statHander = new StatCommandHandler(Program.fileCabinetService, Program.recordValidator);
             var createHander = new CreateCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var listHander = new ListCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var listHander = new ListCommandHandler(Program.fileCabinetService, Program.recordValidator, recordPrinter);
             var editHander = new EditCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var findHandler = new FindCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var findHandler = new FindCommandHandler(Program.fileCabinetService, Program.recordValidator, recordPrinter);
             var exportHandler = new ExportCommandHandler(Program.fileCabinetService, Program.recordValidator);
             var importHandler = new ImportCommandHandler(Program.fileCabinetService, Program.recordValidator);
             var removeHandler = new RemoveCommandHandler(Program.fileCabinetService, Program.recordValidator);

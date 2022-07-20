@@ -1,43 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public abstract class CommandHandlerBase : ICommandHandler
+    internal class DefaultRecordPrinter : IRecordPrinter
     {
-        private ICommandHandler nextHandler;
-
-        public ICommandHandler SetNext(ICommandHandler handler)
+        public void Print(IEnumerable<FileCabinetRecord> records)
         {
-            this.nextHandler = handler;
-            return handler;
-        }
-
-        public virtual void Handle(AppCommandRequest request)
-        {
-            if (this.nextHandler != null)
-            {
-                this.nextHandler.Handle(request);
-            }
-            else
-            {
-                PrintMissedCommandInfo(request.Command);
-            }
-        }
-
-        protected static void PrintMissedCommandInfo(string command)
-        {
-            Console.WriteLine($"There is no '{command}' command.");
-            Console.WriteLine();
-        }
-
-        protected static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
-        {
-            if (records.Count == 0)
+            if (!records.Any())
             {
                 Console.WriteLine("records were not created");
                 return;
