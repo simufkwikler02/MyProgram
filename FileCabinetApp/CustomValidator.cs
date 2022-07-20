@@ -10,11 +10,13 @@ namespace FileCabinetApp
     {
         private readonly string rules = "custom";
         private readonly DateTime minDate = new DateTime(1950, 6, 1);
+        private bool result;
 
         public bool ValidateParametrsFirstName(string input)
         {
             if (string.IsNullOrEmpty(input) || input.Length < 2 || input.Length > 60)
             {
+                this.result = false;
                 return false;
             }
 
@@ -25,6 +27,7 @@ namespace FileCabinetApp
         {
             if (string.IsNullOrEmpty(input) || input.Length < 2 || input.Length > 60)
             {
+                this.result = false;
                 return false;
             }
 
@@ -35,6 +38,7 @@ namespace FileCabinetApp
         {
             if (this.minDate > input || DateTime.Now < input)
             {
+                this.result = false;
                 return false;
             }
 
@@ -58,23 +62,15 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord newRecord)
         {
-            if (string.IsNullOrEmpty(newRecord.FirstName) || newRecord.FirstName.Length < 2 || newRecord.FirstName.Length > 60)
-            {
-                return false;
-            }
+            this.result = true;
+            this.ValidateParametrsFirstName(newRecord.FirstName);
+            this.ValidateParametrsLastName(newRecord.LastName);
+            this.ValidateParametrsDateOfBirth(newRecord.DateOfBirth);
+            this.ValidateParametrsProperty1(newRecord.Property1);
+            this.ValidateParametrsProperty2(newRecord.Property2);
+            this.ValidateParametrsProperty3(newRecord.Property3);
 
-            if (string.IsNullOrEmpty(newRecord.LastName) || newRecord.LastName.Length < 2 || newRecord.LastName.Length > 60)
-            {
-                return false;
-            }
-
-            DateTime minDate = new DateTime(1950, 6, 1);
-            if (minDate > newRecord.DateOfBirth || DateTime.Now < newRecord.DateOfBirth)
-            {
-                return false;
-            }
-
-            return true;
+            return this.result;
         }
 
         public string ValidateInfo()
