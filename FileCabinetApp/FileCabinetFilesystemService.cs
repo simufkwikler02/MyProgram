@@ -10,20 +10,15 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private readonly string serviceRules = "file";
-        private readonly IRecordValidator validator;
+        private readonly CompositeValidator validator;
         private readonly int recordSize = 278;
         private int deleteRecords;
         private FileStream? fileStream;
 
-        public FileCabinetFilesystemService(IRecordValidator validator)
+        public FileCabinetFilesystemService(CompositeValidator validator)
         {
             this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
-        }
-
-        public string ValidateInfo()
-        {
-            return this.validator.ValidateInfo();
         }
 
         public string ServiceInfo()

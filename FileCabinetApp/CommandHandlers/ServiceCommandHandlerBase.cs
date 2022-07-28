@@ -8,13 +8,11 @@ namespace FileCabinetApp.CommandHandlers
 {
     public abstract class ServiceCommandHandlerBase : CommandHandlerBase
     {
-        protected IRecordValidator recordValidator;
         protected IFileCabinetService service;
 
-        protected ServiceCommandHandlerBase(IFileCabinetService fileCabinetService, IRecordValidator validate)
+        protected ServiceCommandHandlerBase(IFileCabinetService fileCabinetService)
         {
             this.service = fileCabinetService;
-            this.recordValidator = validate;
         }
 
     }

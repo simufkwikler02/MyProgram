@@ -6,7 +6,7 @@ namespace FileCabinetApp
     public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-        private readonly IRecordValidator validator;
+        private readonly CompositeValidator validator;
         private readonly string serviceRules = "memory";
         private readonly int deleteRecords;
 
@@ -14,14 +14,9 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
-        public FileCabinetMemoryService(IRecordValidator validator)
+        public FileCabinetMemoryService(CompositeValidator validator)
         {
             this.validator = validator;
-        }
-
-        public string ValidateInfo()
-        {
-            return this.validator.ValidateInfo();
         }
 
         public string ServiceInfo()

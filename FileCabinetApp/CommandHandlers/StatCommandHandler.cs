@@ -8,8 +8,8 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class StatCommandHandler : ServiceCommandHandlerBase
     {
-        public StatCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
-            : base(fileCabinetService, validate)
+        public StatCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
         }
 

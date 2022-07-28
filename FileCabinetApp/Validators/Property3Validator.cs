@@ -17,9 +17,14 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
+            return this.ValidateParametrs(record.Property3);
+        }
+
+        public bool ValidateParametrs(char input)
+        {
             foreach (char symbol in this.banSymbols)
             {
-                if (record.Property3 == symbol)
+                if (input == symbol)
                 {
                     return false;
                 }

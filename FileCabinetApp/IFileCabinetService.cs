@@ -8,8 +8,6 @@ namespace FileCabinetApp
     {
         public int CreateRecord(FileCabinetRecord newRecord);
 
-        public string ValidateInfo();
-
         public string ServiceInfo();
 
         public void EditRecord(int id, FileCabinetRecord recordEdit);

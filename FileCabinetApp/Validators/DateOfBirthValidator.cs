@@ -19,7 +19,12 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
-            if (this.from > record.DateOfBirth || this.to < record.DateOfBirth)
+            return this.ValidateParametrs(record.DateOfBirth);
+        }
+
+        public bool ValidateParametrs(DateTime input)
+        {
+            if (this.from > input || this.to < input)
             {
                 return false;
             }

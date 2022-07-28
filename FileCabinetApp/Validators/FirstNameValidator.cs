@@ -19,7 +19,12 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
-            if (string.IsNullOrEmpty(record.FirstName) || record.FirstName.Length < this.minLength || record.FirstName.Length > this.maxLength)
+            return this.ValidateParametrs(record.FirstName);
+        }
+
+        public bool ValidateParametrs(string input)
+        {
+            if (string.IsNullOrEmpty(input) || input.Length < this.minLength || input.Length > this.maxLength)
             {
                 return false;
             }

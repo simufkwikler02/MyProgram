@@ -8,8 +8,8 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class PurgeCommandHandler : ServiceCommandHandlerBase
     {
-        public PurgeCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
-            : base(fileCabinetService, validate)
+        public PurgeCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
         }
 

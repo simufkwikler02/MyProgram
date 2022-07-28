@@ -9,18 +9,19 @@ namespace FileCabinetApp
         private const string DeveloperName = "Azemsha Oleg";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
 
-        private static IRecordValidator? recordValidator;
+        private static CompositeValidator? recordValidator;
         private static IFileCabinetService? fileCabinetService;
         private static bool isRunning = true;
+        private static string? validateInfo;
 
         public static void Main(string[] args)
         {
             Program.FileCabinetServiceCreate(args);
-            recordValidator = recordValidator ?? new DefaultValidator();
+            recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
             fileCabinetService = fileCabinetService ?? new FileCabinetMemoryService(recordValidator);
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine($"Using '{Program.recordValidator.ValidateInfo()}' validation rules.");
+            Console.WriteLine($"Using '{Program.validateInfo}' validation rules.");
             Console.WriteLine($"Using '{Program.fileCabinetService.ServiceInfo()}' type of service.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
@@ -50,19 +51,19 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            recordValidator = recordValidator ?? new DefaultValidator();
+            recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
 
             var helpHander = new HelpCommandHandler();
             var exitHander = new ExitCommandHandler(() => isRunning = false);
-            var statHander = new StatCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var statHander = new StatCommandHandler(Program.fileCabinetService);
             var createHander = new CreateCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var listHander = new ListCommandHandler(Program.fileCabinetService, Program.recordValidator, DefaultRecordPrinter);
+            var listHander = new ListCommandHandler(Program.fileCabinetService, DefaultRecordPrinter);
             var editHander = new EditCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var findHandler = new FindCommandHandler(Program.fileCabinetService, Program.recordValidator, DefaultRecordPrinter);
-            var exportHandler = new ExportCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var importHandler = new ImportCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var removeHandler = new RemoveCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var purgeHandler = new PurgeCommandHandler(Program.fileCabinetService, Program.recordValidator);
+            var findHandler = new FindCommandHandler(Program.fileCabinetService, DefaultRecordPrinter);
+            var exportHandler = new ExportCommandHandler(Program.fileCabinetService);
+            var importHandler = new ImportCommandHandler(Program.fileCabinetService);
+            var removeHandler = new RemoveCommandHandler(Program.fileCabinetService);
+            var purgeHandler = new PurgeCommandHandler(Program.fileCabinetService);
 
             helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(listHander).SetNext(editHander).SetNext(findHandler).SetNext(exportHandler).SetNext(importHandler).SetNext(removeHandler).SetNext(purgeHandler);
             return helpHander;
@@ -72,7 +73,8 @@ namespace FileCabinetApp
         {
             if (args.Length == 0)
             {
-                recordValidator = new DefaultValidator();
+                recordValidator = new ValidatorBuilder().CreateDefault();
+                Program.validateInfo = "default";
                 fileCabinetService = new FileCabinetMemoryService(recordValidator);
             }
 
@@ -85,11 +87,13 @@ namespace FileCabinetApp
                 else if (string.Equals(args[i], "-v", StringComparison.OrdinalIgnoreCase))
                 {
                     i++;
-                    recordValidator = i >= args.Length ? new DefaultValidator() : Program.ValidationRules(new string[] { args[i - 1], args[i] });
+                    recordValidator = i >= args.Length ? new ValidatorBuilder().CreateDefault() : Program.ValidationRules(new string[] { args[i - 1], args[i] });
+                    Program.validateInfo = "default";
                 }
             }
 
-            recordValidator = recordValidator ?? new DefaultValidator();
+            recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
+            Program.validateInfo = "default";
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -107,7 +111,7 @@ namespace FileCabinetApp
             fileCabinetService = fileCabinetService ?? new FileCabinetMemoryService(recordValidator);
         }
 
-        private static IRecordValidator ValidationRules(string[] input)
+        private static CompositeValidator ValidationRules(string[] input)
         {
             var inputs = new string[] { string.Empty, string.Empty };
             if (input.Length == 1)
@@ -126,23 +130,27 @@ namespace FileCabinetApp
             var rules = inputs[commandrules];
             if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
             {
-                return new DefaultValidator();
+                Program.validateInfo = "default";
+                return new ValidatorBuilder().CreateDefault();
             }
 
             if (command == "-v" || command == "--validation-rules")
             {
                 if (rules.Equals("custom", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new CustomValidator();
+                    Program.validateInfo = "custom";
+                    return new ValidatorBuilder().CreateCustom();
                 }
 
                 if (rules.Equals("default", StringComparison.OrdinalIgnoreCase))
                 {
-                    return new DefaultValidator();
+                    Program.validateInfo = "default";
+                    return new ValidatorBuilder().CreateDefault();
                 }
             }
 
-            return new DefaultValidator();
+            Program.validateInfo = "default";
+            return new ValidatorBuilder().CreateDefault();
         }
 
         private static IFileCabinetService FileCabinetServiceRules(string[] input)
@@ -163,7 +171,7 @@ namespace FileCabinetApp
             var command = inputs[commandIndex];
             var rules = inputs[commandrules];
 
-            recordValidator = recordValidator ?? new DefaultValidator();
+            recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
             if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
             {
                 return new FileCabinetMemoryService(recordValidator);

@@ -13,8 +13,8 @@ namespace FileCabinetApp.CommandHandlers
         private Action<IEnumerable<FileCabinetRecord>> printer;
         private const string HintMessageFind = "Use: find [firstname | lastname | dateofbirth] [text]";
 
-        public FindCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate, Action<IEnumerable<FileCabinetRecord>> printer)
-            : base(fileCabinetService, validate)
+        public FindCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> printer)
+            : base(fileCabinetService)
         {
             this.printer = printer;
         }

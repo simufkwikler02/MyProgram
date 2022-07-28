@@ -89,7 +89,7 @@ namespace FileCabinetGenerator
 
         private static FileCabinetRecord fileCabinetRecordGenerator()
         {
-            var validator = new DefaultValidator();
+            var validator = new ValidatorBuilder().CreateDefault();
             var record = new FileCabinetRecord();
             record.Id = 0;
             Random random = new Random();
@@ -113,7 +113,7 @@ namespace FileCabinetGenerator
 
                 try
                 {
-                    record.DateOfBirth = new DateTime(random.Next(validator.DateTimeMin().Year, DateTime.Now.Year), random.Next(1, 12), random.Next(1, 31));
+                    record.DateOfBirth = new DateTime(random.Next(1950, DateTime.Now.Year), random.Next(1, 12), random.Next(1, 31));
                 }
                 catch
                 {

@@ -9,9 +9,12 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class EditCommandHandler : ServiceCommandHandlerBase
     {
-        public EditCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
-            : base(fileCabinetService, validate)
+        private CompositeValidator recordValidator;
+
+        public EditCommandHandler(IFileCabinetService fileCabinetService, CompositeValidator validate)
+            : base(fileCabinetService)
         {
+            this.recordValidator = validate;
         }
 
         private const string HintMessageEdit = "Use: edit [number]";
@@ -114,42 +117,42 @@ namespace FileCabinetApp.CommandHandlers
         private Tuple<bool, string> FirstNameValidator(string input)
         {
             var resurt = input ?? string.Empty;
-            bool validator = this.recordValidator.ValidateParametrsFirstName(resurt);
+            bool validator = this.recordValidator.ValidateParametrFirstName(resurt);
             return Tuple.Create<bool, string>(validator, resurt);
         }
 
         private Tuple<bool, string> LastNameValidator(string input)
         {
             var resurt = input ?? string.Empty;
-            bool validator = this.recordValidator.ValidateParametrsLastName(input);
+            bool validator = this.recordValidator.ValidateParametrLastName(resurt);
             return Tuple.Create<bool, string>(validator, resurt);
         }
 
         private Tuple<bool, string> DateOfBirthValidator(DateTime input)
         {
             var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
-            bool validator = this.recordValidator.ValidateParametrsDateOfBirth(input);
+            bool validator = this.recordValidator.ValidateParametrDateOfBirth(input);
             return Tuple.Create<bool, string>(validator, resurt);
         }
 
         private Tuple<bool, string> Property1Validator(short input)
         {
             var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
-            bool validator = this.recordValidator.ValidateParametrsProperty1(input);
+            bool validator = this.recordValidator.ValidateParametrProperty1(input);
             return Tuple.Create<bool, string>(validator, resurt);
         }
 
         private Tuple<bool, string> Property2Validator(decimal input)
         {
             var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
-            bool validator = this.recordValidator.ValidateParametrsProperty2(input);
+            bool validator = this.recordValidator.ValidateParametrProperty2(input);
             return Tuple.Create<bool, string>(validator, resurt);
         }
 
         private Tuple<bool, string> Property3Validator(char input)
         {
             var resurt = input.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
-            bool validator = this.recordValidator.ValidateParametrsProperty3(input);
+            bool validator = this.recordValidator.ValidateParametrProperty3(input);
             return Tuple.Create<bool, string>(validator, resurt);
         }
 

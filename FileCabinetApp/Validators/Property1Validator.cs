@@ -8,10 +8,10 @@ namespace FileCabinetApp
 {
     public class Property1Validator : IRecordValidator
     {
-        private int minValue;
-        private int maxValue;
+        private short minValue;
+        private short maxValue;
 
-        public Property1Validator(int minValue, int maxValue)
+        public Property1Validator(short minValue, short maxValue)
         {
             this.minValue = minValue;
             this.maxValue = maxValue;
@@ -19,7 +19,12 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
-            if (record.Property1 < this.minValue || record.Property1 > this.maxValue)
+            return this.ValidateParametrs(record.Property1);
+        }
+
+        public bool ValidateParametrs(short input)
+        {
+            if (input < this.minValue || input > this.maxValue)
             {
                 return false;
             }

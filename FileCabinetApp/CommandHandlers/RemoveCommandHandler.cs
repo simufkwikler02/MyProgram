@@ -11,8 +11,8 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageRemove = "Use: remove [number]";
 
-        public RemoveCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
-            : base(fileCabinetService, validate)
+        public RemoveCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
         }
 
