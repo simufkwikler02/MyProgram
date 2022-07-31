@@ -8,7 +8,7 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class PurgeCommandHandler : ServiceCommandHandlerBase
     {
-        public PurgeCommandHandler(IFileCabinetService fileCabinetService)
+        public PurgeCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
@@ -17,7 +17,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command.Equals("purge", StringComparison.OrdinalIgnoreCase))
             {
-                this.service.PurgeRecords();
+                this.service?.PurgeRecords();
             }
             else
             {

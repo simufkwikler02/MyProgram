@@ -11,7 +11,7 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageExport = "Use: export [csv | xml] [directory]";
 
-        public ExportCommandHandler(IFileCabinetService fileCabinetService)
+        public ExportCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }

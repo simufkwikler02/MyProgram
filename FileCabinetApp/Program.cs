@@ -17,7 +17,7 @@ namespace FileCabinetApp
         {
             Program.FileCabinetServiceCreate(args);
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine($"Using '{Program.recordValidator.ValidateInfo()}' validation rules.");
+            Console.WriteLine($"Using '{Program.recordValidator?.ValidateInfo()}' validation rules.");
             Console.WriteLine($"Using '{Program.fileCabinetService?.ServiceInfo()}' type of service.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
@@ -47,8 +47,6 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
-
             var helpHander = new HelpCommandHandler();
             var exitHander = new ExitCommandHandler(() => isRunning = false);
             var statHander = new StatCommandHandler(Program.fileCabinetService);
@@ -71,6 +69,7 @@ namespace FileCabinetApp
             {
                 recordValidator = new ValidatorBuilder().CreateDefault();
                 fileCabinetService = new FileCabinetMemoryService(recordValidator);
+                return;
             }
 
             for (int i = 0; i < args.Length; i++)
@@ -138,6 +137,7 @@ namespace FileCabinetApp
                     return new ValidatorBuilder().CreateDefault();
                 }
             }
+
             return new ValidatorBuilder().CreateDefault();
         }
 
@@ -159,7 +159,6 @@ namespace FileCabinetApp
             var command = inputs[commandIndex];
             var rules = inputs[commandrules];
 
-            recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
             if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
             {
                 return new FileCabinetMemoryService(recordValidator);

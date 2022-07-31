@@ -11,7 +11,7 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageImport = "Use: import [csv | xml] [directory]";
 
-        public ImportCommandHandler(IFileCabinetService fileCabinetService)
+        public ImportCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }

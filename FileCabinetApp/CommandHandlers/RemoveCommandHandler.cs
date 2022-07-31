@@ -11,7 +11,7 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageRemove = "Use: remove [number]";
 
-        public RemoveCommandHandler(IFileCabinetService fileCabinetService)
+        public RemoveCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }

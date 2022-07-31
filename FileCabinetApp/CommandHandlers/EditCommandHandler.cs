@@ -9,9 +9,9 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class EditCommandHandler : ServiceCommandHandlerBase
     {
-        private IRecordValidator recordValidator;
+        private IRecordValidator? recordValidator;
 
-        public EditCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
+        public EditCommandHandler(IFileCabinetService? fileCabinetService, IRecordValidator? validate)
             : base(fileCabinetService)
         {
             this.recordValidator = validate;

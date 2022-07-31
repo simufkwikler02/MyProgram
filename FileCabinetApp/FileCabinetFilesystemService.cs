@@ -10,12 +10,12 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private readonly string serviceRules = "file";
-        private readonly IRecordValidator validator;
+        private readonly IRecordValidator? validator;
         private readonly int recordSize = 278;
         private int deleteRecords;
         private FileStream? fileStream;
 
-        public FileCabinetFilesystemService(IRecordValidator validator)
+        public FileCabinetFilesystemService(IRecordValidator? validator)
         {
             this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
@@ -28,8 +28,8 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            var poz = fileStream.Seek(0, SeekOrigin.End);
-            newRecord.Id = (Convert.ToInt32(poz) / this.recordSize) + 1;
+            var poz = this.fileStream?.Seek(0, SeekOrigin.End);
+            newRecord.Id = (Convert.ToInt32(poz, CultureInfo.CurrentCulture) / this.recordSize) + 1;
             short status = 0;
             this.WriteRecord(status, newRecord);
             return newRecord.Id;
@@ -38,9 +38,9 @@ namespace FileCabinetApp
         public void PurgeRecords()
         {
             var records = this.GetRecords();
-            var length = this.fileStream.Length;
+            var length = this.fileStream?.Length;
 
-            this.fileStream.Close();
+            this.fileStream?.Close();
             this.fileStream = new FileStream("cabinet-records.db", FileMode.Create);
             short status = 0;
             foreach (var record in records)
@@ -54,12 +54,12 @@ namespace FileCabinetApp
 
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
-            if (this.fileStream.Length == 0)
+            if (this.fileStream?.Length == 0)
             {
                 return new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
             }
 
-            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             var numberRecords = this.GetStat();
 
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
@@ -79,7 +79,7 @@ namespace FileCabinetApp
             }
 
             var nuumber = this.GetStat();
-            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
 
             for (int i = 0; i < nuumber; i++)
             {
@@ -88,7 +88,7 @@ namespace FileCabinetApp
                 {
                     short status = 0;
                     recordEdit.Id = id;
-                    poz = this.fileStream.Seek(-this.recordSize, SeekOrigin.Current);
+                    poz = this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
                     this.WriteRecord(status, recordEdit);
                     Console.WriteLine($"Record #{id} is updated.");
                     return;
@@ -101,7 +101,7 @@ namespace FileCabinetApp
         public void RemoveRecord(int id)
         {
             var nuumber = this.GetStat();
-            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
 
             for (int i = 0; i < nuumber; i++)
             {
@@ -110,7 +110,7 @@ namespace FileCabinetApp
                 {
                     var recordEdit = record;
                     short status = 1;
-                    poz = this.fileStream.Seek(-this.recordSize, SeekOrigin.Current);
+                    poz = this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
                     this.WriteRecord(status, recordEdit);
                     Console.WriteLine($"Record #{id} is removed.");
                     this.deleteRecords++;
@@ -131,7 +131,7 @@ namespace FileCabinetApp
                 return 0;
             }
 
-            int numberRecords = (int)this.fileStream.Length / this.recordSize;
+            int numberRecords = (int)this.fileStream?.Length / this.recordSize;
             return numberRecords - this.deleteRecords;
         }
 
@@ -150,7 +150,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             var nuumber = this.GetStat();
-            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
             for (int i = 0; i < nuumber; i++)
@@ -168,7 +168,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
             var nuumber = this.GetStat();
-            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
             for (int i = 0; i < nuumber; i++)
@@ -186,7 +186,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
             var nuumber = this.GetStat();
-            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
             for (int i = 0; i < nuumber; i++)
@@ -240,7 +240,7 @@ namespace FileCabinetApp
                 }
             }
 
-            var poz = this.fileStream.Seek(0, SeekOrigin.Begin);
+            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             foreach (var record in oldlist)
             {
                 short status = 0;
@@ -254,50 +254,50 @@ namespace FileCabinetApp
         {
             byte[] buffer = Encoding.Default.GetBytes(status.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 2);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.Id.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.FirstName.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 120);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.LastName.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 120);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Year.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Month.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Day.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 4);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.Property1.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 2);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.Property2.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 16);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
 
             buffer = Encoding.Default.GetBytes(newRecord.Property3.ToString(CultureInfo.CurrentCulture));
             Array.Resize(ref buffer, 2);
-            this.fileStream.Write(buffer, 0, buffer.Length);
+            this.fileStream?.Write(buffer, 0, buffer.Length);
         }
 
         private FileCabinetRecord ReadRecord()
         {
             FileCabinetRecord record = new FileCabinetRecord();
             byte[] buffer = new byte[2];
-            this.fileStream.Read(buffer, 0, 2);
+            this.fileStream?.Read(buffer, 0, 2);
             int num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -308,7 +308,7 @@ namespace FileCabinetApp
 
             buffer = new byte[4];
 
-            this.fileStream.Read(buffer, 0, 4);
+            this.fileStream?.Read(buffer, 0, 4);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -319,7 +319,7 @@ namespace FileCabinetApp
 
             buffer = new byte[120];
 
-            this.fileStream.Read(buffer, 0, 120);
+            this.fileStream?.Read(buffer, 0, 120);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -330,7 +330,7 @@ namespace FileCabinetApp
 
             buffer = new byte[120];
 
-            this.fileStream.Read(buffer, 0, 120);
+            this.fileStream?.Read(buffer, 0, 120);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -341,7 +341,7 @@ namespace FileCabinetApp
 
             buffer = new byte[4];
 
-            this.fileStream.Read(buffer, 0, 4);
+            this.fileStream?.Read(buffer, 0, 4);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -352,7 +352,7 @@ namespace FileCabinetApp
 
             buffer = new byte[4];
 
-            this.fileStream.Read(buffer, 0, 4);
+            this.fileStream?.Read(buffer, 0, 4);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -363,7 +363,7 @@ namespace FileCabinetApp
 
             buffer = new byte[4];
 
-            this.fileStream.Read(buffer, 0, 4);
+            this.fileStream?.Read(buffer, 0, 4);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -376,7 +376,7 @@ namespace FileCabinetApp
 
             buffer = new byte[2];
 
-            this.fileStream.Read(buffer, 0, 2);
+            this.fileStream?.Read(buffer, 0, 2);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -387,7 +387,7 @@ namespace FileCabinetApp
 
             buffer = new byte[16];
 
-            this.fileStream.Read(buffer, 0, 16);
+            this.fileStream?.Read(buffer, 0, 16);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {
@@ -398,7 +398,7 @@ namespace FileCabinetApp
 
             buffer = new byte[2];
 
-            this.fileStream.Read(buffer, 0, 2);
+            this.fileStream?.Read(buffer, 0, 2);
             num = Array.IndexOf(buffer, (byte)0);
             if (num > 0)
             {

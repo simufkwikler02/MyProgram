@@ -10,7 +10,7 @@ namespace FileCabinetApp.CommandHandlers
     {
         private Action<IEnumerable<FileCabinetRecord>> printer;
 
-        public ListCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> printer)
+        public ListCommandHandler(IFileCabinetService? fileCabinetService, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(fileCabinetService)
         {
             this.printer = printer;

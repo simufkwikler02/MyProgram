@@ -21,7 +21,7 @@ namespace FileCabinetApp
         public void Write(List<FileCabinetRecord> records)
         {
             XmlSerializer formatter = new XmlSerializer(typeof(List<FileCabinetRecord>));
-            formatter.Serialize(writer, records);
+            formatter.Serialize(this.writer, records);
         }
 
     }
