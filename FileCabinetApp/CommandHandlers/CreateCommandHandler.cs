@@ -9,9 +9,9 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class CreateCommandHandler : ServiceCommandHandlerBase
     {
-        private CompositeValidator recordValidator;
+        private IRecordValidator recordValidator;
 
-        public CreateCommandHandler(IFileCabinetService fileCabinetService, CompositeValidator validate)
+        public CreateCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validate)
             : base(fileCabinetService)
         {
             this.recordValidator = validate;

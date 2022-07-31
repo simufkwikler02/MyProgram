@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class Property2Validator : IRecordValidator
+    public class Property2Validator : IRecordBlocksValidator
     {
         private decimal minValue;
         private decimal maxValue;
@@ -19,12 +19,7 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
-            return this.ValidateParametrs(record.Property2);
-        }
-
-        public bool ValidateParametrs(decimal input)
-        {
-            if (input < this.minValue || input > this.maxValue)
+            if (record.Property2 < this.minValue || record.Property2 > this.maxValue)
             {
                 return false;
             }

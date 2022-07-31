@@ -9,20 +9,16 @@ namespace FileCabinetApp
         private const string DeveloperName = "Azemsha Oleg";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
 
-        private static CompositeValidator? recordValidator;
+        private static IRecordValidator? recordValidator;
         private static IFileCabinetService? fileCabinetService;
         private static bool isRunning = true;
-        private static string? validateInfo;
 
         public static void Main(string[] args)
         {
             Program.FileCabinetServiceCreate(args);
-            recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
-            fileCabinetService = fileCabinetService ?? new FileCabinetMemoryService(recordValidator);
-
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine($"Using '{Program.validateInfo}' validation rules.");
-            Console.WriteLine($"Using '{Program.fileCabinetService.ServiceInfo()}' type of service.");
+            Console.WriteLine($"Using '{Program.recordValidator.ValidateInfo()}' validation rules.");
+            Console.WriteLine($"Using '{Program.fileCabinetService?.ServiceInfo()}' type of service.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 
@@ -74,7 +70,6 @@ namespace FileCabinetApp
             if (args.Length == 0)
             {
                 recordValidator = new ValidatorBuilder().CreateDefault();
-                Program.validateInfo = "default";
                 fileCabinetService = new FileCabinetMemoryService(recordValidator);
             }
 
@@ -88,12 +83,10 @@ namespace FileCabinetApp
                 {
                     i++;
                     recordValidator = i >= args.Length ? new ValidatorBuilder().CreateDefault() : Program.ValidationRules(new string[] { args[i - 1], args[i] });
-                    Program.validateInfo = "default";
                 }
             }
 
             recordValidator = recordValidator ?? new ValidatorBuilder().CreateDefault();
-            Program.validateInfo = "default";
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -111,7 +104,7 @@ namespace FileCabinetApp
             fileCabinetService = fileCabinetService ?? new FileCabinetMemoryService(recordValidator);
         }
 
-        private static CompositeValidator ValidationRules(string[] input)
+        private static IRecordValidator ValidationRules(string[] input)
         {
             var inputs = new string[] { string.Empty, string.Empty };
             if (input.Length == 1)
@@ -130,7 +123,6 @@ namespace FileCabinetApp
             var rules = inputs[commandrules];
             if (string.IsNullOrEmpty(command) || string.IsNullOrEmpty(rules))
             {
-                Program.validateInfo = "default";
                 return new ValidatorBuilder().CreateDefault();
             }
 
@@ -138,18 +130,14 @@ namespace FileCabinetApp
             {
                 if (rules.Equals("custom", StringComparison.OrdinalIgnoreCase))
                 {
-                    Program.validateInfo = "custom";
                     return new ValidatorBuilder().CreateCustom();
                 }
 
                 if (rules.Equals("default", StringComparison.OrdinalIgnoreCase))
                 {
-                    Program.validateInfo = "default";
                     return new ValidatorBuilder().CreateDefault();
                 }
             }
-
-            Program.validateInfo = "default";
             return new ValidatorBuilder().CreateDefault();
         }
 

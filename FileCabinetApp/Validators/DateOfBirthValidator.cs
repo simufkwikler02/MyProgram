@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class DateOfBirthValidator : IRecordValidator
+    public class DateOfBirthValidator : IRecordBlocksValidator
     {
         private DateTime from;
         private DateTime to;
@@ -19,12 +19,7 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
-            return this.ValidateParametrs(record.DateOfBirth);
-        }
-
-        public bool ValidateParametrs(DateTime input)
-        {
-            if (this.from > input || this.to < input)
+            if (this.from > record.DateOfBirth || this.to < record.DateOfBirth)
             {
                 return false;
             }

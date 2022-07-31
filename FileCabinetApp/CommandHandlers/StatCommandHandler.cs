@@ -8,7 +8,7 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class StatCommandHandler : ServiceCommandHandlerBase
     {
-        public StatCommandHandler(IFileCabinetService fileCabinetService)
+        public StatCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }

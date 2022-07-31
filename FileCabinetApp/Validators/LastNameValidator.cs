@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class LastNameValidator : IRecordValidator
+    public class LastNameValidator : IRecordBlocksValidator
     {
         private int minLength;
         private int maxLength;
@@ -19,12 +19,7 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
-            return this.ValidateParametrs(record.LastName);
-        }
-
-        public bool ValidateParametrs(string input)
-        {
-            if (string.IsNullOrEmpty(input) || input.Length < this.minLength || input.Length > this.maxLength)
+            if (string.IsNullOrEmpty(record.LastName) || record.LastName.Length < this.minLength || record.LastName.Length > this.maxLength)
             {
                 return false;
             }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class Property3Validator : IRecordValidator
+    public class Property3Validator : IRecordBlocksValidator
     {
         private char[] banSymbols;
 
@@ -17,14 +17,9 @@ namespace FileCabinetApp
 
         public bool ValidateParametrs(FileCabinetRecord record)
         {
-            return this.ValidateParametrs(record.Property3);
-        }
-
-        public bool ValidateParametrs(char input)
-        {
             foreach (char symbol in this.banSymbols)
             {
-                if (input == symbol)
+                if (record.Property3 == symbol)
                 {
                     return false;
                 }

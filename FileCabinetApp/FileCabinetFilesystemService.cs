@@ -10,12 +10,12 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private readonly string serviceRules = "file";
-        private readonly CompositeValidator validator;
+        private readonly IRecordValidator validator;
         private readonly int recordSize = 278;
         private int deleteRecords;
         private FileStream? fileStream;
 
-        public FileCabinetFilesystemService(CompositeValidator validator)
+        public FileCabinetFilesystemService(IRecordValidator validator)
         {
             this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
@@ -126,7 +126,7 @@ namespace FileCabinetApp
 
         public int GetStat()
         {
-            if (this.fileStream.Length == 0)
+            if (this.fileStream?.Length == 0)
             {
                 return 0;
             }

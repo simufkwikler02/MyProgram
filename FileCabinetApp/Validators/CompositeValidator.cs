@@ -6,13 +6,25 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class CompositeValidator
+    public class CompositeValidator : IRecordValidator
     {
-        private List<IRecordValidator> validators;
+        private ValidateParametrs parametrs;
+        private List<IRecordBlocksValidator> validators;
 
-        public CompositeValidator(IEnumerable<IRecordValidator> validators)
+        public CompositeValidator(IEnumerable<IRecordBlocksValidator> validators, ValidateParametrs parametrs)
         {
-            this.validators = new List<IRecordValidator>(validators);
+            this.validators = new List<IRecordBlocksValidator>(validators);
+            this.parametrs = parametrs;
+        }
+
+        public string ValidateInfo()
+        {
+            return this.parametrs.ValidateInfo;
+        }
+
+        public ValidateParametrs ParametrsInfo()
+        {
+            return this.parametrs;
         }
 
         public bool ValidateParametrs(FileCabinetRecord record)
