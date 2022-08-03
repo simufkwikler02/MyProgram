@@ -1,0 +1,52 @@
+{
+	"default": {
+		"firstName": {
+			"MinLengthFirstName": 2,
+			"MaxLengthFirstName": 60
+		},
+		"lastName": {
+			"MinLengthLastName": 2,
+			"MaxLengthLastName": 60
+		},
+		"dateOfBirth": {
+			"from": "1/1/1950",
+			"to": "10/8/2019"
+		},
+		"Property1": {
+			"MinProperty1": -100,
+			"MaxProperty1": 100
+		},
+		"Property2": {
+			"MinProperty2": -10,
+			"MaxProperty2": 10
+		},
+		"Property3": {
+			"BanSymbols": ["h", "e", "l", "p"]
+		}	
+	},
+	"custom": {
+		"firstName": {
+			"MinLengthFirstName": 5,
+			"MaxLengthFirstName": 80
+		},
+		"lastName": {
+			"MinLengthLastName": 5,
+			"MaxLengthLastName": 80
+		},
+		"dateOfBirth": {
+			"from": "1/1/1980",
+			"to": "10/8/2019"
+		},
+		"Property1": {
+			"MinProperty1": -200,
+			"MaxProperty1": 200
+		},
+		"Property2": {
+			"MinProperty2": -50,
+			"MaxProperty2": 50
+		},
+		"Property3": {
+			"BanSymbols": [ "s", "c", "p" ]
+		}
+	}
+}
