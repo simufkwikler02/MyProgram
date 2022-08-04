@@ -101,6 +101,18 @@ namespace FileCabinetApp
             }
 
             fileCabinetService = fileCabinetService ?? new FileCabinetMemoryService(recordValidator);
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (string.Equals(args[i], "-", StringComparison.OrdinalIgnoreCase))
+                {
+                    i++;
+                    if (i < args.Length && string.Equals(args[i], "use-stopwatch", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fileCabinetService = new ServiceMeter(fileCabinetService);
+                    }
+                }
+            }
         }
 
         private static IRecordValidator ValidationRules(string[] input)

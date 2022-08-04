@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 
 namespace FileCabinetApp
 {
@@ -47,5 +49,43 @@ namespace FileCabinetApp
         public decimal MaxProperty2 { get; set; }
 
         public char[] BanSymbols { get; set; }
+
+        public void SetDefaultParametrs()
+        {
+            IConfiguration config = new ConfigurationBuilder().AddJsonFile("validation-rules.json").Build();
+            var rules = config.GetSection("default:firstName");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("default:lastName");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("default:dateOfBirth");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("default:Property1");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("default:Property2");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("default:Property3");
+            this.BanSymbols = Array.Empty<char>();
+            ConfigurationBinder.Bind(rules, this);
+            this.ValidateInfo = "default";
+        }
+
+        public void SetCustomParametrs()
+        {
+            IConfiguration config = new ConfigurationBuilder().AddJsonFile("validation-rules.json").Build();
+            var rules = config.GetSection("custom:firstName");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("custom:lastName");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("custom:dateOfBirth");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("custom:Property1");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("custom:Property2");
+            ConfigurationBinder.Bind(rules, this);
+            rules = config.GetSection("custom:Property3");
+            this.BanSymbols = Array.Empty<char>();
+            ConfigurationBinder.Bind(rules, this);
+            this.ValidateInfo = "custom";
+        }
     }
 }

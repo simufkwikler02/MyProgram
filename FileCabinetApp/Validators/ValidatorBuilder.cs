@@ -60,17 +60,7 @@ namespace FileCabinetApp
 
         public IRecordValidator CreateDefault()
         {
-            this.parametrs.MinLengthFirstName = 2;
-            this.parametrs.MaxLengthFirstName = 60;
-            this.parametrs.MinLengthLastName = 2;
-            this.parametrs.MaxLengthLastName = 60;
-            this.parametrs.From = new DateTime(1950, 6, 1);
-            this.parametrs.To = DateTime.Now;
-            this.parametrs.MinProperty1 = -100;
-            this.parametrs.MaxProperty1 = 100;
-            this.parametrs.MinProperty2 = -10;
-            this.parametrs.MaxProperty2 = 10;
-            this.parametrs.BanSymbols = new char[] { 'h', 'e', 'l', 'p' };
+            this.parametrs.SetDefaultParametrs();
 
             this.validators.Clear();
             this.validators.Add(new FirstNameValidator(this.parametrs.MinLengthFirstName, this.parametrs.MaxLengthFirstName));
@@ -79,23 +69,12 @@ namespace FileCabinetApp
             this.validators.Add(new Property1Validator(this.parametrs.MinProperty1, this.parametrs.MaxProperty1));
             this.validators.Add(new Property2Validator(this.parametrs.MinProperty2, this.parametrs.MaxProperty2));
             this.validators.Add(new Property3Validator(this.parametrs.BanSymbols));
-            this.parametrs.ValidateInfo = "default";
             return new CompositeValidator(this.validators, this.parametrs);
         }
 
         public IRecordValidator CreateCustom()
         {
-            this.parametrs.MinLengthFirstName = 2;
-            this.parametrs.MaxLengthFirstName = 60;
-            this.parametrs.MinLengthLastName = 2;
-            this.parametrs.MaxLengthLastName = 60;
-            this.parametrs.From = new DateTime(1950, 6, 1);
-            this.parametrs.To = DateTime.Now;
-            this.parametrs.MinProperty1 = -200;
-            this.parametrs.MaxProperty1 = 200;
-            this.parametrs.MinProperty2 = -50;
-            this.parametrs.MaxProperty2 = 50;
-            this.parametrs.BanSymbols = new char[] { 's', 'c', 'p' };
+            this.parametrs.SetCustomParametrs();
 
             this.validators.Clear();
             this.validators.Add(new FirstNameValidator(this.parametrs.MinLengthFirstName, this.parametrs.MaxLengthFirstName));
@@ -104,7 +83,6 @@ namespace FileCabinetApp
             this.validators.Add(new Property1Validator(this.parametrs.MinProperty1, this.parametrs.MaxProperty1));
             this.validators.Add(new Property2Validator(this.parametrs.MinProperty2, this.parametrs.MaxProperty2));
             this.validators.Add(new Property3Validator(this.parametrs.BanSymbols));
-            this.parametrs.ValidateInfo = "custom";
             return new CompositeValidator(this.validators, this.parametrs);
         }
     }
