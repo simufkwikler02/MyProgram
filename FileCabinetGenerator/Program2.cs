@@ -94,6 +94,7 @@ namespace FileCabinetGenerator
             record.Id = 0;
             Random random = new Random();
             StringBuilder? stringBuilder= new StringBuilder();
+            var parametrs = validator.ParametrsInfo();
 
             do
             {
@@ -113,14 +114,14 @@ namespace FileCabinetGenerator
 
                 try
                 {
-                    record.DateOfBirth = new DateTime(random.Next(1950, DateTime.Now.Year), random.Next(1, 12), random.Next(1, 31));
+                    record.DateOfBirth = new DateTime(random.Next(parametrs.From.Year, parametrs.To.Year), random.Next(1, 12), random.Next(1, 31));
                 }
                 catch
                 {
                     record.DateOfBirth = new DateTime(1000,1,1);
                 }
                 
-                record.Property1 = (short)random.Next(1, 100);
+                record.Property1 = (short)random.Next(parametrs.MinProperty1, parametrs.MaxProperty1);
                 record.Property2 = (decimal)random.NextDouble();
                 record.Property3 = letters[random.Next(0, letters.Length - 1)];
 
