@@ -231,7 +231,7 @@ namespace FileCabinetApp
                 this.dateOfBirthDictionary[record.DateOfBirth].Add(record);
             }
 
-            Console.Write($"{newlist.Count} records were imported");
+            Console.WriteLine($"{newlist.Count} records were imported");
         }
     }
 }

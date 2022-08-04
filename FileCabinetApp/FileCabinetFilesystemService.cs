@@ -212,7 +212,8 @@ namespace FileCabinetApp
         {
             var records = snapshot.GetRecords();
             var newlist = new List<FileCabinetRecord>(records);
-            foreach (var record in newlist)
+            var newlistbuf = new List<FileCabinetRecord>(newlist);
+            foreach (var record in newlistbuf)
             {
                 if (!this.validator.ValidateParametrs(record))
                 {
@@ -247,7 +248,7 @@ namespace FileCabinetApp
                 this.WriteRecord(status, record);
             }
 
-            Console.Write($"{newlist.Count} records were imported");
+            Console.WriteLine($"{newlist.Count} records were imported");
         }
 
         private void WriteRecord(short status, FileCabinetRecord newRecord)

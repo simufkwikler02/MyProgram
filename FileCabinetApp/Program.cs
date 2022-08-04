@@ -113,6 +113,18 @@ namespace FileCabinetApp
                     }
                 }
             }
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (string.Equals(args[i], "-", StringComparison.OrdinalIgnoreCase))
+                {
+                    i++;
+                    if (i < args.Length && string.Equals(args[i], "use-logger", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fileCabinetService = new ServiceLogger(fileCabinetService);
+                    }
+                }
+            }
         }
 
         private static IRecordValidator ValidationRules(string[] input)

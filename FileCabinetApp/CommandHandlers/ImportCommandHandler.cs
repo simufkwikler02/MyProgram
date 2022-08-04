@@ -55,7 +55,6 @@ namespace FileCabinetApp.CommandHandlers
                     }
 
                     fstream.Close();
-                    Console.WriteLine($" from {path}");
                 }
                 catch
                 {
