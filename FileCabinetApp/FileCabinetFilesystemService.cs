@@ -12,6 +12,10 @@ namespace FileCabinetApp
         private readonly string serviceRules = "file";
         private readonly IRecordValidator? validator;
         private readonly int recordSize = 278;
+        private readonly Dictionary<string, List<int>> firstNameDictionary = new Dictionary<string, List<int>>();
+        private readonly Dictionary<string, List<int>> lastNameDictionary = new Dictionary<string, List<int>>();
+        private readonly Dictionary<DateTime, List<int>> dateOfBirthDictionary = new Dictionary<DateTime, List<int>>();
+
         private int deleteRecords;
         private FileStream? fileStream;
 
@@ -19,6 +23,48 @@ namespace FileCabinetApp
         {
             this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
+            var records = this.GetRecords();
+            this.ClearAndSaveInDictionary(records);
+            int i = 0;
+            var poz = (int)this.fileStream.Seek(0, SeekOrigin.Begin);
+            while (fileStream.Position < fileStream.Length)
+            {
+                var record = this.ReadRecord();
+                i++;
+            }
+
+            this.deleteRecords = this.GetStat() - i;
+        }
+
+        public void ClearAndSaveInDictionary(ReadOnlyCollection<FileCabinetRecord> records)
+        {
+            this.firstNameDictionary.Clear();
+            this.lastNameDictionary.Clear();
+            this.dateOfBirthDictionary.Clear();
+
+            for (int i = 0; i < records.Count; i++)
+            {
+                if (!this.firstNameDictionary.ContainsKey(records[i].FirstName))
+                {
+                    this.firstNameDictionary.Add(records[i].FirstName, new List<int>());
+                }
+
+                this.firstNameDictionary[records[i].FirstName].Add(i * this.recordSize);
+
+                if (!this.lastNameDictionary.ContainsKey(records[i].LastName))
+                {
+                    this.lastNameDictionary.Add(records[i].LastName, new List<int>());
+                }
+
+                this.lastNameDictionary[records[i].LastName].Add(i * this.recordSize);
+
+                if (!this.dateOfBirthDictionary.ContainsKey(records[i].DateOfBirth))
+                {
+                    this.dateOfBirthDictionary.Add(records[i].DateOfBirth, new List<int>());
+                }
+
+                this.dateOfBirthDictionary[records[i].DateOfBirth].Add(i * this.recordSize);
+            }
         }
 
         public string ServiceInfo()
@@ -28,9 +74,30 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            var poz = this.fileStream?.Seek(0, SeekOrigin.End);
+            var poz = (int)this.fileStream.Seek(0, SeekOrigin.End);
             newRecord.Id = (Convert.ToInt32(poz, CultureInfo.CurrentCulture) / this.recordSize) + 1;
             short status = 0;
+            if (!this.firstNameDictionary.ContainsKey(newRecord.FirstName))
+            {
+                this.firstNameDictionary.Add(newRecord.FirstName, new List<int>());
+            }
+
+            this.firstNameDictionary[newRecord.FirstName].Add(poz);
+
+            if (!this.lastNameDictionary.ContainsKey(newRecord.LastName))
+            {
+                this.lastNameDictionary.Add(newRecord.LastName, new List<int>());
+            }
+
+            this.lastNameDictionary[newRecord.LastName].Add(poz);
+
+            if (!this.dateOfBirthDictionary.ContainsKey(newRecord.DateOfBirth))
+            {
+                this.dateOfBirthDictionary.Add(newRecord.DateOfBirth, new List<int>());
+            }
+
+            this.dateOfBirthDictionary[newRecord.DateOfBirth].Add(poz);
+
             this.WriteRecord(status, newRecord);
             return newRecord.Id;
         }
@@ -48,6 +115,7 @@ namespace FileCabinetApp
                 this.WriteRecord(status, record);
             }
 
+            this.ClearAndSaveInDictionary(records);
             Console.WriteLine($"Data file processing is completed: {this.deleteRecords} of {length / this.recordSize} records were purged.");
             this.deleteRecords = 0;
         }
@@ -60,10 +128,9 @@ namespace FileCabinetApp
             }
 
             var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
-            var numberRecords = this.GetStat();
 
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-            for (int i = 0; i < numberRecords; i++)
+            while (fileStream.Position < fileStream.Length)
             {
                 list.Add(this.ReadRecord());
             }
@@ -79,17 +146,43 @@ namespace FileCabinetApp
             }
 
             var nuumber = this.GetStat();
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
+            var poz = (int)this.fileStream?.Seek(0, SeekOrigin.Begin);
 
-            for (int i = 0; i < nuumber; i++)
+            while (fileStream.Position < fileStream.Length)
             {
                 var record = this.ReadRecord();
                 if (record.Id == id)
                 {
                     short status = 0;
                     recordEdit.Id = id;
-                    poz = this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+                    poz = (int)this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+                    this.firstNameDictionary[record.FirstName].Remove(poz);
+                    this.lastNameDictionary[record.LastName].Remove(poz);
+                    this.dateOfBirthDictionary[record.DateOfBirth].Remove(poz);
+
+                    if (!this.firstNameDictionary.ContainsKey(recordEdit.FirstName))
+                    {
+                        this.firstNameDictionary.Add(recordEdit.FirstName, new List<int>());
+                    }
+
+                    this.firstNameDictionary[recordEdit.FirstName].Add(poz);
+
+                    if (!this.lastNameDictionary.ContainsKey(recordEdit.LastName))
+                    {
+                        this.lastNameDictionary.Add(recordEdit.LastName, new List<int>());
+                    }
+
+                    this.lastNameDictionary[recordEdit.LastName].Add(poz);
+
+                    if (!this.dateOfBirthDictionary.ContainsKey(recordEdit.DateOfBirth))
+                    {
+                        this.dateOfBirthDictionary.Add(recordEdit.DateOfBirth, new List<int>());
+                    }
+
+                    this.dateOfBirthDictionary[recordEdit.DateOfBirth].Add(poz);
+
                     this.WriteRecord(status, recordEdit);
+
                     Console.WriteLine($"Record #{id} is updated.");
                     return;
                 }
@@ -101,16 +194,19 @@ namespace FileCabinetApp
         public void RemoveRecord(int id)
         {
             var nuumber = this.GetStat();
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
+            var poz = (int)this.fileStream?.Seek(0, SeekOrigin.Begin);
 
-            for (int i = 0; i < nuumber; i++)
+            while (fileStream.Position < fileStream.Length)
             {
                 var record = this.ReadRecord();
                 if (record.Id == id)
                 {
                     var recordEdit = record;
                     short status = 1;
-                    poz = this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+                    poz = (int)this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+                    this.firstNameDictionary[record.FirstName].Remove(poz);
+                    this.lastNameDictionary[record.LastName].Remove(poz);
+                    this.dateOfBirthDictionary[record.DateOfBirth].Remove(poz);
                     this.WriteRecord(status, recordEdit);
                     Console.WriteLine($"Record #{id} is removed.");
                     this.deleteRecords++;
@@ -152,14 +248,16 @@ namespace FileCabinetApp
             var nuumber = this.GetStat();
             var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-
-            for (int i = 0; i < nuumber; i++)
+            if (!this.firstNameDictionary.ContainsKey(firstName))
             {
+                return new ReadOnlyCollection<FileCabinetRecord>(list);
+            }
+
+            foreach (var position in this.firstNameDictionary[firstName])
+            {
+                poz = this.fileStream?.Seek(position, SeekOrigin.Begin);
                 var record = this.ReadRecord();
-                if (record.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase))
-                {
-                    list.Add(record);
-                }
+                list.Add(record);
             }
 
             return new ReadOnlyCollection<FileCabinetRecord>(list);
@@ -171,13 +269,16 @@ namespace FileCabinetApp
             var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
-            for (int i = 0; i < nuumber; i++)
+            if (!this.lastNameDictionary.ContainsKey(lastName))
             {
+                return new ReadOnlyCollection<FileCabinetRecord>(list);
+            }
+
+            foreach (var position in this.lastNameDictionary[lastName])
+            {
+                poz = this.fileStream?.Seek(position, SeekOrigin.Begin);
                 var record = this.ReadRecord();
-                if (record.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase))
-                {
-                    list.Add(record);
-                }
+                list.Add(record);
             }
 
             return new ReadOnlyCollection<FileCabinetRecord>(list);
@@ -188,14 +289,22 @@ namespace FileCabinetApp
             var nuumber = this.GetStat();
             var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-
-            for (int i = 0; i < nuumber; i++)
+            DateTime date;
+            if (!DateTime.TryParse(dateofbirth, out date))
             {
+                return new ReadOnlyCollection<FileCabinetRecord>(list);
+            }
+
+            if (!this.dateOfBirthDictionary.ContainsKey(date))
+            {
+                return new ReadOnlyCollection<FileCabinetRecord>(list);
+            }
+
+            foreach (var position in this.dateOfBirthDictionary[date])
+            {
+                poz = this.fileStream?.Seek(position, SeekOrigin.Begin);
                 var record = this.ReadRecord();
-                if (record.DateOfBirth == DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture))
-                {
-                    list.Add(record);
-                }
+                list.Add(record);
             }
 
             return new ReadOnlyCollection<FileCabinetRecord>(list);
@@ -247,6 +356,8 @@ namespace FileCabinetApp
                 short status = 0;
                 this.WriteRecord(status, record);
             }
+
+            this.ClearAndSaveInDictionary(new ReadOnlyCollection<FileCabinetRecord>(oldlist));
 
             Console.WriteLine($"{newlist.Count} records were imported");
         }
