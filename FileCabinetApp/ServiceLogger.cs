@@ -54,7 +54,7 @@ namespace FileCabinetApp
             }
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
+        public IRecordIterator FindByDateoOfBirth(string dateofbirth)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {
@@ -73,7 +73,7 @@ namespace FileCabinetApp
             }
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IRecordIterator FindByFirstName(string firstName)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {
@@ -92,7 +92,7 @@ namespace FileCabinetApp
             }
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IRecordIterator FindByLastName(string lastName)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {

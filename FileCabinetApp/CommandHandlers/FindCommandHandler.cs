@@ -32,11 +32,11 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                var commandsForFind = new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>[]
+                var commandsForFind = new Tuple<string, Func<string, IRecordIterator>>[]
                 {
-                new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("firstName", this.service.FindByFirstName),
-                new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("lastName", this.service.FindByLastName),
-                new Tuple<string, Func<string, ReadOnlyCollection<FileCabinetRecord>>>("dateofbirth",this.service.FindByDateoOfBirth),
+                new Tuple<string, Func<string, IRecordIterator>>("firstName", this.service.FindByFirstName),
+                new Tuple<string, Func<string, IRecordIterator>>("lastName", this.service.FindByLastName),
+                new Tuple<string, Func<string, IRecordIterator>>("dateofbirth", this.service.FindByDateoOfBirth),
                 };
 
                 var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
@@ -45,7 +45,20 @@ namespace FileCabinetApp.CommandHandlers
                     const int stringIndex = 1;
                     var stringFind = inputs.Length > 1 ? inputs[stringIndex] : string.Empty;
                     stringFind = stringFind.Trim('"');
-                    this.printer(commandsForFind[index].Item2(stringFind));
+                    var iterator = commandsForFind[index].Item2(stringFind);
+                    var result = new List<FileCabinetRecord>();
+                    while (iterator.HasMore())
+                    {
+                        var record = iterator.GetNext();
+                        if (record is null)
+                        {
+                            break;
+                        }
+
+                        result.Add(record);
+                    }
+
+                    this.printer(result);
                 }
                 else
                 {
