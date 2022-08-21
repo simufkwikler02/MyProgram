@@ -24,11 +24,11 @@ namespace FileCabinetApp
 
         public void PurgeRecords();
 
-        public IRecordIterator FindByFirstName(string firstName);
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName);
 
-        public IRecordIterator FindByLastName(string lastName);
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName);
 
-        public IRecordIterator FindByDateoOfBirth(string dateofbirth);
+        public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth);
 
         public FileCabinetServiceSnapshot MakeSnapshot();
 

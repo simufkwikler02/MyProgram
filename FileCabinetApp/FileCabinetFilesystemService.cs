@@ -160,20 +160,20 @@ namespace FileCabinetApp
             return true;
         }
 
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            return new FileSystemIterator(this.fileStream, firstName, "firstname");
+            return new Enumerable(this.fileStream, firstName, "firstname");
         }
 
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
 
-            return new FileSystemIterator(this.fileStream, lastName, "lastname");
+            return new Enumerable(this.fileStream, lastName, "lastname");
         }
 
-        public IRecordIterator FindByDateoOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
-            return new FileSystemIterator(this.fileStream, dateofbirth, "dateofbirth");
+            return new Enumerable(this.fileStream, dateofbirth, "dateofbirth");
         }
 
         public FileCabinetServiceSnapshot MakeSnapshot()

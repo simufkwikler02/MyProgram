@@ -141,34 +141,34 @@ namespace FileCabinetApp
             return;
         }
 
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             if (firstName is null)
             {
                 throw new ArgumentNullException(nameof(firstName));
             }
 
-            return new MemoryIterator(this.firstNameDictionary[firstName]);
+            return this.firstNameDictionary[firstName];
         }
 
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             if (lastName is null)
             {
                 throw new ArgumentNullException(nameof(lastName));
             }
 
-            return new MemoryIterator(this.lastNameDictionary[lastName]);
+            return this.lastNameDictionary[lastName];
         }
 
-        public IRecordIterator FindByDateoOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
             if (dateofbirth is null)
             {
                 throw new ArgumentNullException(nameof(dateofbirth));
             }
 
-            return new MemoryIterator(this.dateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)]);
+            return this.dateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)];
         }
 
         public FileCabinetServiceSnapshot MakeSnapshot()
