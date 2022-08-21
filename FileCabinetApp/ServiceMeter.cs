@@ -38,7 +38,7 @@ namespace FileCabinetApp
             Console.WriteLine($"EditRecord method execution duration is {this.time.ElapsedTicks} ticks.");
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
             this.time.Reset();
             this.time.Start();
@@ -48,7 +48,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.time.Reset();
             this.time.Start();
@@ -58,7 +58,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.time.Reset();
             this.time.Start();

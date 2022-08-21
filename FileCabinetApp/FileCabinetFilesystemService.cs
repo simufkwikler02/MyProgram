@@ -12,6 +12,7 @@ namespace FileCabinetApp
         private readonly string serviceRules = "file";
         private readonly IRecordValidator? validator;
         private readonly int recordSize = 278;
+
         private int deleteRecords;
         private FileStream? fileStream;
 
@@ -19,6 +20,16 @@ namespace FileCabinetApp
         {
             this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
+            var records = this.GetRecords();
+            int i = 0;
+            var poz = (int)this.fileStream.Seek(0, SeekOrigin.Begin);
+            while (fileStream.Position < fileStream.Length)
+            {
+                var record = this.ReadRecord();
+                i++;
+            }
+
+            this.deleteRecords = this.GetStat() - i;
         }
 
         public string ServiceInfo()
@@ -28,9 +39,10 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            var poz = this.fileStream?.Seek(0, SeekOrigin.End);
+            var poz = (int)this.fileStream.Seek(0, SeekOrigin.End);
             newRecord.Id = (Convert.ToInt32(poz, CultureInfo.CurrentCulture) / this.recordSize) + 1;
             short status = 0;
+
             this.WriteRecord(status, newRecord);
             return newRecord.Id;
         }
@@ -60,10 +72,9 @@ namespace FileCabinetApp
             }
 
             var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
-            var numberRecords = this.GetStat();
 
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-            for (int i = 0; i < numberRecords; i++)
+            while (fileStream.Position < fileStream.Length)
             {
                 list.Add(this.ReadRecord());
             }
@@ -79,17 +90,19 @@ namespace FileCabinetApp
             }
 
             var nuumber = this.GetStat();
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
+            var poz = (int)this.fileStream?.Seek(0, SeekOrigin.Begin);
 
-            for (int i = 0; i < nuumber; i++)
+            while (fileStream.Position < fileStream.Length)
             {
                 var record = this.ReadRecord();
                 if (record.Id == id)
                 {
                     short status = 0;
                     recordEdit.Id = id;
-                    poz = this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+                    poz = (int)this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+
                     this.WriteRecord(status, recordEdit);
+
                     Console.WriteLine($"Record #{id} is updated.");
                     return;
                 }
@@ -101,16 +114,16 @@ namespace FileCabinetApp
         public void RemoveRecord(int id)
         {
             var nuumber = this.GetStat();
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
+            var poz = (int)this.fileStream?.Seek(0, SeekOrigin.Begin);
 
-            for (int i = 0; i < nuumber; i++)
+            while (fileStream.Position < fileStream.Length)
             {
                 var record = this.ReadRecord();
                 if (record.Id == id)
                 {
                     var recordEdit = record;
                     short status = 1;
-                    poz = this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+                    poz = (int)this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
                     this.WriteRecord(status, recordEdit);
                     Console.WriteLine($"Record #{id} is removed.");
                     this.deleteRecords++;
@@ -147,58 +160,20 @@ namespace FileCabinetApp
             return true;
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            var nuumber = this.GetStat();
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
-            List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-
-            for (int i = 0; i < nuumber; i++)
-            {
-                var record = this.ReadRecord();
-                if (record.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase))
-                {
-                    list.Add(record);
-                }
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(list);
+            return new Enumerable(this.fileStream, firstName, "firstname");
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
-            var nuumber = this.GetStat();
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
-            List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
-            for (int i = 0; i < nuumber; i++)
-            {
-                var record = this.ReadRecord();
-                if (record.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase))
-                {
-                    list.Add(record);
-                }
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(list);
+            return new Enumerable(this.fileStream, lastName, "lastname");
         }
 
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
+        public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
-            var nuumber = this.GetStat();
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
-            List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-
-            for (int i = 0; i < nuumber; i++)
-            {
-                var record = this.ReadRecord();
-                if (record.DateOfBirth == DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture))
-                {
-                    list.Add(record);
-                }
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(list);
+            return new Enumerable(this.fileStream, dateofbirth, "dateofbirth");
         }
 
         public FileCabinetServiceSnapshot MakeSnapshot()
