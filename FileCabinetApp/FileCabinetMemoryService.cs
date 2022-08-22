@@ -28,10 +28,14 @@ namespace FileCabinetApp
         {
             if (!this.validator.ValidateParametrs(newRecord))
             {
-                throw new ArgumentException("incorrect format", nameof(newRecord));
+                throw new ArgumentException("Incorrect format", nameof(newRecord));
             }
 
-            newRecord.Id = this.list.Count + 1;
+            if (this.IdExist(newRecord.Id))
+            {
+                throw new ArgumentException($"This Id exists.", nameof(newRecord));
+            }
+
             this.list.Add(newRecord);
 
             if (!this.firstNameDictionary.ContainsKey(newRecord.FirstName))

@@ -39,8 +39,17 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
+            if (!this.validator.ValidateParametrs(newRecord))
+            {
+                throw new ArgumentException("Incorrect format", nameof(newRecord));
+            }
+
+            if (this.IdExist(newRecord.Id))
+            {
+                throw new ArgumentException($"This Id exists.", nameof(newRecord));
+            }
+
             var poz = (int)this.fileStream.Seek(0, SeekOrigin.End);
-            newRecord.Id = (Convert.ToInt32(poz, CultureInfo.CurrentCulture) / this.recordSize) + 1;
             short status = 0;
 
             this.WriteRecord(status, newRecord);
