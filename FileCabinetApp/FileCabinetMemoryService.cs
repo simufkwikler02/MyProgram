@@ -91,6 +91,29 @@ namespace FileCabinetApp
             return true;
         }
 
+        public long FindIndex(string name, string value)
+        {
+            switch (name)
+            {
+                case "id":
+                    return this.list.FindIndex(x => x.Id == Convert.ToInt32(value, CultureInfo.CurrentCulture));
+                case "firstname":
+                    return this.list.FindIndex(x => x.FirstName == value);
+                case "lastname":
+                    return this.list.FindIndex(x => x.LastName == value);
+                case "dateofbirth":
+                    return this.list.FindIndex(x => x.DateOfBirth == Convert.ToDateTime(value, CultureInfo.CurrentCulture));
+                case "Property1":
+                    return this.list.FindIndex(x => x.Property1 == Convert.ToInt16(value, CultureInfo.CurrentCulture));
+                case "Property2":
+                    return this.list.FindIndex(x => x.Property2 == Convert.ToDecimal(value, CultureInfo.CurrentCulture));
+                case "Property3":
+                    return this.list.FindIndex(x => x.Property3 == Convert.ToChar(value, CultureInfo.CurrentCulture));
+                default:
+                    return -1;
+            }
+        }
+
         public int GetStat()
         {
             return this.list.Count;
@@ -137,6 +160,23 @@ namespace FileCabinetApp
             this.lastNameDictionary[record.LastName].Remove(record);
             this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
             Console.WriteLine($"Record #{id} is removed.");
+        }
+
+        public int DeleteRecord(string name, string value)
+        {
+            int index = (int)this.FindIndex(name, value);
+
+            if (index == -1)
+            {
+                return index;
+            }
+
+            var record = this.list[index];
+            this.list.RemoveAt(index);
+            this.firstNameDictionary[record.FirstName].Remove(record);
+            this.lastNameDictionary[record.LastName].Remove(record);
+            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
+            return record.Id;
         }
 
         public void PurgeRecords()

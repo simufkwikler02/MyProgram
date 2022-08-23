@@ -29,6 +29,16 @@ namespace FileCabinetApp
             return result;
         }
 
+        public int DeleteRecord(string name, string value)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.DeleteRecord(name, value);
+            this.time.Stop();
+            Console.WriteLine($"DeleteRecord method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
         public void EditRecord(int id, FileCabinetRecord recordEdit)
         {
             this.time.Reset();
@@ -65,6 +75,16 @@ namespace FileCabinetApp
             var result = this.service.FindByLastName(lastName);
             this.time.Stop();
             Console.WriteLine($"FindByLastName method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public long FindIndex(string name, string value)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindIndex(name, value);
+            this.time.Stop();
+            Console.WriteLine($"FindIndex method execution duration is {this.time.ElapsedTicks} ticks.");
             return result;
         }
 

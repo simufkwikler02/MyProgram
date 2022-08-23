@@ -37,6 +37,25 @@ namespace FileCabinetApp
             }
         }
 
+        public int DeleteRecord(string name, string value)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling DeleteRecord() with name = '{name}', value = '{value}'");
+                try
+                {
+                    var result = this.service.DeleteRecord(name, value);
+                    fstream.WriteLine($"{DateTime.Now} - DeleteRecord() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
         public void EditRecord(int id, FileCabinetRecord recordEdit)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
@@ -101,6 +120,25 @@ namespace FileCabinetApp
                 {
                     var result = this.service.FindByLastName(lastName);
                     fstream.WriteLine($"{DateTime.Now} - FindByLastName() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
+        public long FindIndex(string name, string value)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling FindIndex() with name = '{name}', value = '{value}'");
+                try
+                {
+                    var result = this.service.FindIndex(name, value);
+                    fstream.WriteLine($"{DateTime.Now} - FindIndex() returned '{result}'");
                     return result;
                 }
                 catch (Exception ex)

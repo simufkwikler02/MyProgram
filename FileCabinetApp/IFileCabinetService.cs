@@ -18,7 +18,11 @@ namespace FileCabinetApp
 
         public bool IdExist(int id);
 
+        public long FindIndex(string name, string value);
+
         public void RemoveRecord(int id);
+
+        public int DeleteRecord(string name, string value);
 
         public int GetStatDelete();
 

@@ -20,13 +20,15 @@ namespace FileCabinetApp
         {
             this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
-            var records = this.GetRecords();
             int i = 0;
             var poz = (int)this.fileStream.Seek(0, SeekOrigin.Begin);
             while (fileStream.Position < fileStream.Length)
             {
                 var record = this.ReadRecord();
-                i++;
+                if (record != null)
+                {
+                    i++;
+                }
             }
 
             this.deleteRecords = this.GetStat() - i;
@@ -85,7 +87,11 @@ namespace FileCabinetApp
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
             while (fileStream.Position < fileStream.Length)
             {
-                list.Add(this.ReadRecord());
+                var record = this.ReadRecord();
+                if (record != null)
+                {
+                    list.Add(record);
+                }
             }
 
             return new ReadOnlyCollection<FileCabinetRecord>(list);
@@ -122,23 +128,41 @@ namespace FileCabinetApp
 
         public void RemoveRecord(int id)
         {
-            var nuumber = this.GetStat();
-            var poz = (int)this.fileStream?.Seek(0, SeekOrigin.Begin);
-
-            while (fileStream.Position < fileStream.Length)
+            this.fileStream?.Seek(0, SeekOrigin.Begin);
+            while (this.fileStream.Position < this.fileStream.Length)
             {
                 var record = this.ReadRecord();
                 if (record.Id == id)
                 {
                     var recordEdit = record;
                     short status = 1;
-                    poz = (int)this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+                    this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
                     this.WriteRecord(status, recordEdit);
                     Console.WriteLine($"Record #{id} is removed.");
                     this.deleteRecords++;
                     return;
                 }
             }
+        }
+
+        public int DeleteRecord(string name, string value)
+        {
+            var index = this.FindIndex(name, value);
+
+            if (index == -1)
+            {
+                return -1;
+            }
+
+            this.fileStream?.Seek(index, SeekOrigin.Begin);
+            var record = this.ReadRecord();
+
+            var recordEdit = record;
+            short status = 1;
+            this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+            this.WriteRecord(status, recordEdit);
+            this.deleteRecords++;
+            return recordEdit.Id;
         }
 
         public int GetStatDelete()
@@ -167,6 +191,63 @@ namespace FileCabinetApp
             }
 
             return true;
+        }
+
+        public long FindIndex(string name, string value)
+        {
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            try
+            {
+                while (this.fileStream.Position < this.fileStream.Length)
+                {
+                    var record = this.ReadRecord();
+                    if (record == null)
+                    {
+                        return -1;
+                    }
+
+                    if (name.Equals("id", StringComparison.OrdinalIgnoreCase) && record.Id == Convert.ToInt32(value, CultureInfo.CurrentCulture))
+                    {
+                        return this.fileStream.Position - this.recordSize;
+                    }
+
+                    if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase) && record.FirstName == value)
+                    {
+                        return this.fileStream.Position - this.recordSize;
+                    }
+
+                    if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase) && record.LastName == value)
+                    {
+                        return this.fileStream.Position - this.recordSize;
+                    }
+
+                    if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase) && record.DateOfBirth == Convert.ToDateTime(value, CultureInfo.CurrentCulture))
+                    {
+                        return this.fileStream.Position - this.recordSize;
+                    }
+
+                    if (name.Equals("Property1", StringComparison.OrdinalIgnoreCase) && record.Property1 == Convert.ToInt16(value, CultureInfo.CurrentCulture))
+                    {
+                        return this.fileStream.Position - this.recordSize;
+                    }
+
+                    if (name.Equals("Property2", StringComparison.OrdinalIgnoreCase) && record.Property2 == Convert.ToDecimal(value, CultureInfo.CurrentCulture))
+                    {
+                        return this.fileStream.Position - this.recordSize;
+                    }
+
+                    if (name.Equals("Property3", StringComparison.OrdinalIgnoreCase) && record.Property3 == Convert.ToChar(value, CultureInfo.CurrentCulture))
+                    {
+                        return this.fileStream.Position - this.recordSize;
+                    }
+                }
+            }
+            catch
+            {
+                return -1;
+            }
+
+            return -1;
         }
 
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
@@ -281,6 +362,12 @@ namespace FileCabinetApp
         private FileCabinetRecord ReadRecord()
         {
             FileCabinetRecord record = new FileCabinetRecord();
+
+            if (this.fileStream.Position == this.fileStream.Length)
+            {
+                return null;
+            }
+
             byte[] buffer = new byte[2];
             this.fileStream?.Read(buffer, 0, 2);
             int num = Array.IndexOf(buffer, (byte)0);

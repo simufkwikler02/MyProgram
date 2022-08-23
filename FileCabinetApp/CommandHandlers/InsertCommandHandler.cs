@@ -24,8 +24,13 @@ namespace FileCabinetApp.CommandHandlers
             {
                 try
                 {
-                    Dictionary<string,string> args = new Dictionary<string,string>();
-                    var data = request.Parameters.Replace(",", string.Empty, StringComparison.CurrentCulture).Replace("(", string.Empty, StringComparison.CurrentCulture).Replace(")", string.Empty, StringComparison.CurrentCulture).Replace("'", string.Empty, StringComparison.CurrentCulture).Split("values");
+                    if (string.IsNullOrEmpty(request.Parameters))
+                    {
+                        Console.WriteLine(HintMessageInsert);
+                        return;
+                    }
+
+                    var data = request.Parameters.Replace(",", " ", StringComparison.CurrentCulture).Replace("(", string.Empty, StringComparison.CurrentCulture).Replace(")", string.Empty, StringComparison.CurrentCulture).Replace("'", string.Empty, StringComparison.CurrentCulture).Split("values");
 
                     var name = data[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     var value = data[1].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -34,11 +39,6 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         Console.WriteLine(HintMessageInsert);
                         return;
-                    }
-
-                    for (int i = 0; i < value.Length; i++)
-                    {
-                        args.Add(name[i], value[i]);
                     }
 
                     var record = new FileCabinetRecord();
