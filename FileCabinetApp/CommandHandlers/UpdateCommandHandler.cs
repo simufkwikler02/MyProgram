@@ -10,7 +10,6 @@ namespace FileCabinetApp.CommandHandlers
     public class UpdateCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageUpdate = "Use: update set [name] = '[value]', [name] = '[value]' where [name] = '[value]'";
-        private IRecordValidator? recordValidator;
 
         public UpdateCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)

@@ -48,7 +48,18 @@ namespace FileCabinetApp
 
             if (this.IdExist(newRecord.Id))
             {
-                throw new ArgumentException($"This Id exists.", nameof(newRecord));
+                var id = 0;
+                do
+                {
+                    if (!this.IdExist(id))
+                    {
+                        newRecord.Id = id;
+                        break;
+                    }
+
+                    id++;
+                }
+                while (true);
             }
 
             var poz = (int)this.fileStream.Seek(0, SeekOrigin.End);
