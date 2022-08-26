@@ -73,6 +73,22 @@ namespace FileCabinetApp.CommandHandlers
                 {
                     command.Add(helpMessage[0]);
                 }
+                else
+                {
+                    bool contain = true;
+                    foreach (var sim in com.ToCharArray())
+                    {
+                        if (helpMessage[0].IndexOf(sim, StringComparison.CurrentCultureIgnoreCase) == -1)
+                        {
+                            contain = false;
+                        }
+                    }
+
+                    if (contain)
+                    {
+                        command.Add(helpMessage[0]);
+                    }
+                }
             }
 
             return command;
