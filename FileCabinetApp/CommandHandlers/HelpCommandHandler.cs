@@ -63,5 +63,19 @@ namespace FileCabinetApp.CommandHandlers
                 base.Handle(request);
             }
         }
+
+        public List<string> HelpComand(string com)
+        {
+            var command = new List<string>();
+            foreach (var helpMessage in this.helpMessages)
+            {
+                if (helpMessage[0].IndexOf(com, StringComparison.CurrentCultureIgnoreCase) != -1)
+                {
+                    command.Add(helpMessage[0]);
+                }
+            }
+
+            return command;
+        }
     }
 }

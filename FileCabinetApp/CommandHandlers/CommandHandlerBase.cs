@@ -31,7 +31,29 @@ namespace FileCabinetApp.CommandHandlers
 
         protected static void PrintMissedCommandInfo(string command)
         {
-            Console.WriteLine($"There is no '{command}' command.");
+            Console.WriteLine($"There is no '{command}' command. See 'help' command.");
+            Console.WriteLine();
+            var helpcomand = new HelpCommandHandler().HelpComand(command);
+            if (helpcomand.Count > 1)
+            {
+                Console.WriteLine();
+                Console.WriteLine("The most similar commands are");
+            }
+            else if (helpcomand.Count == 1)
+            {
+                Console.WriteLine();
+                Console.WriteLine("The most similar command is");
+            }
+            else
+            {
+                return;
+            }
+
+            foreach (var item in helpcomand)
+            {
+                Console.WriteLine($"        {item}");
+            }
+
             Console.WriteLine();
         }
     }
