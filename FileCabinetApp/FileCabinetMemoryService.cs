@@ -28,10 +28,25 @@ namespace FileCabinetApp
         {
             if (!this.validator.ValidateParametrs(newRecord))
             {
-                throw new ArgumentException("incorrect format", nameof(newRecord));
+                throw new ArgumentException("Incorrect format", nameof(newRecord));
             }
 
-            newRecord.Id = this.list.Count + 1;
+            if (this.IdExist(newRecord.Id))
+            {
+                var id = 0;
+                do
+                {
+                    if (!this.IdExist(id))
+                    {
+                        newRecord.Id = id;
+                        break;
+                    }
+
+                    id++;
+                }
+                while (true);
+            }
+
             this.list.Add(newRecord);
 
             if (!this.firstNameDictionary.ContainsKey(newRecord.FirstName))
@@ -87,6 +102,49 @@ namespace FileCabinetApp
             return true;
         }
 
+        public ReadOnlyCollection<long> FindIndex(string name, string value)
+        {
+            var recordFind = new List<FileCabinetRecord>();
+
+            switch (name)
+            {
+                case "id":
+                    recordFind = this.list.FindAll(x => x.Id == Convert.ToInt32(value, CultureInfo.CurrentCulture));
+                    break;
+                case "firstname":
+                    recordFind = this.list.FindAll(x => x.FirstName == value);
+                    break;
+                case "lastname":
+                    recordFind = this.list.FindAll(x => x.LastName == value);
+                    break;
+                case "dateofbirth":
+                    recordFind = this.list.FindAll(x => x.DateOfBirth == Convert.ToDateTime(value, CultureInfo.CurrentCulture));
+                    break;
+                case "Property1":
+                    recordFind = this.list.FindAll(x => x.Property1 == Convert.ToInt16(value, CultureInfo.CurrentCulture));
+                    break;
+                case "Property2":
+                    recordFind = this.list.FindAll(x => x.Property2 == Convert.ToDecimal(value, CultureInfo.CurrentCulture));
+                    break;
+                case "Property3":
+                    recordFind = this.list.FindAll(x => x.Property3 == Convert.ToChar(value, CultureInfo.CurrentCulture));
+                    break;
+            }
+
+            var indexFind = new List<long>();
+            foreach (var item in recordFind)
+            {
+                indexFind.Add(item.Id);
+            }
+
+            return new ReadOnlyCollection<long>(indexFind);
+        }
+
+        public FileCabinetRecord GetRecord(long position)
+        {
+            return this.list[(int)position];
+        }
+
         public int GetStat()
         {
             return this.list.Count;
@@ -97,31 +155,15 @@ namespace FileCabinetApp
             return this.deleteRecords;
         }
 
-        public void EditRecord(int id, FileCabinetRecord recordEdit)
+        public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
-            if (!this.validator.ValidateParametrs(recordEdit))
+            if (!this.validator.ValidateParametrs(recordUpdate))
             {
-                throw new ArgumentException("incorrect format", nameof(recordEdit));
+                return -1;
             }
 
-            foreach (var record in this.list)
-            {
-                if (record.Id == id)
-                {
-                    this.CreateRecord(recordEdit);
-                    recordEdit.Id = record.Id;
-                    this.list.Insert(id - 1, recordEdit);
-                    this.list.RemoveAt(this.list.Count - 1);
-                    this.list.RemoveAt(id);
-                    this.firstNameDictionary[record.FirstName].Remove(record);
-                    this.lastNameDictionary[record.LastName].Remove(record);
-                    this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
-                    Console.WriteLine($"Record #{id} is updated.");
-                    return;
-                }
-            }
-
-            throw new ArgumentException("index is not exsist.", nameof(id));
+            this.list[(int)position] = recordUpdate;
+            return recordUpdate.Id;
         }
 
         public void RemoveRecord(int id)
@@ -133,6 +175,23 @@ namespace FileCabinetApp
             this.lastNameDictionary[record.LastName].Remove(record);
             this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
             Console.WriteLine($"Record #{id} is removed.");
+        }
+
+        public int DeleteRecord(string name, string value)
+        {
+            var index = this.FindIndex(name, value);
+
+            if (!index.Any())
+            {
+                return -1;
+            }
+
+            var record = this.list[(int)index[0]];
+            this.list.RemoveAt((int)index[0]);
+            this.firstNameDictionary[record.FirstName].Remove(record);
+            this.lastNameDictionary[record.LastName].Remove(record);
+            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
+            return record.Id;
         }
 
         public void PurgeRecords()

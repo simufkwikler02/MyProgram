@@ -10,7 +10,7 @@ namespace FileCabinetApp
 
         public string ServiceInfo();
 
-        public void EditRecord(int id, FileCabinetRecord recordEdit);
+        public int UpdateRecord(long position, FileCabinetRecord recordUpdate);
 
         public ReadOnlyCollection<FileCabinetRecord> GetRecords();
 
@@ -18,7 +18,13 @@ namespace FileCabinetApp
 
         public bool IdExist(int id);
 
+        public ReadOnlyCollection<long> FindIndex(string name, string value);
+
+        public FileCabinetRecord GetRecord(long position);
+
         public void RemoveRecord(int id);
+
+        public int DeleteRecord(string name, string value);
 
         public int GetStatDelete();
 

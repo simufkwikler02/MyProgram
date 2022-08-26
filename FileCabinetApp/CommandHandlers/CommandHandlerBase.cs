@@ -31,42 +31,30 @@ namespace FileCabinetApp.CommandHandlers
 
         protected static void PrintMissedCommandInfo(string command)
         {
-            Console.WriteLine($"There is no '{command}' command.");
+            Console.WriteLine($"There is no '{command}' command. See 'help' command.");
             Console.WriteLine();
-        }
-
-        protected static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
-        {
-            if (records.Count == 0)
+            var helpcomand = new HelpCommandHandler().HelpComand(command);
+            if (helpcomand.Count > 1)
             {
-                Console.WriteLine("records were not created");
-                return;
+                Console.WriteLine();
+                Console.WriteLine("The most similar commands are");
+            }
+            else if (helpcomand.Count == 1)
+            {
+                Console.WriteLine();
+                Console.WriteLine("The most similar command is");
             }
             else
             {
-                foreach (var record in records)
-                {
-                    string month = record.DateOfBirth.Month switch
-                    {
-                        1 => "Jan",
-                        2 => "Feb",
-                        3 => "Mar",
-                        4 => "Apr",
-                        5 => "May",
-                        6 => "Jun",
-                        7 => "Jul",
-                        8 => "Aug",
-                        9 => "Sep",
-                        10 => "Oct",
-                        11 => "Nov",
-                        12 => "Dec",
-                        _ => "incorrect format."
-                    };
-                    Console.WriteLine();
-                    Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.Year}-{month}-{record.DateOfBirth.Day}");
-                    Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property2}  property3 (char):{record.Property3}");
-                }
+                return;
             }
+
+            foreach (var item in helpcomand)
+            {
+                Console.WriteLine($"        {item}");
+            }
+
+            Console.WriteLine();
         }
     }
 }

@@ -23,8 +23,11 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "find", "find records", "The 'find' command finds and prints records" },
             new string[] { "export", "export records", "The 'export' command exports records to the directory" },
             new string[] { "import", "import records", "The 'import' command imports records from the directory" },
-            new string[] { "remove", "remove record", "The 'remove' command delete record from cabinet" },
+            new string[] { "remove", "remove record", "The 'remove' command delete record from the cabinet" },
             new string[] { "purge", "purge record", "The 'purge' command performs defragmentation of the data in the file (only 'file' type of service)" },
+            new string[] { "insert", "insert record", "The 'insert' command create and saves data to record" },
+            new string[] { "delete", "delete records", "The 'delete' command delete records from the cabinet" },
+            new string[] { "update", "update records", "The 'update' command update records in the cabinet" },
         };
 
         public override void Handle(AppCommandRequest request)
@@ -59,6 +62,36 @@ namespace FileCabinetApp.CommandHandlers
             {
                 base.Handle(request);
             }
+        }
+
+        public List<string> HelpComand(string com)
+        {
+            var command = new List<string>();
+            foreach (var helpMessage in this.helpMessages)
+            {
+                if (helpMessage[0].IndexOf(com, StringComparison.CurrentCultureIgnoreCase) != -1)
+                {
+                    command.Add(helpMessage[0]);
+                }
+                else
+                {
+                    bool contain = true;
+                    foreach (var sim in com.ToCharArray())
+                    {
+                        if (helpMessage[0].IndexOf(sim, StringComparison.CurrentCultureIgnoreCase) == -1)
+                        {
+                            contain = false;
+                        }
+                    }
+
+                    if (contain)
+                    {
+                        command.Add(helpMessage[0]);
+                    }
+                }
+            }
+
+            return command;
         }
     }
 }
