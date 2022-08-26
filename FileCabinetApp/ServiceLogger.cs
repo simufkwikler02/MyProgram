@@ -56,14 +56,16 @@ namespace FileCabinetApp
             }
         }
 
-        public void EditRecord(int id, FileCabinetRecord recordEdit)
+        public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {
-                fstream.WriteLine($"{DateTime.Now} - Calling EditRecord() with id = '{id}', FirstName = '{recordEdit.FirstName}', LastName = '{recordEdit.LastName}', DateOfBirth = '{recordEdit.DateOfBirth.Date}',  Property1 = '{recordEdit.Property1}', Property2 = '{recordEdit.Property2}', Property3 = '{recordEdit.Property3}',");
+                fstream.WriteLine($"{DateTime.Now} - Calling UpdateRecord() with position = '{position}', recordUpdate = '{recordUpdate}'");
                 try
                 {
-                    this.service.EditRecord(id, recordEdit);
+                    var result = this.service.UpdateRecord(position, recordUpdate);
+                    fstream.WriteLine($"{DateTime.Now} - UpdateRecord() returned '{result}'");
+                    return result;
                 }
                 catch (Exception ex)
                 {
@@ -130,7 +132,7 @@ namespace FileCabinetApp
             }
         }
 
-        public long FindIndex(string name, string value)
+        public ReadOnlyCollection<long> FindIndex(string name, string value)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {
@@ -139,6 +141,25 @@ namespace FileCabinetApp
                 {
                     var result = this.service.FindIndex(name, value);
                     fstream.WriteLine($"{DateTime.Now} - FindIndex() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
+        public FileCabinetRecord GetRecord(long position)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling GetRecord() with position = '{position}'");
+                try
+                {
+                    var result = this.service.GetRecord(position);
+                    fstream.WriteLine($"{DateTime.Now} - GetRecord() returned '{result}'");
                     return result;
                 }
                 catch (Exception ex)

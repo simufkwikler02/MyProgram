@@ -39,13 +39,14 @@ namespace FileCabinetApp
             return result;
         }
 
-        public void EditRecord(int id, FileCabinetRecord recordEdit)
+        public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
             this.time.Reset();
             this.time.Start();
-            this.service.EditRecord(id, recordEdit);
+            var result = this.service.UpdateRecord(position, recordUpdate);
             this.time.Stop();
-            Console.WriteLine($"EditRecord method execution duration is {this.time.ElapsedTicks} ticks.");
+            Console.WriteLine($"UpdateRecord method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
         }
 
         public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
@@ -78,13 +79,23 @@ namespace FileCabinetApp
             return result;
         }
 
-        public long FindIndex(string name, string value)
+        public ReadOnlyCollection<long> FindIndex(string name, string value)
         {
             this.time.Reset();
             this.time.Start();
             var result = this.service.FindIndex(name, value);
             this.time.Stop();
             Console.WriteLine($"FindIndex method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public FileCabinetRecord GetRecord(long position)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.GetRecord(position);
+            this.time.Stop();
+            Console.WriteLine($"GetRecord method execution duration is {this.time.ElapsedTicks} ticks.");
             return result;
         }
 

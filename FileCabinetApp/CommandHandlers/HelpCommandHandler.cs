@@ -27,6 +27,7 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "purge", "purge record", "The 'purge' command performs defragmentation of the data in the file (only 'file' type of service)" },
             new string[] { "insert", "insert record", "The 'insert' command create and saves data to record" },
             new string[] { "delete", "delete records", "The 'delete' command delete records from the cabinet" },
+            new string[] { "update", "update records", "The 'update' command update records in the cabinet" },
         };
 
         public override void Handle(AppCommandRequest request)

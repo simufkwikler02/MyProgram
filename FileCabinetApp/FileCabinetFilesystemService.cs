@@ -97,33 +97,17 @@ namespace FileCabinetApp
             return new ReadOnlyCollection<FileCabinetRecord>(list);
         }
 
-        public void EditRecord(int id, FileCabinetRecord recordEdit)
+        public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
-            if (!this.validator.ValidateParametrs(recordEdit))
+            if (!this.validator.ValidateParametrs(recordUpdate))
             {
-                throw new ArgumentException("incorrect format", nameof(recordEdit));
+               return -1;
             }
 
-            var nuumber = this.GetStat();
-            var poz = (int)this.fileStream?.Seek(0, SeekOrigin.Begin);
-
-            while (fileStream.Position < fileStream.Length)
-            {
-                var record = this.ReadRecord();
-                if (record.Id == id)
-                {
-                    short status = 0;
-                    recordEdit.Id = id;
-                    poz = (int)this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
-
-                    this.WriteRecord(status, recordEdit);
-
-                    Console.WriteLine($"Record #{id} is updated.");
-                    return;
-                }
-            }
-
-            Console.WriteLine($"Record #{id} is not found");
+            this.fileStream?.Seek(position, SeekOrigin.Begin);
+            short status = 0;
+            this.WriteRecord(status, recordUpdate);
+            return recordUpdate.Id;
         }
 
         public void RemoveRecord(int id)
@@ -149,12 +133,12 @@ namespace FileCabinetApp
         {
             var index = this.FindIndex(name, value);
 
-            if (index == -1)
+            if (!index.Any())
             {
                 return -1;
             }
 
-            this.fileStream?.Seek(index, SeekOrigin.Begin);
+            this.fileStream?.Seek(index[0], SeekOrigin.Begin);
             var record = this.ReadRecord();
 
             var recordEdit = record;
@@ -193,9 +177,11 @@ namespace FileCabinetApp
             return true;
         }
 
-        public long FindIndex(string name, string value)
+        public ReadOnlyCollection<long> FindIndex(string name, string value)
         {
             this.fileStream.Seek(0, SeekOrigin.Begin);
+            var indexFind = new List<long>();
+
             try
             {
                 while (this.fileStream.Position < this.fileStream.Length)
@@ -203,51 +189,57 @@ namespace FileCabinetApp
                     var record = this.ReadRecord();
                     if (record == null)
                     {
-                        return -1;
+                        return new ReadOnlyCollection<long>(indexFind);
                     }
 
                     if (name.Equals("id", StringComparison.OrdinalIgnoreCase) && record.Id == Convert.ToInt32(value, CultureInfo.CurrentCulture))
                     {
-                        return this.fileStream.Position - this.recordSize;
+                        indexFind.Add(this.fileStream.Position - this.recordSize);
                     }
 
                     if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase) && record.FirstName == value)
                     {
-                        return this.fileStream.Position - this.recordSize;
+                        indexFind.Add(this.fileStream.Position - this.recordSize);
                     }
 
                     if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase) && record.LastName == value)
                     {
-                        return this.fileStream.Position - this.recordSize;
+                        indexFind.Add(this.fileStream.Position - this.recordSize);
                     }
 
                     if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase) && record.DateOfBirth == Convert.ToDateTime(value, CultureInfo.CurrentCulture))
                     {
-                        return this.fileStream.Position - this.recordSize;
+                        indexFind.Add(this.fileStream.Position - this.recordSize);
                     }
 
                     if (name.Equals("Property1", StringComparison.OrdinalIgnoreCase) && record.Property1 == Convert.ToInt16(value, CultureInfo.CurrentCulture))
                     {
-                        return this.fileStream.Position - this.recordSize;
+                        indexFind.Add(this.fileStream.Position - this.recordSize);
                     }
 
                     if (name.Equals("Property2", StringComparison.OrdinalIgnoreCase) && record.Property2 == Convert.ToDecimal(value, CultureInfo.CurrentCulture))
                     {
-                        return this.fileStream.Position - this.recordSize;
+                        indexFind.Add(this.fileStream.Position - this.recordSize);
                     }
 
                     if (name.Equals("Property3", StringComparison.OrdinalIgnoreCase) && record.Property3 == Convert.ToChar(value, CultureInfo.CurrentCulture))
                     {
-                        return this.fileStream.Position - this.recordSize;
+                        indexFind.Add(this.fileStream.Position - this.recordSize);
                     }
                 }
             }
             catch
             {
-                return -1;
+                return new ReadOnlyCollection<long>(indexFind);
             }
 
-            return -1;
+            return new ReadOnlyCollection<long>(indexFind);
+        }
+
+        public FileCabinetRecord GetRecord(long position)
+        {
+            this.fileStream.Seek(position, SeekOrigin.Begin);
+            return this.ReadRecord();
         }
 
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
