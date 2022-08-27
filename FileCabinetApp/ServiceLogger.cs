@@ -117,11 +117,68 @@ namespace FileCabinetApp
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {
-                fstream.WriteLine($"{DateTime.Now} - Calling FindByLastName() with firstName = '{lastName}'");
+                fstream.WriteLine($"{DateTime.Now} - Calling FindByLastName() with lastName = '{lastName}'");
                 try
                 {
                     var result = this.service.FindByLastName(lastName);
                     fstream.WriteLine($"{DateTime.Now} - FindByLastName() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty1(string property1)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling FindByProperty1() with property1 = '{property1}'");
+                try
+                {
+                    var result = this.service.FindByProperty1(property1);
+                    fstream.WriteLine($"{DateTime.Now} - FindByProperty1() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty2(string property2)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling FindByProperty2() with property2 = '{property2}'");
+                try
+                {
+                    var result = this.service.FindByProperty2(property2);
+                    fstream.WriteLine($"{DateTime.Now} - FindByProperty2() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty3(string property3)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling FindByProperty3() with property3 = '{property3}'");
+                try
+                {
+                    var result = this.service.FindByProperty2(property3);
+                    fstream.WriteLine($"{DateTime.Now} - FindByProperty3() returned '{result}'");
                     return result;
                 }
                 catch (Exception ex)
@@ -273,23 +330,6 @@ namespace FileCabinetApp
                 try
                 {
                     this.service.PurgeRecords();
-                }
-                catch (Exception ex)
-                {
-                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
-                    throw new ArgumentException($"{ex.Message}");
-                }
-            }
-        }
-
-        public void RemoveRecord(int id)
-        {
-            using (StreamWriter fstream = new StreamWriter("log.txt", true))
-            {
-                fstream.WriteLine($"{DateTime.Now} - Calling RemoveRecord() with id = '{id}'");
-                try
-                {
-                    this.service.RemoveRecord(id);
                 }
                 catch (Exception ex)
                 {

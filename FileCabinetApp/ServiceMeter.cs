@@ -79,6 +79,36 @@ namespace FileCabinetApp
             return result;
         }
 
+        public IEnumerable<FileCabinetRecord> FindByProperty1(string property1)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindByProperty1(property1);
+            this.time.Stop();
+            Console.WriteLine($"FindByProperty1 method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty2(string property2)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindByProperty2(property2);
+            this.time.Stop();
+            Console.WriteLine($"FindByProperty2 method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty3(string property3)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindByProperty3(property3);
+            this.time.Stop();
+            Console.WriteLine($"FindByProperty3 method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
         public ReadOnlyCollection<long> FindIndex(string name, string value)
         {
             this.time.Reset();
@@ -156,15 +186,6 @@ namespace FileCabinetApp
             this.service.PurgeRecords();
             this.time.Stop();
             Console.WriteLine($"PurgeRecords method execution duration is {this.time.ElapsedTicks} ticks.");
-        }
-
-        public void RemoveRecord(int id)
-        {
-            this.time.Reset();
-            this.time.Start();
-            this.service.RemoveRecord(id);
-            this.time.Stop();
-            Console.WriteLine($"RemoveRecord method execution duration is {this.time.ElapsedTicks} ticks.");
         }
 
         public void Restore(FileCabinetServiceSnapshot snapshot)

@@ -121,25 +121,6 @@ namespace FileCabinetApp
             return recordUpdate.Id;
         }
 
-        public void RemoveRecord(int id)
-        {
-            this.fileStream?.Seek(0, SeekOrigin.Begin);
-            while (this.fileStream.Position < this.fileStream.Length)
-            {
-                var record = this.ReadRecord();
-                if (record.Id == id)
-                {
-                    var recordEdit = record;
-                    short status = 1;
-                    this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
-                    this.WriteRecord(status, recordEdit);
-                    Console.WriteLine($"Record #{id} is removed.");
-                    this.deleteRecords++;
-                    return;
-                }
-            }
-        }
-
         public int DeleteRecord(string name, string value)
         {
             var index = this.FindIndex(name, value);
@@ -267,6 +248,21 @@ namespace FileCabinetApp
         public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
             return new Enumerable(this.fileStream, dateofbirth, "dateofbirth");
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty1(string property1)
+        {
+            return new Enumerable(this.fileStream, property1, "property1");
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty2(string property2)
+        {
+            return new Enumerable(this.fileStream, property2, "property2");
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty3(string property3)
+        {
+            return new Enumerable(this.fileStream, property3, "property3");
         }
 
         public FileCabinetServiceSnapshot MakeSnapshot()

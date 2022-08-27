@@ -22,8 +22,6 @@ namespace FileCabinetApp
 
         public FileCabinetRecord GetRecord(long position);
 
-        public void RemoveRecord(int id);
-
         public int DeleteRecord(string name, string value);
 
         public int GetStatDelete();
@@ -35,6 +33,12 @@ namespace FileCabinetApp
         public IEnumerable<FileCabinetRecord> FindByLastName(string lastName);
 
         public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth);
+
+        public IEnumerable<FileCabinetRecord> FindByProperty1(string property1);
+
+        public IEnumerable<FileCabinetRecord> FindByProperty2(string property2);
+
+        public IEnumerable<FileCabinetRecord> FindByProperty3(string property3);
 
         public FileCabinetServiceSnapshot MakeSnapshot();
 

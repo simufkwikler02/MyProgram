@@ -37,6 +37,9 @@ namespace FileCabinetApp.CommandHandlers
                 new Tuple<string, Func<string, IEnumerable<FileCabinetRecord>>>("firstName", this.service.FindByFirstName),
                 new Tuple<string, Func<string, IEnumerable<FileCabinetRecord>>>("lastName", this.service.FindByLastName),
                 new Tuple<string, Func<string, IEnumerable<FileCabinetRecord>>>("dateofbirth", this.service.FindByDateoOfBirth),
+                new Tuple<string, Func<string, IEnumerable<FileCabinetRecord>>>("property1", this.service.FindByProperty1),
+                new Tuple<string, Func<string, IEnumerable<FileCabinetRecord>>>("property2", this.service.FindByProperty2),
+                new Tuple<string, Func<string, IEnumerable<FileCabinetRecord>>>("property3", this.service.FindByProperty3),
                 };
 
                 var index = Array.FindIndex(commandsForFind, 0, commandsForFind.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
