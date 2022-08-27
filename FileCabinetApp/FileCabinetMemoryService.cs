@@ -10,6 +10,7 @@ namespace FileCabinetApp
         private readonly string serviceRules = "memory";
         private readonly int deleteRecords;
 
+        private readonly Dictionary<int, List<FileCabinetRecord>> idDictionary = new Dictionary<int, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
@@ -51,49 +52,7 @@ namespace FileCabinetApp
             }
 
             this.list.Add(newRecord);
-
-            if (!this.firstNameDictionary.ContainsKey(newRecord.FirstName))
-            {
-                this.firstNameDictionary.Add(newRecord.FirstName, new List<FileCabinetRecord>());
-            }
-
-            this.firstNameDictionary[newRecord.FirstName].Add(newRecord);
-
-            if (!this.lastNameDictionary.ContainsKey(newRecord.LastName))
-            {
-                this.lastNameDictionary.Add(newRecord.LastName, new List<FileCabinetRecord>());
-            }
-
-            this.lastNameDictionary[newRecord.LastName].Add(newRecord);
-
-            if (!this.dateOfBirthDictionary.ContainsKey(newRecord.DateOfBirth))
-            {
-                this.dateOfBirthDictionary.Add(newRecord.DateOfBirth, new List<FileCabinetRecord>());
-            }
-
-            this.dateOfBirthDictionary[newRecord.DateOfBirth].Add(newRecord);
-
-            if (!this.property1Dictionary.ContainsKey(newRecord.Property1))
-            {
-                this.property1Dictionary.Add(newRecord.Property1, new List<FileCabinetRecord>());
-            }
-
-            this.property1Dictionary[newRecord.Property1].Add(newRecord);
-
-            if (!this.property2Dictionary.ContainsKey(newRecord.Property2))
-            {
-                this.property2Dictionary.Add(newRecord.Property2, new List<FileCabinetRecord>());
-            }
-
-            this.property2Dictionary[newRecord.Property2].Add(newRecord);
-
-            if (!this.property3Dictionary.ContainsKey(newRecord.Property3))
-            {
-                this.property3Dictionary.Add(newRecord.Property3, new List<FileCabinetRecord>());
-            }
-
-            this.property3Dictionary[newRecord.Property3].Add(newRecord);
-
+            this.AddToDictionary(newRecord);
             return newRecord.Id;
         }
 
@@ -185,56 +144,10 @@ namespace FileCabinetApp
             {
                 return -1;
             }
-            this.firstNameDictionary[this.list[(int)position].FirstName].Remove(this.list[(int)position]);
-            this.lastNameDictionary[this.list[(int)position].LastName].Remove(this.list[(int)position]);
-            this.dateOfBirthDictionary[this.list[(int)position].DateOfBirth].Remove(this.list[(int)position]);
-            this.property1Dictionary[this.list[(int)position].Property1].Remove(this.list[(int)position]);
-            this.property2Dictionary[this.list[(int)position].Property2].Remove(this.list[(int)position]);
-            this.property3Dictionary[this.list[(int)position].Property3].Remove(this.list[(int)position]);
 
+            this.RemoveFromDictionary(this.list[(int)position]);
             this.list[(int)position] = recordUpdate;
-
-            if (!this.firstNameDictionary.ContainsKey(recordUpdate.FirstName))
-            {
-                this.firstNameDictionary.Add(recordUpdate.FirstName, new List<FileCabinetRecord>());
-            }
-
-            this.firstNameDictionary[recordUpdate.FirstName].Add(recordUpdate);
-
-            if (!this.lastNameDictionary.ContainsKey(recordUpdate.LastName))
-            {
-                this.lastNameDictionary.Add(recordUpdate.LastName, new List<FileCabinetRecord>());
-            }
-
-            this.lastNameDictionary[recordUpdate.LastName].Add(recordUpdate);
-
-            if (!this.dateOfBirthDictionary.ContainsKey(recordUpdate.DateOfBirth))
-            {
-                this.dateOfBirthDictionary.Add(recordUpdate.DateOfBirth, new List<FileCabinetRecord>());
-            }
-
-            this.dateOfBirthDictionary[recordUpdate.DateOfBirth].Add(recordUpdate);
-
-            if (!this.property1Dictionary.ContainsKey(recordUpdate.Property1))
-            {
-                this.property1Dictionary.Add(recordUpdate.Property1, new List<FileCabinetRecord>());
-            }
-
-            this.property1Dictionary[recordUpdate.Property1].Add(recordUpdate);
-
-            if (!this.property2Dictionary.ContainsKey(recordUpdate.Property2))
-            {
-                this.property2Dictionary.Add(recordUpdate.Property2, new List<FileCabinetRecord>());
-            }
-
-            this.property2Dictionary[recordUpdate.Property2].Add(recordUpdate);
-
-            if (!this.property3Dictionary.ContainsKey(recordUpdate.Property3))
-            {
-                this.property3Dictionary.Add(recordUpdate.Property3, new List<FileCabinetRecord>());
-            }
-
-            this.property3Dictionary[recordUpdate.Property3].Add(recordUpdate);
+            this.AddToDictionary(recordUpdate);
             return recordUpdate.Id;
         }
 
@@ -249,12 +162,7 @@ namespace FileCabinetApp
 
             var record = this.list[(int)index[0]];
             this.list.RemoveAt((int)index[0]);
-            this.firstNameDictionary[record.FirstName].Remove(record);
-            this.lastNameDictionary[record.LastName].Remove(record);
-            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
-            this.property1Dictionary[record.Property1].Remove(record);
-            this.property2Dictionary[record.Property2].Remove(record);
-            this.property3Dictionary[record.Property3].Remove(record);
+            this.RemoveFromDictionary(record);
             return record.Id;
         }
 
@@ -262,6 +170,16 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Error -> This command works only with 'file' type of service");
             return;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindById(string id)
+        {
+            if (id is null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return this.idDictionary[Convert.ToInt32(id, CultureInfo.CurrentCulture)];
         }
 
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
@@ -349,14 +267,8 @@ namespace FileCabinetApp
                 if (index >= 0)
                 {
                     newlist.Remove(record);
-                    this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
-                    this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
-                    this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
-                    this.property1Dictionary[this.list[index].Property1].Remove(this.list[index]);
-                    this.property2Dictionary[this.list[index].Property2].Remove(this.list[index]);
-                    this.property3Dictionary[this.list[index].Property3].Remove(this.list[index]);
+                    this.RemoveFromDictionary(this.list[index]);
                     this.list.Insert(index, record);
-
                     this.list.RemoveAt(index + 1);
                     continue;
                 }
@@ -365,50 +277,73 @@ namespace FileCabinetApp
                     this.list.Add(record);
                 }
 
-                if (!this.firstNameDictionary.ContainsKey(record.FirstName))
-                {
-                    this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>());
-                }
-
-                this.firstNameDictionary[record.FirstName].Add(record);
-
-                if (!this.lastNameDictionary.ContainsKey(record.LastName))
-                {
-                    this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>());
-                }
-
-                this.lastNameDictionary[record.LastName].Add(record);
-
-                if (!this.dateOfBirthDictionary.ContainsKey(record.DateOfBirth))
-                {
-                    this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>());
-                }
-
-                this.dateOfBirthDictionary[record.DateOfBirth].Add(record);
-
-                if (!this.property1Dictionary.ContainsKey(record.Property1))
-                {
-                    this.property1Dictionary.Add(record.Property1, new List<FileCabinetRecord>());
-                }
-
-                this.property1Dictionary[record.Property1].Add(record);
-
-                if (!this.property2Dictionary.ContainsKey(record.Property2))
-                {
-                    this.property2Dictionary.Add(record.Property2, new List<FileCabinetRecord>());
-                }
-
-                this.property2Dictionary[record.Property2].Add(record);
-
-                if (!this.property3Dictionary.ContainsKey(record.Property3))
-                {
-                    this.property3Dictionary.Add(record.Property3, new List<FileCabinetRecord>());
-                }
-
-                this.property3Dictionary[record.Property3].Add(record);
+                this.AddToDictionary(record);
             }
 
             Console.WriteLine($"{newlist.Count} records were imported");
+        }
+
+        private void AddToDictionary(FileCabinetRecord record)
+        {
+            if (!this.idDictionary.ContainsKey(record.Id))
+            {
+                this.idDictionary.Add(record.Id, new List<FileCabinetRecord>());
+            }
+
+            this.idDictionary[record.Id].Add(record);
+
+            if (!this.firstNameDictionary.ContainsKey(record.FirstName))
+            {
+                this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>());
+            }
+
+            this.firstNameDictionary[record.FirstName].Add(record);
+
+            if (!this.lastNameDictionary.ContainsKey(record.LastName))
+            {
+                this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>());
+            }
+
+            this.lastNameDictionary[record.LastName].Add(record);
+
+            if (!this.dateOfBirthDictionary.ContainsKey(record.DateOfBirth))
+            {
+                this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>());
+            }
+
+            this.dateOfBirthDictionary[record.DateOfBirth].Add(record);
+
+            if (!this.property1Dictionary.ContainsKey(record.Property1))
+            {
+                this.property1Dictionary.Add(record.Property1, new List<FileCabinetRecord>());
+            }
+
+            this.property1Dictionary[record.Property1].Add(record);
+
+            if (!this.property2Dictionary.ContainsKey(record.Property2))
+            {
+                this.property2Dictionary.Add(record.Property2, new List<FileCabinetRecord>());
+            }
+
+            this.property2Dictionary[record.Property2].Add(record);
+
+            if (!this.property3Dictionary.ContainsKey(record.Property3))
+            {
+                this.property3Dictionary.Add(record.Property3, new List<FileCabinetRecord>());
+            }
+
+            this.property3Dictionary[record.Property3].Add(record);
+        }
+
+        private void RemoveFromDictionary(FileCabinetRecord record)
+        {
+            this.idDictionary[record.Id].Remove(record);
+            this.firstNameDictionary[record.FirstName].Remove(record);
+            this.lastNameDictionary[record.LastName].Remove(record);
+            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
+            this.property1Dictionary[record.Property1].Remove(record);
+            this.property2Dictionary[record.Property2].Remove(record);
+            this.property3Dictionary[record.Property3].Remove(record);
         }
     }
 }

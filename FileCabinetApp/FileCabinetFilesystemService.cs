@@ -234,6 +234,11 @@ namespace FileCabinetApp
             return this.ReadRecord();
         }
 
+        public IEnumerable<FileCabinetRecord> FindById(string id)
+        {
+            return new Enumerable(this.fileStream, id, "id");
+        }
+
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             return new Enumerable(this.fileStream, firstName, "firstname");
