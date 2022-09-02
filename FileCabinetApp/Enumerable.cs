@@ -47,7 +47,32 @@ namespace FileCabinetApp
 
                         break;
                     case "dateofbirth":
-                        if (record.DateOfBirth == DateTime.Parse(this.data, CultureInfo.CurrentCulture))
+                        var dateofbirth = new DateTime();
+                        if (DateTime.TryParse(this.data, out dateofbirth) && record.DateOfBirth == dateofbirth)
+                        {
+                            yield return record;
+                        }
+
+                        break;
+                    case "property1":
+                        short property1;
+                        if (short.TryParse(this.data, out property1) && record.Property1 == property1)
+                        {
+                            yield return record;
+                        }
+
+                        break;
+                    case "property2":
+                        decimal property2;
+                        if (decimal.TryParse(this.data, out property2) && record.Property2 == property2)
+                        {
+                            yield return record;
+                        }
+
+                        break;
+                    case "property3":
+                        char property3;
+                        if (char.TryParse(this.data, out property3) && record.Property3 == property3)
                         {
                             yield return record;
                         }

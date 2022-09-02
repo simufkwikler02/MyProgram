@@ -33,11 +33,11 @@ namespace FileCabinetApp.CommandHandlers
                     var set = data[0].Split(new char[] { ',' }, StringSplitOptions.TrimEntries);
                     var where = data[1].Split("and", StringSplitOptions.TrimEntries);
 
-                    List<List<long>> parameters = new List<List<long>>();
+                    List<IEnumerable<FileCabinetRecord>> parameters = new List<IEnumerable<FileCabinetRecord>>();
                     foreach (var param in where)
                     {
-                        var index = this.service.FindIndex(param.Split('=')[0], param.Split('=')[1]);
-                        parameters.Add(new List<long>(index));
+                        var records = this.service.FindRecords(param.Split('=')[0], param.Split('=')[1]);
+                        parameters.Add(records);
 
                     }
 
@@ -48,7 +48,7 @@ namespace FileCabinetApp.CommandHandlers
                     }
 
                     var resultWhere = parameters[parameters.Count - 1];
-                    if (resultWhere.Count < 1)
+                    if (!resultWhere.Any())
                     {
                         Console.WriteLine("This records does't exist");
                         return;
@@ -65,10 +65,8 @@ namespace FileCabinetApp.CommandHandlers
                     }
 
                     var idupdate = new List<long>();
-                    foreach (var position in resultWhere)
+                    foreach (var record in resultWhere)
                     {
-                        var record = this.service.GetRecord(position);
-
                         var ind = name.FindIndex(i => i.Equals("id", StringComparison.OrdinalIgnoreCase));
                         record.Id = ind == -1 ? record.Id : Convert.ToInt32(value[ind], CultureInfo.CurrentCulture);
 
@@ -89,13 +87,12 @@ namespace FileCabinetApp.CommandHandlers
 
                         ind = name.FindIndex(i => i.Equals("Property3", StringComparison.OrdinalIgnoreCase));
                         record.Property3 = ind == -1 ? record.Property3 : Convert.ToChar(value[ind], CultureInfo.CurrentCulture);
-                        var indexUpdate = this.service.UpdateRecord(position, record);
+                        var indexUpdate = this.service.UpdateRecord(this.service.FindIndex(record), record);
                         if (indexUpdate != -1)
                         {
                             idupdate.Add(indexUpdate);
                         }
                     }
-
 
                     if (idupdate.Count > 1)
                     {
@@ -116,7 +113,6 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         Console.WriteLine("incorrect format");
                     }
-
                 }
                 catch
                 {
@@ -130,9 +126,9 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private List<long> Intersect(List<long> one, List<long> two)
+        private IEnumerable<FileCabinetRecord> Intersect(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
         {
-            var result = new List<long>();
+            var result = new List<FileCabinetRecord>();
             foreach (var item1 in one)
             {
                 foreach (var item2 in two)

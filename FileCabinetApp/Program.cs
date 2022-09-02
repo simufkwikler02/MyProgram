@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Text;
 using FileCabinetApp.CommandHandlers;
+using ConsoleTables;
 
 namespace FileCabinetApp
 {
@@ -51,16 +53,15 @@ namespace FileCabinetApp
             var exitHander = new ExitCommandHandler(() => isRunning = false);
             var statHander = new StatCommandHandler(Program.fileCabinetService);
             var createHander = new CreateCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var listHander = new ListCommandHandler(Program.fileCabinetService, DefaultRecordPrinter);
-            var findHandler = new FindCommandHandler(Program.fileCabinetService, DefaultRecordPrinter);
             var exportHandler = new ExportCommandHandler(Program.fileCabinetService);
             var importHandler = new ImportCommandHandler(Program.fileCabinetService);
             var purgeHandler = new PurgeCommandHandler(Program.fileCabinetService);
             var insertHandler = new InsertCommandHandler(Program.fileCabinetService);
             var deleteHandler = new DeleteCommandHandler(Program.fileCabinetService);
             var updateHandler = new UpdateCommandHandler(Program.fileCabinetService);
+            var selectHandler = new SelectCommandHandler(Program.fileCabinetService, PrintTable);
 
-            helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(listHander).SetNext(findHandler).SetNext(exportHandler).SetNext(importHandler).SetNext(purgeHandler).SetNext(insertHandler).SetNext(deleteHandler).SetNext(updateHandler);
+            helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(exportHandler).SetNext(importHandler).SetNext(purgeHandler).SetNext(insertHandler).SetNext(deleteHandler).SetNext(updateHandler).SetNext(selectHandler);
             return helpHander;
         }
 
@@ -205,38 +206,57 @@ namespace FileCabinetApp
             return new FileCabinetMemoryService(recordValidator);
         }
 
-        private static void DefaultRecordPrinter(IEnumerable<FileCabinetRecord> records)
+        private static void PrintTable(string[] tableName, IEnumerable<FileCabinetRecord> record)
         {
-            if (!records.Any())
+            var table = new ConsoleTable(tableName);
+            foreach (var recordItem in record)
             {
-                Console.WriteLine("records were not created");
-                return;
-            }
-            else
-            {
-                foreach (var record in records)
+                var result = new StringBuilder();
+                foreach (var name in tableName)
                 {
-                    string month = record.DateOfBirth.Month switch
+                    if (name.Equals("id", StringComparison.OrdinalIgnoreCase))
                     {
-                        1 => "Jan",
-                        2 => "Feb",
-                        3 => "Mar",
-                        4 => "Apr",
-                        5 => "May",
-                        6 => "Jun",
-                        7 => "Jul",
-                        8 => "Aug",
-                        9 => "Sep",
-                        10 => "Oct",
-                        11 => "Nov",
-                        12 => "Dec",
-                        _ => "incorrect format."
-                    };
-                    Console.WriteLine();
-                    Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.Year}-{month}-{record.DateOfBirth.Day}");
-                    Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property2}  property3 (char):{record.Property3}");
+                        result.Append(recordItem.Id);
+                    }
+
+                    if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.FirstName);
+                    }
+
+                    if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.LastName);
+                    }
+
+                    if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.DateOfBirth);
+                    }
+
+                    if (name.Equals("property1", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.Property1);
+                    }
+
+                    if (name.Equals("property2", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.Property2);
+                    }
+
+                    if (name.Equals("property3", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.Property3);
+                    }
+
+                    result.Append('?');
                 }
+
+                var row = result.ToString().Split("?", StringSplitOptions.RemoveEmptyEntries);
+                table.AddRow(row);
             }
+
+            table.Write(Format.Alternative);
         }
     }
 }

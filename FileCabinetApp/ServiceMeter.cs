@@ -29,11 +29,11 @@ namespace FileCabinetApp
             return result;
         }
 
-        public int DeleteRecord(string name, string value)
+        public int DeleteRecord(FileCabinetRecord newRecord)
         {
             this.time.Reset();
             this.time.Start();
-            var result = this.service.DeleteRecord(name, value);
+            var result = this.service.DeleteRecord(newRecord);
             this.time.Stop();
             Console.WriteLine($"DeleteRecord method execution duration is {this.time.ElapsedTicks} ticks.");
             return result;
@@ -79,11 +79,41 @@ namespace FileCabinetApp
             return result;
         }
 
-        public ReadOnlyCollection<long> FindIndex(string name, string value)
+        public IEnumerable<FileCabinetRecord> FindByProperty1(string property1)
         {
             this.time.Reset();
             this.time.Start();
-            var result = this.service.FindIndex(name, value);
+            var result = this.service.FindByProperty1(property1);
+            this.time.Stop();
+            Console.WriteLine($"FindByProperty1 method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty2(string property2)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindByProperty2(property2);
+            this.time.Stop();
+            Console.WriteLine($"FindByProperty2 method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty3(string property3)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindByProperty3(property3);
+            this.time.Stop();
+            Console.WriteLine($"FindByProperty3 method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public long FindIndex(FileCabinetRecord record)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindIndex(record);
             this.time.Stop();
             Console.WriteLine($"FindIndex method execution duration is {this.time.ElapsedTicks} ticks.");
             return result;
@@ -158,15 +188,6 @@ namespace FileCabinetApp
             Console.WriteLine($"PurgeRecords method execution duration is {this.time.ElapsedTicks} ticks.");
         }
 
-        public void RemoveRecord(int id)
-        {
-            this.time.Reset();
-            this.time.Start();
-            this.service.RemoveRecord(id);
-            this.time.Stop();
-            Console.WriteLine($"RemoveRecord method execution duration is {this.time.ElapsedTicks} ticks.");
-        }
-
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             this.time.Reset();
@@ -183,6 +204,26 @@ namespace FileCabinetApp
             var result = this.service.ServiceInfo();
             this.time.Stop();
             Console.WriteLine($"ServiceInfo method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindRecords(string name, string value)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindRecords(name, value);
+            this.time.Stop();
+            Console.WriteLine($"FindRecords method execution duration is {this.time.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindById(string id)
+        {
+            this.time.Reset();
+            this.time.Start();
+            var result = this.service.FindById(id);
+            this.time.Stop();
+            Console.WriteLine($"FindById method execution duration is {this.time.ElapsedTicks} ticks.");
             return result;
         }
     }

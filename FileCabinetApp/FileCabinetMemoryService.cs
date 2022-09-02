@@ -10,9 +10,16 @@ namespace FileCabinetApp
         private readonly string serviceRules = "memory";
         private readonly int deleteRecords;
 
+        private readonly Dictionary<int, List<FileCabinetRecord>> idDictionary = new Dictionary<int, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+        private readonly Dictionary<short, List<FileCabinetRecord>> property1Dictionary = new Dictionary<short, List<FileCabinetRecord>>();
+        private readonly Dictionary<decimal, List<FileCabinetRecord>> property2Dictionary = new Dictionary<decimal, List<FileCabinetRecord>>();
+        private readonly Dictionary<char, List<FileCabinetRecord>> property3Dictionary = new Dictionary<char, List<FileCabinetRecord>>();
+
+        private readonly Dictionary<string, IEnumerable<FileCabinetRecord>> FindRecordsDictionary = new Dictionary<string, IEnumerable<FileCabinetRecord>>();
+        private readonly Dictionary<FileCabinetRecord, long> FindIndexDictionary = new Dictionary<FileCabinetRecord, long>();
 
         public FileCabinetMemoryService(IRecordValidator? validator)
         {
@@ -48,28 +55,10 @@ namespace FileCabinetApp
             }
 
             this.list.Add(newRecord);
+            this.AddToDictionary(newRecord);
 
-            if (!this.firstNameDictionary.ContainsKey(newRecord.FirstName))
-            {
-                this.firstNameDictionary.Add(newRecord.FirstName, new List<FileCabinetRecord>());
-            }
-
-            this.firstNameDictionary[newRecord.FirstName].Add(newRecord);
-
-            if (!this.lastNameDictionary.ContainsKey(newRecord.LastName))
-            {
-                this.lastNameDictionary.Add(newRecord.LastName, new List<FileCabinetRecord>());
-            }
-
-            this.lastNameDictionary[newRecord.LastName].Add(newRecord);
-
-            if (!this.dateOfBirthDictionary.ContainsKey(newRecord.DateOfBirth))
-            {
-                this.dateOfBirthDictionary.Add(newRecord.DateOfBirth, new List<FileCabinetRecord>());
-            }
-
-            this.dateOfBirthDictionary[newRecord.DateOfBirth].Add(newRecord);
-
+            this.FindIndexDictionary.Clear();
+            this.FindRecordsDictionary.Clear();
             return newRecord.Id;
         }
 
@@ -102,42 +91,68 @@ namespace FileCabinetApp
             return true;
         }
 
-        public ReadOnlyCollection<long> FindIndex(string name, string value)
+        public IEnumerable<FileCabinetRecord> FindRecords(string name, string value)
         {
-            var recordFind = new List<FileCabinetRecord>();
-
-            switch (name)
+            if (this.FindRecordsDictionary.ContainsKey(name + value))
             {
-                case "id":
-                    recordFind = this.list.FindAll(x => x.Id == Convert.ToInt32(value, CultureInfo.CurrentCulture));
-                    break;
-                case "firstname":
-                    recordFind = this.list.FindAll(x => x.FirstName == value);
-                    break;
-                case "lastname":
-                    recordFind = this.list.FindAll(x => x.LastName == value);
-                    break;
-                case "dateofbirth":
-                    recordFind = this.list.FindAll(x => x.DateOfBirth == Convert.ToDateTime(value, CultureInfo.CurrentCulture));
-                    break;
-                case "Property1":
-                    recordFind = this.list.FindAll(x => x.Property1 == Convert.ToInt16(value, CultureInfo.CurrentCulture));
-                    break;
-                case "Property2":
-                    recordFind = this.list.FindAll(x => x.Property2 == Convert.ToDecimal(value, CultureInfo.CurrentCulture));
-                    break;
-                case "Property3":
-                    recordFind = this.list.FindAll(x => x.Property3 == Convert.ToChar(value, CultureInfo.CurrentCulture));
-                    break;
+                return this.FindRecordsDictionary[name + value];
             }
 
-            var indexFind = new List<long>();
-            foreach (var item in recordFind)
+            if (name.Equals("id", StringComparison.OrdinalIgnoreCase))
             {
-                indexFind.Add(item.Id);
+                this.FindRecordsDictionary.Add(name + value, this.FindById(value));
+                return this.FindById(value);
             }
 
-            return new ReadOnlyCollection<long>(indexFind);
+            if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase))
+            {
+                this.FindRecordsDictionary.Add(name + value, this.FindByFirstName(value));
+                return this.FindByFirstName(value);
+            }
+
+            if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase))
+            {
+                this.FindRecordsDictionary.Add(name + value, this.FindByLastName(value));
+                return this.FindByLastName(value);
+            }
+
+            if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase))
+            {
+                this.FindRecordsDictionary.Add(name + value, this.FindByDateoOfBirth(value));
+                return this.FindByDateoOfBirth(value);
+            }
+
+            if (name.Equals("Property1", StringComparison.OrdinalIgnoreCase))
+            {
+                this.FindRecordsDictionary.Add(name + value, this.FindByProperty1(value));
+                return this.FindByProperty1(value);
+            }
+
+            if (name.Equals("Property2", StringComparison.OrdinalIgnoreCase))
+            {
+                this.FindRecordsDictionary.Add(name + value, this.FindByProperty2(value));
+                return this.FindByProperty2(value);
+            }
+
+            if (name.Equals("Property3", StringComparison.OrdinalIgnoreCase))
+            {
+                this.FindRecordsDictionary.Add(name + value, this.FindByProperty3(value));
+                return this.FindByProperty3(value);
+            }
+
+            this.FindRecordsDictionary.Add(name + value, new List<FileCabinetRecord>());
+            return new List<FileCabinetRecord>();
+        }
+
+        public long FindIndex(FileCabinetRecord record)
+        {
+            if (this.FindIndexDictionary.ContainsKey(record))
+            {
+                return this.FindIndexDictionary[record];
+            }
+
+            this.FindIndexDictionary.Add(record, this.list.FindIndex(x => x == record));
+            return this.list.FindIndex(x => x == record);
         }
 
         public FileCabinetRecord GetRecord(long position)
@@ -162,35 +177,27 @@ namespace FileCabinetApp
                 return -1;
             }
 
+            this.RemoveFromDictionary(this.list[(int)position]);
             this.list[(int)position] = recordUpdate;
+            this.AddToDictionary(recordUpdate);
+
+            this.FindIndexDictionary.Clear();
+            this.FindRecordsDictionary.Clear();
             return recordUpdate.Id;
         }
 
-        public void RemoveRecord(int id)
+        public int DeleteRecord(FileCabinetRecord record)
         {
-            var index = this.list.FindIndex(x => x.Id == id);
-            var record = this.list[index];
-            this.list.RemoveAt(index);
-            this.firstNameDictionary[record.FirstName].Remove(record);
-            this.lastNameDictionary[record.LastName].Remove(record);
-            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
-            Console.WriteLine($"Record #{id} is removed.");
-        }
-
-        public int DeleteRecord(string name, string value)
-        {
-            var index = this.FindIndex(name, value);
-
-            if (!index.Any())
+            if (this.FindIndex(record) == -1)
             {
                 return -1;
             }
 
-            var record = this.list[(int)index[0]];
-            this.list.RemoveAt((int)index[0]);
-            this.firstNameDictionary[record.FirstName].Remove(record);
-            this.lastNameDictionary[record.LastName].Remove(record);
-            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
+            this.list.Remove(record);
+            this.RemoveFromDictionary(record);
+
+            this.FindIndexDictionary.Clear();
+            this.FindRecordsDictionary.Clear();
             return record.Id;
         }
 
@@ -198,6 +205,16 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Error -> This command works only with 'file' type of service");
             return;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindById(string id)
+        {
+            if (id is null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return this.idDictionary[Convert.ToInt32(id, CultureInfo.CurrentCulture)];
         }
 
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
@@ -230,6 +247,36 @@ namespace FileCabinetApp
             return this.dateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)];
         }
 
+        public IEnumerable<FileCabinetRecord> FindByProperty1(string property1)
+        {
+            if (property1 is null)
+            {
+                throw new ArgumentNullException(nameof(property1));
+            }
+
+            return this.property1Dictionary[Convert.ToInt16(property1, CultureInfo.CurrentCulture)];
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty2(string property2)
+        {
+            if (property2 is null)
+            {
+                throw new ArgumentNullException(nameof(property2));
+            }
+
+            return this.property2Dictionary[Convert.ToDecimal(property2, CultureInfo.CurrentCulture)];
+        }
+
+        public IEnumerable<FileCabinetRecord> FindByProperty3(string property3)
+        {
+            if (property3 is null)
+            {
+                throw new ArgumentNullException(nameof(property3));
+            }
+
+            return this.property3Dictionary[Convert.ToChar(property3, CultureInfo.CurrentCulture)];
+        }
+
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             return new FileCabinetServiceSnapshot(this.list);
@@ -255,11 +302,8 @@ namespace FileCabinetApp
                 if (index >= 0)
                 {
                     newlist.Remove(record);
-                    this.firstNameDictionary[this.list[index].FirstName].Remove(this.list[index]);
-                    this.lastNameDictionary[this.list[index].LastName].Remove(this.list[index]);
-                    this.dateOfBirthDictionary[this.list[index].DateOfBirth].Remove(this.list[index]);
+                    this.RemoveFromDictionary(this.list[index]);
                     this.list.Insert(index, record);
-
                     this.list.RemoveAt(index + 1);
                     continue;
                 }
@@ -268,29 +312,73 @@ namespace FileCabinetApp
                     this.list.Add(record);
                 }
 
-                if (!this.firstNameDictionary.ContainsKey(record.FirstName))
-                {
-                    this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>());
-                }
-
-                this.firstNameDictionary[record.FirstName].Add(record);
-
-                if (!this.lastNameDictionary.ContainsKey(record.LastName))
-                {
-                    this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>());
-                }
-
-                this.lastNameDictionary[record.LastName].Add(record);
-
-                if (!this.dateOfBirthDictionary.ContainsKey(record.DateOfBirth))
-                {
-                    this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>());
-                }
-
-                this.dateOfBirthDictionary[record.DateOfBirth].Add(record);
+                this.AddToDictionary(record);
             }
 
             Console.WriteLine($"{newlist.Count} records were imported");
+        }
+
+        private void AddToDictionary(FileCabinetRecord record)
+        {
+            if (!this.idDictionary.ContainsKey(record.Id))
+            {
+                this.idDictionary.Add(record.Id, new List<FileCabinetRecord>());
+            }
+
+            this.idDictionary[record.Id].Add(record);
+
+            if (!this.firstNameDictionary.ContainsKey(record.FirstName))
+            {
+                this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>());
+            }
+
+            this.firstNameDictionary[record.FirstName].Add(record);
+
+            if (!this.lastNameDictionary.ContainsKey(record.LastName))
+            {
+                this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>());
+            }
+
+            this.lastNameDictionary[record.LastName].Add(record);
+
+            if (!this.dateOfBirthDictionary.ContainsKey(record.DateOfBirth))
+            {
+                this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>());
+            }
+
+            this.dateOfBirthDictionary[record.DateOfBirth].Add(record);
+
+            if (!this.property1Dictionary.ContainsKey(record.Property1))
+            {
+                this.property1Dictionary.Add(record.Property1, new List<FileCabinetRecord>());
+            }
+
+            this.property1Dictionary[record.Property1].Add(record);
+
+            if (!this.property2Dictionary.ContainsKey(record.Property2))
+            {
+                this.property2Dictionary.Add(record.Property2, new List<FileCabinetRecord>());
+            }
+
+            this.property2Dictionary[record.Property2].Add(record);
+
+            if (!this.property3Dictionary.ContainsKey(record.Property3))
+            {
+                this.property3Dictionary.Add(record.Property3, new List<FileCabinetRecord>());
+            }
+
+            this.property3Dictionary[record.Property3].Add(record);
+        }
+
+        private void RemoveFromDictionary(FileCabinetRecord record)
+        {
+            this.idDictionary[record.Id].Remove(record);
+            this.firstNameDictionary[record.FirstName].Remove(record);
+            this.lastNameDictionary[record.LastName].Remove(record);
+            this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
+            this.property1Dictionary[record.Property1].Remove(record);
+            this.property2Dictionary[record.Property2].Remove(record);
+            this.property3Dictionary[record.Property3].Remove(record);
         }
     }
 }

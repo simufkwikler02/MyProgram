@@ -35,16 +35,18 @@ namespace FileCabinetApp.CommandHandlers
 
                 int index;
                 List<int> indexDelete = new List<int>();
-                do
+
+                var recordsDelete = this.service.FindRecords(data[0], data[1]);
+
+                foreach (var record in recordsDelete)
                 {
-                    index = this.service.DeleteRecord(data[0], data[1]);
+                    index = this.service.DeleteRecord(record);
 
                     if (index != -1)
                     {
                         indexDelete.Add(index);
                     }
                 }
-                while (index != -1);
 
                 if (indexDelete.Count > 1)
                 {
