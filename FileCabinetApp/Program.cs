@@ -53,8 +53,6 @@ namespace FileCabinetApp
             var exitHander = new ExitCommandHandler(() => isRunning = false);
             var statHander = new StatCommandHandler(Program.fileCabinetService);
             var createHander = new CreateCommandHandler(Program.fileCabinetService, Program.recordValidator);
-            var listHander = new ListCommandHandler(Program.fileCabinetService, DefaultRecordPrinter);
-            var findHandler = new FindCommandHandler(Program.fileCabinetService, DefaultRecordPrinter);
             var exportHandler = new ExportCommandHandler(Program.fileCabinetService);
             var importHandler = new ImportCommandHandler(Program.fileCabinetService);
             var purgeHandler = new PurgeCommandHandler(Program.fileCabinetService);
@@ -63,7 +61,7 @@ namespace FileCabinetApp
             var updateHandler = new UpdateCommandHandler(Program.fileCabinetService);
             var selectHandler = new SelectCommandHandler(Program.fileCabinetService, PrintTable);
 
-            helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(listHander).SetNext(findHandler).SetNext(exportHandler).SetNext(importHandler).SetNext(purgeHandler).SetNext(insertHandler).SetNext(deleteHandler).SetNext(updateHandler).SetNext(selectHandler);
+            helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(exportHandler).SetNext(importHandler).SetNext(purgeHandler).SetNext(insertHandler).SetNext(deleteHandler).SetNext(updateHandler).SetNext(selectHandler);
             return helpHander;
         }
 
@@ -206,40 +204,6 @@ namespace FileCabinetApp
             }
 
             return new FileCabinetMemoryService(recordValidator);
-        }
-
-        private static void DefaultRecordPrinter(IEnumerable<FileCabinetRecord> records)
-        {
-            if (!records.Any())
-            {
-                Console.WriteLine("records were not created");
-                return;
-            }
-            else
-            {
-                foreach (var record in records)
-                {
-                    string month = record.DateOfBirth.Month switch
-                    {
-                        1 => "Jan",
-                        2 => "Feb",
-                        3 => "Mar",
-                        4 => "Apr",
-                        5 => "May",
-                        6 => "Jun",
-                        7 => "Jul",
-                        8 => "Aug",
-                        9 => "Sep",
-                        10 => "Oct",
-                        11 => "Nov",
-                        12 => "Dec",
-                        _ => "incorrect format."
-                    };
-                    Console.WriteLine();
-                    Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.Year}-{month}-{record.DateOfBirth.Day}");
-                    Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property2}  property3 (char):{record.Property3}");
-                }
-            }
         }
 
         private static void PrintTable(string[] tableName, IEnumerable<FileCabinetRecord> record)
