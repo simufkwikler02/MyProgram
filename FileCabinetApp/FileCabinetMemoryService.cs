@@ -85,42 +85,49 @@ namespace FileCabinetApp
             return true;
         }
 
-        public ReadOnlyCollection<long> FindIndex(string name, string value)
+        public IEnumerable<FileCabinetRecord> FindRecords(string name, string value)
         {
-            var recordFind = new List<FileCabinetRecord>();
-
-            switch (name)
+            if (name.Equals("id", StringComparison.OrdinalIgnoreCase))
             {
-                case "id":
-                    recordFind = this.list.FindAll(x => x.Id == Convert.ToInt32(value, CultureInfo.CurrentCulture));
-                    break;
-                case "firstname":
-                    recordFind = this.list.FindAll(x => x.FirstName == value);
-                    break;
-                case "lastname":
-                    recordFind = this.list.FindAll(x => x.LastName == value);
-                    break;
-                case "dateofbirth":
-                    recordFind = this.list.FindAll(x => x.DateOfBirth == Convert.ToDateTime(value, CultureInfo.CurrentCulture));
-                    break;
-                case "Property1":
-                    recordFind = this.list.FindAll(x => x.Property1 == Convert.ToInt16(value, CultureInfo.CurrentCulture));
-                    break;
-                case "Property2":
-                    recordFind = this.list.FindAll(x => x.Property2 == Convert.ToDecimal(value, CultureInfo.CurrentCulture));
-                    break;
-                case "Property3":
-                    recordFind = this.list.FindAll(x => x.Property3 == Convert.ToChar(value, CultureInfo.CurrentCulture));
-                    break;
+                return this.FindById(value);
             }
 
-            var indexFind = new List<long>();
-            foreach (var item in recordFind)
+            if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase))
             {
-                indexFind.Add(item.Id);
+                return this.FindByFirstName(value);
             }
 
-            return new ReadOnlyCollection<long>(indexFind);
+            if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByLastName(value);
+            }
+
+            if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByDateoOfBirth(value);
+            }
+
+            if (name.Equals("Property1", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByProperty1(value);
+            }
+
+            if (name.Equals("Property2", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByProperty2(value);
+            }
+
+            if (name.Equals("Property3", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByProperty3(value);
+            }
+
+            return new List<FileCabinetRecord>();
+        }
+
+        public long FindIndex(FileCabinetRecord record)
+        {
+            return this.list.FindIndex(x => x == record);
         }
 
         public FileCabinetRecord GetRecord(long position)
@@ -151,17 +158,14 @@ namespace FileCabinetApp
             return recordUpdate.Id;
         }
 
-        public int DeleteRecord(string name, string value)
+        public int DeleteRecord(FileCabinetRecord record)
         {
-            var index = this.FindIndex(name, value);
-
-            if (!index.Any())
+            if (this.FindIndex(record) == -1)
             {
                 return -1;
             }
 
-            var record = this.list[(int)index[0]];
-            this.list.RemoveAt((int)index[0]);
+            this.list.Remove(record);
             this.RemoveFromDictionary(record);
             return record.Id;
         }

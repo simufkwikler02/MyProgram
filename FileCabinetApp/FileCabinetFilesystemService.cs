@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using ConsoleTables;
 
 namespace FileCabinetApp
 {
@@ -121,21 +122,19 @@ namespace FileCabinetApp
             return recordUpdate.Id;
         }
 
-        public int DeleteRecord(string name, string value)
+        public int DeleteRecord(FileCabinetRecord record)
         {
-            var index = this.FindIndex(name, value);
+            var index = this.FindIndex(record);
 
-            if (!index.Any())
+            if (index == -1)
             {
                 return -1;
             }
 
-            this.fileStream?.Seek(index[0], SeekOrigin.Begin);
-            var record = this.ReadRecord();
-
+            this.fileStream?.Seek(index, SeekOrigin.Begin);
             var recordEdit = record;
             short status = 1;
-            this.fileStream?.Seek(-this.recordSize, SeekOrigin.Current);
+
             this.WriteRecord(status, recordEdit);
             this.deleteRecords++;
             return recordEdit.Id;
@@ -169,63 +168,60 @@ namespace FileCabinetApp
             return true;
         }
 
-        public ReadOnlyCollection<long> FindIndex(string name, string value)
+        public long FindIndex(FileCabinetRecord record)
         {
             this.fileStream.Seek(0, SeekOrigin.Begin);
-            var indexFind = new List<long>();
 
-            try
+            while (this.fileStream.Position < this.fileStream.Length)
             {
-                while (this.fileStream.Position < this.fileStream.Length)
+                var newRecord = this.ReadRecord();
+                if (record != null && newRecord == record)
                 {
-                    var record = this.ReadRecord();
-                    if (record == null)
-                    {
-                        return new ReadOnlyCollection<long>(indexFind);
-                    }
-
-                    if (name.Equals("id", StringComparison.OrdinalIgnoreCase) && record.Id == Convert.ToInt32(value, CultureInfo.CurrentCulture))
-                    {
-                        indexFind.Add(this.fileStream.Position - this.recordSize);
-                    }
-
-                    if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase) && record.FirstName == value)
-                    {
-                        indexFind.Add(this.fileStream.Position - this.recordSize);
-                    }
-
-                    if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase) && record.LastName == value)
-                    {
-                        indexFind.Add(this.fileStream.Position - this.recordSize);
-                    }
-
-                    if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase) && record.DateOfBirth == Convert.ToDateTime(value, CultureInfo.CurrentCulture))
-                    {
-                        indexFind.Add(this.fileStream.Position - this.recordSize);
-                    }
-
-                    if (name.Equals("Property1", StringComparison.OrdinalIgnoreCase) && record.Property1 == Convert.ToInt16(value, CultureInfo.CurrentCulture))
-                    {
-                        indexFind.Add(this.fileStream.Position - this.recordSize);
-                    }
-
-                    if (name.Equals("Property2", StringComparison.OrdinalIgnoreCase) && record.Property2 == Convert.ToDecimal(value, CultureInfo.CurrentCulture))
-                    {
-                        indexFind.Add(this.fileStream.Position - this.recordSize);
-                    }
-
-                    if (name.Equals("Property3", StringComparison.OrdinalIgnoreCase) && record.Property3 == Convert.ToChar(value, CultureInfo.CurrentCulture))
-                    {
-                        indexFind.Add(this.fileStream.Position - this.recordSize);
-                    }
+                    return this.fileStream.Position - this.recordSize;
                 }
             }
-            catch
+
+            return -1;
+        }
+
+        public IEnumerable<FileCabinetRecord> FindRecords(string name, string value)
+        {
+            if (name.Equals("id", StringComparison.OrdinalIgnoreCase))
             {
-                return new ReadOnlyCollection<long>(indexFind);
+                return this.FindById(value);
             }
 
-            return new ReadOnlyCollection<long>(indexFind);
+            if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByFirstName(value);
+            }
+
+            if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByLastName(value);
+            }
+
+            if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByDateoOfBirth(value);
+            }
+
+            if (name.Equals("Property1", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByProperty1(value);
+            }
+
+            if (name.Equals("Property2", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByProperty2(value);
+            }
+
+            if (name.Equals("Property3", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.FindByProperty3(value);
+            }
+
+            return new List<FileCabinetRecord>();
         }
 
         public FileCabinetRecord GetRecord(long position)

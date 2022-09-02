@@ -18,15 +18,19 @@ namespace FileCabinetApp
 
         public bool IdExist(int id);
 
-        public ReadOnlyCollection<long> FindIndex(string name, string value);
+        public IEnumerable<FileCabinetRecord> FindRecords(string name, string value);
 
         public FileCabinetRecord GetRecord(long position);
 
-        public int DeleteRecord(string name, string value);
+        public long FindIndex(FileCabinetRecord record);
+
+        public int DeleteRecord(FileCabinetRecord record);
 
         public int GetStatDelete();
 
         public void PurgeRecords();
+
+        public IEnumerable<FileCabinetRecord> FindById(string id);
 
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName);
 

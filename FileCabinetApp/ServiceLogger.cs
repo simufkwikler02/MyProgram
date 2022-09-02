@@ -37,14 +37,14 @@ namespace FileCabinetApp
             }
         }
 
-        public int DeleteRecord(string name, string value)
+        public int DeleteRecord(FileCabinetRecord record)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {
-                fstream.WriteLine($"{DateTime.Now} - Calling DeleteRecord() with name = '{name}', value = '{value}'");
+                fstream.WriteLine($"{DateTime.Now} - Calling DeleteRecord() with record = '{record}'");
                 try
                 {
-                    var result = this.service.DeleteRecord(name, value);
+                    var result = this.service.DeleteRecord(record);
                     fstream.WriteLine($"{DateTime.Now} - DeleteRecord() returned '{result}'");
                     return result;
                 }
@@ -189,15 +189,15 @@ namespace FileCabinetApp
             }
         }
 
-        public ReadOnlyCollection<long> FindIndex(string name, string value)
+        public IEnumerable<FileCabinetRecord> FindRecords(string name, string value)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {
-                fstream.WriteLine($"{DateTime.Now} - Calling FindIndex() with name = '{name}', value = '{value}'");
+                fstream.WriteLine($"{DateTime.Now} - Calling FindRecords() with name = '{name}', value = '{value}'");
                 try
                 {
-                    var result = this.service.FindIndex(name, value);
-                    fstream.WriteLine($"{DateTime.Now} - FindIndex() returned '{result}'");
+                    var result = this.service.FindRecords(name, value);
+                    fstream.WriteLine($"{DateTime.Now} - FindRecords() returned '{result}'");
                     return result;
                 }
                 catch (Exception ex)
@@ -365,6 +365,44 @@ namespace FileCabinetApp
                 {
                     var result = this.service.ServiceInfo();
                     fstream.WriteLine($"{DateTime.Now} - ServiceInfo() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
+        public long FindIndex(FileCabinetRecord record)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling FindIndex() with record = '{record}'");
+                try
+                {
+                    var result = this.service.FindIndex(record);
+                    fstream.WriteLine($"{DateTime.Now} - FindIndex() returned '{result}'");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    fstream.WriteLine($"{DateTime.Now} - Catch Exception '{ex.Message}'");
+                    throw new ArgumentException($"{ex.Message}");
+                }
+            }
+        }
+
+        public IEnumerable<FileCabinetRecord> FindById(string id)
+        {
+            using (StreamWriter fstream = new StreamWriter("log.txt", true))
+            {
+                fstream.WriteLine($"{DateTime.Now} - Calling FindById() with id = '{id}'");
+                try
+                {
+                    var result = this.service.FindById(id);
+                    fstream.WriteLine($"{DateTime.Now} - FindById() returned '{result}'");
                     return result;
                 }
                 catch (Exception ex)

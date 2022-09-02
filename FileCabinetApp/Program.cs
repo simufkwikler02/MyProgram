@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Text;
 using FileCabinetApp.CommandHandlers;
+using ConsoleTables;
 
 namespace FileCabinetApp
 {
@@ -59,7 +61,7 @@ namespace FileCabinetApp
             var insertHandler = new InsertCommandHandler(Program.fileCabinetService);
             var deleteHandler = new DeleteCommandHandler(Program.fileCabinetService);
             var updateHandler = new UpdateCommandHandler(Program.fileCabinetService);
-            var selectHandler = new SelectCommandHandler(Program.fileCabinetService);
+            var selectHandler = new SelectCommandHandler(Program.fileCabinetService, PrintTable);
 
             helpHander.SetNext(exitHander).SetNext(statHander).SetNext(createHander).SetNext(listHander).SetNext(findHandler).SetNext(exportHandler).SetNext(importHandler).SetNext(purgeHandler).SetNext(insertHandler).SetNext(deleteHandler).SetNext(updateHandler).SetNext(selectHandler);
             return helpHander;
@@ -238,6 +240,59 @@ namespace FileCabinetApp
                     Console.WriteLine($"property1 (short):{record.Property1}  property2 (decimal):{record.Property2}  property3 (char):{record.Property3}");
                 }
             }
+        }
+
+        private static void PrintTable(string[] tableName, IEnumerable<FileCabinetRecord> record)
+        {
+            var table = new ConsoleTable(tableName);
+            foreach (var recordItem in record)
+            {
+                var result = new StringBuilder();
+                foreach (var name in tableName)
+                {
+                    if (name.Equals("id", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.Id);
+                    }
+
+                    if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.FirstName);
+                    }
+
+                    if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.LastName);
+                    }
+
+                    if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.DateOfBirth);
+                    }
+
+                    if (name.Equals("property1", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.Property1);
+                    }
+
+                    if (name.Equals("property2", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.Property2);
+                    }
+
+                    if (name.Equals("property3", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Append(recordItem.Property3);
+                    }
+
+                    result.Append('?');
+                }
+
+                var row = result.ToString().Split("?", StringSplitOptions.RemoveEmptyEntries);
+                table.AddRow(row);
+            }
+
+            table.Write(Format.Alternative);
         }
     }
 }
