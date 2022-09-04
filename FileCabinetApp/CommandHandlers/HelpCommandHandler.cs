@@ -18,16 +18,14 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
             new string[] { "create", "saves data to record", "The 'create' command saves data to record" },
-            new string[] { "list", "prints a list of records", "The 'list' command prints a list of records" },
-            new string[] { "edit", "edits records", "The 'edit' command edits records" },
             new string[] { "find", "find records", "The 'find' command finds and prints records" },
             new string[] { "export", "export records", "The 'export' command exports records to the directory" },
             new string[] { "import", "import records", "The 'import' command imports records from the directory" },
-            new string[] { "remove", "remove record", "The 'remove' command delete record from the cabinet" },
             new string[] { "purge", "purge record", "The 'purge' command performs defragmentation of the data in the file (only 'file' type of service)" },
             new string[] { "insert", "insert record", "The 'insert' command create and saves data to record" },
             new string[] { "delete", "delete records", "The 'delete' command delete records from the cabinet" },
             new string[] { "update", "update records", "The 'update' command update records in the cabinet" },
+            new string[] { "select", "print records", "The 'select' command prints selected records to the console" },
         };
 
         public override void Handle(AppCommandRequest request)
@@ -78,7 +76,7 @@ namespace FileCabinetApp.CommandHandlers
                     bool contain = true;
                     foreach (var sim in com.ToCharArray())
                     {
-                        if (helpMessage[0].IndexOf(sim, StringComparison.CurrentCultureIgnoreCase) == -1)
+                        if (!helpMessage[0].Contains(sim, StringComparison.CurrentCultureIgnoreCase))
                         {
                             contain = false;
                         }

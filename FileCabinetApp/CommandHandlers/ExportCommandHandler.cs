@@ -23,7 +23,7 @@ namespace FileCabinetApp.CommandHandlers
                 var inputs = request.Parameters != null && request.Parameters != string.Empty ? request.Parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
                 if (inputs.Length <= 1)
                 {
-                    PrintMissedCommandInfo(request.Parameters);
+                    PrintMissedCommandInfo(request.Parameters ?? string.Empty);
                     Console.WriteLine(HintMessageExport);
                     return;
                 }
@@ -39,7 +39,7 @@ namespace FileCabinetApp.CommandHandlers
                 {
                     fileInfo = new FileInfo(path);
                     directory = fileInfo.Directory;
-                    if (!directory.Exists)
+                    if (!directory?.Exists ?? false)
                     {
                         throw new ArgumentException(nameof(directory));
                     }
@@ -73,14 +73,14 @@ namespace FileCabinetApp.CommandHandlers
                 }
 
                 fstream = new StreamWriter(path, false);
-                var snapshot = this.service.MakeSnapshot();
+                var snapshot = this.Service?.MakeSnapshot();
                 switch (command.ToLower(CultureInfo.CurrentCulture))
                 {
                     case "csv":
-                        snapshot.SaveToCsv(fstream);
+                        snapshot?.SaveToCsv(fstream);
                         break;
                     case "xml":
-                        snapshot.SaveToXml(fstream);
+                        snapshot?.SaveToXml(fstream);
                         break;
                     default:
                         PrintMissedCommandInfo(command);

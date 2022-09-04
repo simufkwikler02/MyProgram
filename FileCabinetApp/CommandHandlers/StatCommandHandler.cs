@@ -15,10 +15,10 @@ namespace FileCabinetApp.CommandHandlers
 
         public override void Handle(AppCommandRequest request)
         {
-            if (request.Command.Equals("stat", StringComparison.OrdinalIgnoreCase))
+            if (request.Command?.Equals("stat", StringComparison.OrdinalIgnoreCase) ?? false)
             {
-                var recordsCount = this.service.GetStat();
-                var recordsIsDelete = this.service.GetStatDelete();
+                var recordsCount = this.Service?.GetStat();
+                var recordsIsDelete = this.Service?.GetStatDelete();
                 Console.WriteLine($"{recordsCount} record(s). {recordsIsDelete} delete record(s)");
             }
             else

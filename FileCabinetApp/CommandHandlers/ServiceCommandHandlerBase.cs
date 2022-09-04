@@ -8,12 +8,11 @@ namespace FileCabinetApp.CommandHandlers
 {
     public abstract class ServiceCommandHandlerBase : CommandHandlerBase
     {
-        protected IFileCabinetService? service;
-
         protected ServiceCommandHandlerBase(IFileCabinetService? fileCabinetService)
         {
-            this.service = fileCabinetService;
+            this.Service = fileCabinetService;
         }
 
+        protected IFileCabinetService? Service { get; }
     }
 }

@@ -206,8 +206,18 @@ namespace FileCabinetApp
             return new FileCabinetMemoryService(recordValidator);
         }
 
-        private static void PrintTable(string[] tableName, IEnumerable<FileCabinetRecord> record)
+        private static void PrintTable(string[]? tableName, IEnumerable<FileCabinetRecord>? record)
         {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            if (tableName is null)
+            {
+                throw new ArgumentNullException(nameof(tableName));
+            }
+
             var table = new ConsoleTable(tableName);
             foreach (var recordItem in record)
             {

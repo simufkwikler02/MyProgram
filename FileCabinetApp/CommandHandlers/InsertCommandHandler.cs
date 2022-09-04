@@ -61,7 +61,7 @@ namespace FileCabinetApp.CommandHandlers
                     ind = Array.FindIndex(name, i => i.Equals("Property3", StringComparison.OrdinalIgnoreCase));
                     record.Property3 = Convert.ToChar(value[ind], CultureInfo.CurrentCulture);
 
-                    var number = this.service?.CreateRecord(record);
+                    var number = this.Service?.CreateRecord(record);
                     Console.WriteLine($"Record #{number} is created.");
                 }
                 catch

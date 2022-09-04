@@ -17,7 +17,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command.Equals("purge", StringComparison.OrdinalIgnoreCase))
             {
-                this.service?.PurgeRecords();
+                this.Service?.PurgeRecords();
             }
             else
             {
