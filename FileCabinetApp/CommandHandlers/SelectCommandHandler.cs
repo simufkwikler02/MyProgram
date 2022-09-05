@@ -107,7 +107,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 foreach (var item2 in two)
                 {
-                    if (item1.Id == item2.Id && !result.Contains(item2))
+                    if (item1.Equals(item2) && !result.Contains(item2))
                     {
                         result.Add(item2);
                     }

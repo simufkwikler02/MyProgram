@@ -32,6 +32,14 @@ namespace FileCabinetApp
                 var record = this.ReadRecord();
                 switch (this.name)
                 {
+                    case "id":
+                        int id;
+                        if (int.TryParse(this.data, out id) && record.Id == id)
+                        {
+                            yield return record;
+                        }
+
+                        break;
                     case "firstname":
                         if (record.FirstName == this.data)
                         {

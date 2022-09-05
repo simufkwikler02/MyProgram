@@ -175,7 +175,7 @@ namespace FileCabinetApp
             while (this.fileStream.Position < this.fileStream.Length)
             {
                 var newRecord = this.ReadRecord();
-                if (record != null && newRecord == record)
+                if (record != null && newRecord.Equals(record))
                 {
                     return this.fileStream.Position - this.recordSize;
                 }

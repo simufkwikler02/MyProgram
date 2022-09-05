@@ -37,5 +37,20 @@
         public string LastName { get; set; }
 
         public DateTime DateOfBirth { get; set; }
+
+        public bool Equals(FileCabinetRecord? record)
+        {
+            if (record == null)
+            {
+                return false;
+            }
+
+            if (record.Id != this.Id || record.FirstName != this.FirstName || record.LastName != this.LastName || record.DateOfBirth != this.DateOfBirth || record.Property1 != this.Property1 || record.Property2 != this.Property2 || record.Property3 != this.Property3)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
