@@ -8,8 +8,8 @@ namespace FileCabinetApp
 {
     public class DateOfBirthValidator : IRecordBlocksValidator
     {
-        private DateTime from;
-        private DateTime to;
+        private readonly DateTime from;
+        private readonly DateTime to;
 
         public DateOfBirthValidator(DateTime from, DateTime to)
         {

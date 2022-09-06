@@ -8,8 +8,8 @@ namespace FileCabinetApp
 {
     public class ValidatorBuilder
     {
-        private List<IRecordBlocksValidator> validators = new List<IRecordBlocksValidator>();
-        private ValidateParametrs parametrs = new ValidateParametrs();
+        private readonly List<IRecordBlocksValidator> validators = new List<IRecordBlocksValidator>();
+        private readonly ValidateParametrs parametrs = new ValidateParametrs();
 
         public void ValidateFirstName(int min, int max)
         {

@@ -8,8 +8,8 @@ namespace FileCabinetApp
 {
     public class LastNameValidator : IRecordBlocksValidator
     {
-        private int minLength;
-        private int maxLength;
+        private readonly int minLength;
+        private readonly int maxLength;
 
         public LastNameValidator(int minLength, int maxLength)
         {

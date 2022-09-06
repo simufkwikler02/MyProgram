@@ -8,7 +8,7 @@ namespace FileCabinetApp
 {
     public class Property3Validator : IRecordBlocksValidator
     {
-        private char[] banSymbols;
+        private readonly char[] banSymbols;
 
         public Property3Validator(char[] banSymbols)
         {

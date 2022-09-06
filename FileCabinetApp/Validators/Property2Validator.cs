@@ -8,8 +8,8 @@ namespace FileCabinetApp
 {
     public class Property2Validator : IRecordBlocksValidator
     {
-        private decimal minValue;
-        private decimal maxValue;
+        private readonly decimal minValue;
+        private readonly decimal maxValue;
 
         public Property2Validator(decimal minValue, decimal maxValue)
         {

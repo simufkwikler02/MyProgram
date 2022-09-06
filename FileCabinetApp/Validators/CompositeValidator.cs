@@ -8,8 +8,8 @@ namespace FileCabinetApp
 {
     public class CompositeValidator : IRecordValidator
     {
-        private ValidateParametrs parametrs;
-        private List<IRecordBlocksValidator> validators;
+        private readonly ValidateParametrs parametrs;
+        private readonly List<IRecordBlocksValidator> validators;
 
         public CompositeValidator(IEnumerable<IRecordBlocksValidator> validators, ValidateParametrs parametrs)
         {
