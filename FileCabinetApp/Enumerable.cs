@@ -10,12 +10,11 @@ namespace FileCabinetApp
 {
     public class Enumerable : IEnumerable<FileCabinetRecord>
     {
+        private readonly string data;
 
-        private string data;
+        private readonly string name;
 
-        private string name;
-
-        private FileStream? fileStream;
+        private readonly FileStream? fileStream;
 
         public Enumerable(FileStream? fileStream, string data, string name)
         {
@@ -26,6 +25,11 @@ namespace FileCabinetApp
 
         public IEnumerator<FileCabinetRecord> GetEnumerator()
         {
+            if (this.fileStream is null)
+            {
+                yield break;
+            }
+
             this.fileStream.Seek(0, SeekOrigin.Begin);
             while (this.fileStream.Position < this.fileStream.Length)
             {
@@ -55,7 +59,7 @@ namespace FileCabinetApp
 
                         break;
                     case "dateofbirth":
-                        var dateofbirth = new DateTime();
+                        var dateofbirth = default(DateTime);
                         if (DateTime.TryParse(this.data, out dateofbirth) && record.DateOfBirth == dateofbirth)
                         {
                             yield return record;
