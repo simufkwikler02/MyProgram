@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
-using FileCabinetApp.CommandHandlers;
 using ConsoleTables;
+using FileCabinetApp.CommandHandlers;
 
 namespace FileCabinetApp
 {

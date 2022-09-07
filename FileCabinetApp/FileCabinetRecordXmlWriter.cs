@@ -11,7 +11,7 @@ namespace FileCabinetApp
 {
     public class FileCabinetRecordXmlWriter
     {
-        private readonly XmlWriter? writer;
+        private readonly XmlWriter writer;
 
         public FileCabinetRecordXmlWriter(XmlWriter fstream)
         {
@@ -23,6 +23,5 @@ namespace FileCabinetApp
             XmlSerializer formatter = new XmlSerializer(typeof(List<FileCabinetRecord>));
             formatter.Serialize(this.writer, records);
         }
-
     }
 }

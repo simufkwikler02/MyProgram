@@ -7,22 +7,25 @@ namespace FileCabinetApp
 {
     public class FileCabinetServiceSnapshot
     {
-        private readonly List<FileCabinetRecord>? records;
+        private readonly List<FileCabinetRecord> records;
 
-        private List<FileCabinetRecord>? Records;
+        private List<FileCabinetRecord> recordsToRestore;
 
         public FileCabinetServiceSnapshot(List<FileCabinetRecord> records)
         {
             this.records = records;
+            this.recordsToRestore = new List<FileCabinetRecord>();
         }
 
         public FileCabinetServiceSnapshot()
         {
+            this.records = new List<FileCabinetRecord>();
+            this.recordsToRestore = new List<FileCabinetRecord>();
         }
 
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
-            return new ReadOnlyCollection<FileCabinetRecord>(this.Records);
+            return new ReadOnlyCollection<FileCabinetRecord>(this.recordsToRestore);
         }
 
         public void SaveToCsv(StreamWriter fstream)
@@ -45,7 +48,7 @@ namespace FileCabinetApp
             var scv = new FileCabinetRecordCsvReader(fstream);
             var list = scv.ReadAll();
 
-            this.Records = (List<FileCabinetRecord>)list;
+            this.recordsToRestore = (List<FileCabinetRecord>)list;
         }
 
         public void LoadFromXml(StreamReader fstream)
@@ -55,7 +58,7 @@ namespace FileCabinetApp
             var xml = new FileCabinetRecordXmlReader(XmlReader.Create(fstream, settings));
             var list = xml.ReadAll();
 
-            this.Records = (List<FileCabinetRecord>)list;
+            this.recordsToRestore = (List<FileCabinetRecord>)list;
         }
     }
 }

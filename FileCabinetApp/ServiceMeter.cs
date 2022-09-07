@@ -29,11 +29,11 @@ namespace FileCabinetApp
             return result;
         }
 
-        public int DeleteRecord(FileCabinetRecord newRecord)
+        public int DeleteRecord(FileCabinetRecord record)
         {
             this.time.Reset();
             this.time.Start();
-            var result = this.service.DeleteRecord(newRecord);
+            var result = this.service.DeleteRecord(record);
             this.time.Stop();
             Console.WriteLine($"DeleteRecord method execution duration is {this.time.ElapsedTicks} ticks.");
             return result;
@@ -119,7 +119,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        public FileCabinetRecord GetRecord(long position)
+        public FileCabinetRecord? GetRecord(long position)
         {
             this.time.Reset();
             this.time.Start();

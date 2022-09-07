@@ -9,7 +9,7 @@ namespace FileCabinetApp
 {
     public class FileCabinetRecordCsvWriter
     {
-        private readonly TextWriter? writer;
+        private readonly TextWriter writer;
 
         public FileCabinetRecordCsvWriter(TextWriter fstream)
         {
@@ -24,6 +24,5 @@ namespace FileCabinetApp
                 this.writer?.WriteLine($"{record.Id},{record.FirstName},{record.LastName},{record.DateOfBirth},{record.Property1},{record.Property2.ToString(CultureInfo.CreateSpecificCulture("en-GB"))},{record.Property3}");
             }
         }
-
     }
 }

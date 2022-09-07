@@ -34,7 +34,7 @@ namespace FileCabinetGenerator
             {
                 fileInfo = new FileInfo(path);
                 directory = fileInfo.Directory;
-                if (!directory.Exists)
+                if (!(directory?.Exists ?? false))
                 {
                     throw new ArgumentException(nameof(directory));
                 }

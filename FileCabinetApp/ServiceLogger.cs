@@ -208,7 +208,7 @@ namespace FileCabinetApp
             }
         }
 
-        public FileCabinetRecord GetRecord(long position)
+        public FileCabinetRecord? GetRecord(long position)
         {
             using (StreamWriter fstream = new StreamWriter("log.txt", true))
             {

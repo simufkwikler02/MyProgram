@@ -20,7 +20,7 @@ namespace FileCabinetApp
         public IList<FileCabinetRecord> ReadAll()
         {
             XmlSerializer formater = new XmlSerializer(typeof(FileCabinetRecord[]));
-            FileCabinetRecord[] records = formater.Deserialize(this.reader) as FileCabinetRecord[];
+            FileCabinetRecord[] records = formater.Deserialize(this.reader) as FileCabinetRecord[] ?? Array.Empty<FileCabinetRecord>();
             return new List<FileCabinetRecord>(records);
         }
     }
