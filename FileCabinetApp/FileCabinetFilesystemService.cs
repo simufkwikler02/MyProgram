@@ -8,14 +8,15 @@ using ConsoleTables;
 
 namespace FileCabinetApp
 {
-    public class FileCabinetFilesystemService : IFileCabinetService
+    public class FileCabinetFilesystemService : IFileCabinetService, IDisposable
     {
         private readonly string serviceRules = "file";
         private readonly IRecordValidator? validator;
-        private readonly int recordSize = 278;
+        private readonly long recordSize = 278;
 
         private int deleteRecords;
         private FileStream? fileStream;
+        private bool isDisposed;
 
         public FileCabinetFilesystemService(IRecordValidator? validator)
         {
@@ -23,7 +24,7 @@ namespace FileCabinetApp
             this.validator = validator;
             int i = 0;
             var poz = (int)this.fileStream.Seek(0, SeekOrigin.Begin);
-            while (fileStream.Position < fileStream.Length)
+            while (this.fileStream.Position < this.fileStream.Length)
             {
                 var record = this.ReadRecord();
                 if (record != null)
@@ -35,6 +36,17 @@ namespace FileCabinetApp
             this.deleteRecords = this.GetStat() - i;
         }
 
+        ~FileCabinetFilesystemService()
+        {
+            this.Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public string ServiceInfo()
         {
             return this.serviceRules;
@@ -42,7 +54,7 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            if (!this.validator.ValidateParametrs(newRecord))
+            if (!this.validator?.ValidateParametrs(newRecord) ?? false)
             {
                 throw new ArgumentException("Incorrect format", nameof(newRecord));
             }
@@ -63,7 +75,7 @@ namespace FileCabinetApp
                 while (true);
             }
 
-            var poz = (int)this.fileStream.Seek(0, SeekOrigin.End);
+            this.fileStream?.Seek(0, SeekOrigin.End);
             short status = 0;
 
             this.WriteRecord(status, newRecord);
@@ -97,7 +109,7 @@ namespace FileCabinetApp
             var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
 
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
-            while (fileStream.Position < fileStream.Length)
+            while (this.fileStream?.Position < this.fileStream?.Length)
             {
                 var record = this.ReadRecord();
                 if (record != null)
@@ -111,7 +123,7 @@ namespace FileCabinetApp
 
         public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
-            if (!this.validator.ValidateParametrs(recordUpdate))
+            if (!this.validator?.ValidateParametrs(recordUpdate) ?? false)
             {
                return -1;
             }
@@ -152,8 +164,8 @@ namespace FileCabinetApp
                 return 0;
             }
 
-            int numberRecords = (int)this.fileStream?.Length / this.recordSize;
-            return numberRecords - this.deleteRecords;
+            var numberRecords = this.fileStream?.Length ?? 0 / this.recordSize;
+            return (int)numberRecords - this.deleteRecords;
         }
 
         public bool IdExist(int id)
@@ -170,14 +182,14 @@ namespace FileCabinetApp
 
         public long FindIndex(FileCabinetRecord record)
         {
-            this.fileStream.Seek(0, SeekOrigin.Begin);
+            this.fileStream?.Seek(0, SeekOrigin.Begin);
 
-            while (this.fileStream.Position < this.fileStream.Length)
+            while (this.fileStream?.Position < this.fileStream?.Length)
             {
                 var newRecord = this.ReadRecord();
-                if (record != null && newRecord.Equals(record))
+                if (record != null && (newRecord?.Equals(record) ?? false))
                 {
-                    return this.fileStream.Position - this.recordSize;
+                    return this.fileStream?.Position ?? 0 - this.recordSize;
                 }
             }
 
@@ -224,9 +236,9 @@ namespace FileCabinetApp
             return new List<FileCabinetRecord>();
         }
 
-        public FileCabinetRecord GetRecord(long position)
+        public FileCabinetRecord? GetRecord(long position)
         {
-            this.fileStream.Seek(position, SeekOrigin.Begin);
+            this.fileStream?.Seek(position, SeekOrigin.Begin);
             return this.ReadRecord();
         }
 
@@ -242,7 +254,6 @@ namespace FileCabinetApp
 
         public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
-
             return new Enumerable(this.fileStream, lastName, "lastname");
         }
 
@@ -280,7 +291,7 @@ namespace FileCabinetApp
             var newlistbuf = new List<FileCabinetRecord>(newlist);
             foreach (var record in newlistbuf)
             {
-                if (!this.validator.ValidateParametrs(record))
+                if (!this.validator?.ValidateParametrs(record) ?? false)
                 {
                     Console.WriteLine($"Record validation error with id number {record.Id},record skipped");
                     newlist.Remove(record);
@@ -314,6 +325,21 @@ namespace FileCabinetApp
             }
 
             Console.WriteLine($"{newlist.Count} records were imported");
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+            }
+
+            this.fileStream?.Close();
+            this.isDisposed = true;
         }
 
         private void WriteRecord(short status, FileCabinetRecord newRecord)
@@ -359,11 +385,11 @@ namespace FileCabinetApp
             this.fileStream?.Write(buffer, 0, buffer.Length);
         }
 
-        private FileCabinetRecord ReadRecord()
+        private FileCabinetRecord? ReadRecord()
         {
-            FileCabinetRecord record = new FileCabinetRecord();
+            FileCabinetRecord? record = new FileCabinetRecord();
 
-            if (this.fileStream.Position == this.fileStream.Length)
+            if (this.fileStream?.Position == this.fileStream?.Length)
             {
                 return null;
             }

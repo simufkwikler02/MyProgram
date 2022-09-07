@@ -20,7 +20,7 @@ namespace FileCabinetApp
 
         public IEnumerable<FileCabinetRecord> FindRecords(string name, string value);
 
-        public FileCabinetRecord GetRecord(long position);
+        public FileCabinetRecord? GetRecord(long position);
 
         public long FindIndex(FileCabinetRecord record);
 
