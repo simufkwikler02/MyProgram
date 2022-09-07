@@ -54,7 +54,7 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            if (!this.validator?.ValidateParametrs(newRecord) ?? false)
+            if (!(this.validator?.ValidateParametrs(newRecord) ?? false))
             {
                 throw new ArgumentException("Incorrect format", nameof(newRecord));
             }
@@ -123,7 +123,7 @@ namespace FileCabinetApp
 
         public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
-            if (!this.validator?.ValidateParametrs(recordUpdate) ?? false)
+            if (!(this.validator?.ValidateParametrs(recordUpdate) ?? false))
             {
                return -1;
             }
@@ -291,7 +291,7 @@ namespace FileCabinetApp
             var newlistbuf = new List<FileCabinetRecord>(newlist);
             foreach (var record in newlistbuf)
             {
-                if (!this.validator?.ValidateParametrs(record) ?? false)
+                if (!(this.validator?.ValidateParametrs(record) ?? false))
                 {
                     Console.WriteLine($"Record validation error with id number {record.Id},record skipped");
                     newlist.Remove(record);

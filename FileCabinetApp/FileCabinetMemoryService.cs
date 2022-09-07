@@ -10,7 +10,7 @@ namespace FileCabinetApp
         private readonly string serviceRules = "memory";
         private readonly int deleteRecords;
 
-        private readonly Dictionary<int, List<FileCabinetRecord>> idDictionary = new Dictionary<int, List<FileCabinetRecord>>();
+        private readonly Dictionary<int, List<FileCabinetRecord>> idrecordDictionary = new Dictionary<int, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
@@ -18,8 +18,8 @@ namespace FileCabinetApp
         private readonly Dictionary<decimal, List<FileCabinetRecord>> property2Dictionary = new Dictionary<decimal, List<FileCabinetRecord>>();
         private readonly Dictionary<char, List<FileCabinetRecord>> property3Dictionary = new Dictionary<char, List<FileCabinetRecord>>();
 
-        private readonly Dictionary<string, IEnumerable<FileCabinetRecord>> FindRecordsDictionary = new Dictionary<string, IEnumerable<FileCabinetRecord>>();
-        private readonly Dictionary<FileCabinetRecord, long> FindIndexDictionary = new Dictionary<FileCabinetRecord, long>();
+        private readonly Dictionary<string, IEnumerable<FileCabinetRecord>> findRecordsDictionary = new Dictionary<string, IEnumerable<FileCabinetRecord>>();
+        private readonly Dictionary<FileCabinetRecord, long> findIndexDictionary = new Dictionary<FileCabinetRecord, long>();
 
         public FileCabinetMemoryService(IRecordValidator? validator)
         {
@@ -33,7 +33,7 @@ namespace FileCabinetApp
 
         public int CreateRecord(FileCabinetRecord newRecord)
         {
-            if (!this.validator.ValidateParametrs(newRecord))
+            if (!this.validator?.ValidateParametrs(newRecord) ?? false)
             {
                 throw new ArgumentException("Incorrect format", nameof(newRecord));
             }
@@ -57,8 +57,8 @@ namespace FileCabinetApp
             this.list.Add(newRecord);
             this.AddToDictionary(newRecord);
 
-            this.FindIndexDictionary.Clear();
-            this.FindRecordsDictionary.Clear();
+            this.findIndexDictionary.Clear();
+            this.findRecordsDictionary.Clear();
             return newRecord.Id;
         }
 
@@ -93,65 +93,65 @@ namespace FileCabinetApp
 
         public IEnumerable<FileCabinetRecord> FindRecords(string name, string value)
         {
-            if (this.FindRecordsDictionary.ContainsKey(name + value))
+            if (this.findRecordsDictionary.ContainsKey(name + value))
             {
-                return this.FindRecordsDictionary[name + value];
+                return this.findRecordsDictionary[name + value];
             }
 
             if (name.Equals("id", StringComparison.OrdinalIgnoreCase))
             {
-                this.FindRecordsDictionary.Add(name + value, this.FindById(value));
+                this.findRecordsDictionary.Add(name + value, this.FindById(value));
                 return this.FindById(value);
             }
 
             if (name.Equals("firstname", StringComparison.OrdinalIgnoreCase))
             {
-                this.FindRecordsDictionary.Add(name + value, this.FindByFirstName(value));
+                this.findRecordsDictionary.Add(name + value, this.FindByFirstName(value));
                 return this.FindByFirstName(value);
             }
 
             if (name.Equals("lastname", StringComparison.OrdinalIgnoreCase))
             {
-                this.FindRecordsDictionary.Add(name + value, this.FindByLastName(value));
+                this.findRecordsDictionary.Add(name + value, this.FindByLastName(value));
                 return this.FindByLastName(value);
             }
 
             if (name.Equals("dateofbirth", StringComparison.OrdinalIgnoreCase))
             {
-                this.FindRecordsDictionary.Add(name + value, this.FindByDateoOfBirth(value));
+                this.findRecordsDictionary.Add(name + value, this.FindByDateoOfBirth(value));
                 return this.FindByDateoOfBirth(value);
             }
 
             if (name.Equals("Property1", StringComparison.OrdinalIgnoreCase))
             {
-                this.FindRecordsDictionary.Add(name + value, this.FindByProperty1(value));
+                this.findRecordsDictionary.Add(name + value, this.FindByProperty1(value));
                 return this.FindByProperty1(value);
             }
 
             if (name.Equals("Property2", StringComparison.OrdinalIgnoreCase))
             {
-                this.FindRecordsDictionary.Add(name + value, this.FindByProperty2(value));
+                this.findRecordsDictionary.Add(name + value, this.FindByProperty2(value));
                 return this.FindByProperty2(value);
             }
 
             if (name.Equals("Property3", StringComparison.OrdinalIgnoreCase))
             {
-                this.FindRecordsDictionary.Add(name + value, this.FindByProperty3(value));
+                this.findRecordsDictionary.Add(name + value, this.FindByProperty3(value));
                 return this.FindByProperty3(value);
             }
 
-            this.FindRecordsDictionary.Add(name + value, new List<FileCabinetRecord>());
+            this.findRecordsDictionary.Add(name + value, new List<FileCabinetRecord>());
             return new List<FileCabinetRecord>();
         }
 
         public long FindIndex(FileCabinetRecord record)
         {
-            if (this.FindIndexDictionary.ContainsKey(record))
+            if (this.findIndexDictionary.ContainsKey(record))
             {
-                return this.FindIndexDictionary[record];
+                return this.findIndexDictionary[record];
             }
 
-            this.FindIndexDictionary.Add(record, this.list.FindIndex(x => x == record));
+            this.findIndexDictionary.Add(record, this.list.FindIndex(x => x == record));
             return this.list.FindIndex(x => x == record);
         }
 
@@ -172,7 +172,7 @@ namespace FileCabinetApp
 
         public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
-            if (!this.validator.ValidateParametrs(recordUpdate))
+            if (!(this.validator?.ValidateParametrs(recordUpdate) ?? false))
             {
                 return -1;
             }
@@ -181,8 +181,8 @@ namespace FileCabinetApp
             this.list[(int)position] = recordUpdate;
             this.AddToDictionary(recordUpdate);
 
-            this.FindIndexDictionary.Clear();
-            this.FindRecordsDictionary.Clear();
+            this.findIndexDictionary.Clear();
+            this.findRecordsDictionary.Clear();
             return recordUpdate.Id;
         }
 
@@ -196,8 +196,8 @@ namespace FileCabinetApp
             this.list.Remove(record);
             this.RemoveFromDictionary(record);
 
-            this.FindIndexDictionary.Clear();
-            this.FindRecordsDictionary.Clear();
+            this.findIndexDictionary.Clear();
+            this.findRecordsDictionary.Clear();
             return record.Id;
         }
 
@@ -214,7 +214,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return this.idDictionary[Convert.ToInt32(id, CultureInfo.CurrentCulture)];
+            return this.idrecordDictionary[Convert.ToInt32(id, CultureInfo.CurrentCulture)];
         }
 
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
@@ -288,7 +288,7 @@ namespace FileCabinetApp
             var newlist = new List<FileCabinetRecord>(records);
             foreach (var record in newlist)
             {
-                if (!this.validator.ValidateParametrs(record))
+                if (!(this.validator?.ValidateParametrs(record) ?? false))
                 {
                     Console.WriteLine($"Record validation error with id number {record.Id},record skipped");
                     newlist.Remove(record);
@@ -320,12 +320,12 @@ namespace FileCabinetApp
 
         private void AddToDictionary(FileCabinetRecord record)
         {
-            if (!this.idDictionary.ContainsKey(record.Id))
+            if (!this.idrecordDictionary.ContainsKey(record.Id))
             {
-                this.idDictionary.Add(record.Id, new List<FileCabinetRecord>());
+                this.idrecordDictionary.Add(record.Id, new List<FileCabinetRecord>());
             }
 
-            this.idDictionary[record.Id].Add(record);
+            this.idrecordDictionary[record.Id].Add(record);
 
             if (!this.firstNameDictionary.ContainsKey(record.FirstName))
             {
@@ -372,7 +372,7 @@ namespace FileCabinetApp
 
         private void RemoveFromDictionary(FileCabinetRecord record)
         {
-            this.idDictionary[record.Id].Remove(record);
+            this.idrecordDictionary[record.Id].Remove(record);
             this.firstNameDictionary[record.FirstName].Remove(record);
             this.lastNameDictionary[record.LastName].Remove(record);
             this.dateOfBirthDictionary[record.DateOfBirth].Remove(record);
