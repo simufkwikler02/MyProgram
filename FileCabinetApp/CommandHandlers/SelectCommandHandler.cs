@@ -11,12 +11,17 @@ namespace FileCabinetApp.CommandHandlers
         private const string HintMessageSelect = "Use: select id, firstname, lastname, dateofbirth, Property1 ... Property3 where firstname = '[value]' [and/or] lastname = '[value]'";
         private Action<string[]?, IEnumerable<FileCabinetRecord>?> printer;
 
+        /// <summary>Initializes a new instance of the <see cref="SelectCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
+        /// <param name="printer">The <see cref="Action" /> printer.</param>
         public SelectCommandHandler(IFileCabinetService? fileCabinetService, Action<string[]?, IEnumerable<FileCabinetRecord>?> printer)
             : base(fileCabinetService)
         {
             this.printer = printer;
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command?.Equals("select", StringComparison.OrdinalIgnoreCase) ?? false)

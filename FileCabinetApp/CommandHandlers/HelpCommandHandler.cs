@@ -28,6 +28,8 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "select", "print records", "The 'select' command prints selected records to the console" },
         };
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("help", StringComparison.OrdinalIgnoreCase))
@@ -62,6 +64,11 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
+        /// <summary>Finds the most similar commands.</summary>
+        /// <param name="com">The incorrect command.</param>
+        /// <returns>
+        /// List of the most similar commands.
+        /// </returns>
         public List<string> HelpComand(string com)
         {
             var command = new List<string>();

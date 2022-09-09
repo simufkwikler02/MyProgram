@@ -8,11 +8,15 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class StatCommandHandler : ServiceCommandHandlerBase
     {
+        /// <summary>Initializes a new instance of the <see cref="StatCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
         public StatCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command?.Equals("stat", StringComparison.OrdinalIgnoreCase) ?? false)

@@ -11,12 +11,17 @@ namespace FileCabinetApp.CommandHandlers
     {
         private IRecordValidator? recordValidator;
 
+        /// <summary>Initializes a new instance of the <see cref="CreateCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
+        /// <param name="validate">The service validator.</param>
         public CreateCommandHandler(IFileCabinetService? fileCabinetService, IRecordValidator? validate)
             : base(fileCabinetService)
         {
             this.recordValidator = validate;
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("create", StringComparison.OrdinalIgnoreCase))

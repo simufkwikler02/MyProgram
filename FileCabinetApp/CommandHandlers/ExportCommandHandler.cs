@@ -11,11 +11,15 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string HintMessageExport = "Use: export [csv | xml] [directory]";
 
+        /// <summary>Initializes a new instance of the <see cref="ExportCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
         public ExportCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("export", StringComparison.OrdinalIgnoreCase))
@@ -64,6 +68,8 @@ namespace FileCabinetApp.CommandHandlers
                                 return;
                         }
                     }
+
+                    fstream = new StreamWriter(path, false);
                 }
                 catch
                 {
@@ -72,7 +78,6 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                fstream = new StreamWriter(path, false);
                 var snapshot = this.Service?.MakeSnapshot();
                 switch (command.ToLower(CultureInfo.CurrentCulture))
                 {
