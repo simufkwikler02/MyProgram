@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "select".
+    /// </summary>
     public class SelectCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageSelect = "Use: select id, firstname, lastname, dateofbirth, Property1 ... Property3 where firstname = '[value]' [and/or] lastname = '[value]'";

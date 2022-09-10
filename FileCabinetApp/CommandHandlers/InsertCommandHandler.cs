@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "insert".
+    /// </summary>
     public class InsertCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageInsert = "Use: insert (id, firstname, lastname, dateofbirth, Property1, Property2, Property3) values ('[value]', '[value]', ...)";

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "import".
+    /// </summary>
     public class ImportCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageImport = "Use: import [csv | xml] [directory]";

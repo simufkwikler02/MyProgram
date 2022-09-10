@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "delete".
+    /// </summary>
     public class DeleteCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageDelete = "Use: delete where [name] = '[value]'";

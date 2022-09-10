@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "export".
+    /// </summary>
     public class ExportCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageExport = "Use: export [csv | xml] [directory]";

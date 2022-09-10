@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>
-    /// 
+    ///  Provides a set of properties that are used to represent command input to the console.
     /// </summary>
     public class AppCommandRequest
     {

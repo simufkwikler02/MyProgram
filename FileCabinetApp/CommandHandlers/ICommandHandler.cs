@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler interface.
+    /// </summary>
     public interface ICommandHandler
     {
         /// <summary>Sets the next command handler.</summary>

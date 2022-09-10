@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "stat".
+    /// </summary>
     public class StatCommandHandler : ServiceCommandHandlerBase
     {
         /// <summary>Initializes a new instance of the <see cref="StatCommandHandler" /> class.</summary>

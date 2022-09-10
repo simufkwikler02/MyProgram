@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "create".
+    /// </summary>
     public class CreateCommandHandler : ServiceCommandHandlerBase
     {
         private IRecordValidator? recordValidator;

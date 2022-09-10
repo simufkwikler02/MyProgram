@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "exit".
+    /// </summary>
     public class ExitCommandHandler : CommandHandlerBase
     {
         private Action exit;

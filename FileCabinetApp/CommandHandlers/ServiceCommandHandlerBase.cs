@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///  Represents an abstract command handler with a property <see cref="Service" />.
+    /// </summary>
     public abstract class ServiceCommandHandlerBase : CommandHandlerBase
     {
         /// <summary>Initializes a new instance of the <see cref="ServiceCommandHandlerBase" /> class.</summary>

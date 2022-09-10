@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents an abstract class for command handlers.
+    /// </summary>
     public abstract class CommandHandlerBase : ICommandHandler
     {
         private ICommandHandler? nextHandler;

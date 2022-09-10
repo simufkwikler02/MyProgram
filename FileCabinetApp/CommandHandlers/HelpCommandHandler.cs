@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "help".
+    /// </summary>
     public class HelpCommandHandler : CommandHandlerBase
     {
         private const int CommandHelpIndex = 0;

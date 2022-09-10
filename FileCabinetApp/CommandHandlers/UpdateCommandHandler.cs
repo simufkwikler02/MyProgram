@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "update".
+    /// </summary>
     public class UpdateCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageUpdate = "Use: update set [name] = '[value]', [name] = '[value]' where [name] = '[value]'";

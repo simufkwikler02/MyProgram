@@ -6,6 +6,9 @@ using FileCabinetApp.CommandHandlers;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    ///   The main class.
+    /// </summary>
     public static class Program
     {
         private const string DeveloperName = "Azemsha Oleg";
@@ -15,6 +18,8 @@ namespace FileCabinetApp
         private static IFileCabinetService? fileCabinetService;
         private static bool isRunning = true;
 
+        /// <summary>Defines the entry point of the application.</summary>
+        /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
             Program.FileCabinetServiceCreate(args);
