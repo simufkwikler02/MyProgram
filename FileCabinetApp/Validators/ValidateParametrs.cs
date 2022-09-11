@@ -8,8 +8,12 @@ using Microsoft.Extensions.Configuration.Json;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    ///   The class that contains parameters of the validation rules.
+    /// </summary>
     public class ValidateParametrs
     {
+        /// <summary>Initializes a new instance of the <see cref="ValidateParametrs" /> class with default settings.</summary>
         public ValidateParametrs()
         {
             this.ValidateInfo = "default";
@@ -26,30 +30,55 @@ namespace FileCabinetApp
             this.BanSymbols = new char[] { 'h', 'e', 'l', 'p' };
         }
 
+        /// <summary>Gets or sets the name of the validation rules.</summary>
+        /// <value>The name of the validation rules <see cref="string"/>.</value>
         public string ValidateInfo { get; set; }
 
+        /// <summary>Gets or sets the minimum length of the first name.</summary>
+        /// <value>The minimum length of the first name <see cref="int"/>.</value>
         public int MinLengthFirstName { get; set; }
 
+        /// <summary>Gets or sets the maximum length of the first name.</summary>
+        /// <value>The maximum length of the first name <see cref="int"/>.</value>
         public int MaxLengthFirstName { get; set; }
 
+        /// <summary>Gets or sets the minimum length of the last name.</summary>
+        /// <value>The minimum length of the last name <see cref="int"/>.</value>
         public int MinLengthLastName { get; set; }
 
+        /// <summary>Gets or sets the maximum length of the last name.</summary>
+        /// <value>The maximum length of the last name <see cref="int"/>.</value>
         public int MaxLengthLastName { get; set; }
 
+        /// <summary>Gets or sets the minimum value date of birth.</summary>
+        /// <value>The minimum value date of birth <see cref="DateTime"/>.</value>
         public DateTime From { get; set; }
 
+        /// <summary>Gets or sets the maximum value date of birth.</summary>
+        /// <value>The maximum value date of birth <see cref="DateTime"/>.</value>
         public DateTime To { get; set; }
 
+        /// <summary>Gets or sets the minimum value of the property1.</summary>
+        /// <value>The minimum value of the property1 <see cref="short"/>.</value>
         public short MinProperty1 { get; set; }
 
+        /// <summary>Gets or sets the maximum value of the property1.</summary>
+        /// <value>The maximum value of the property1 <see cref="short"/>.</value>
         public short MaxProperty1 { get; set; }
 
+        /// <summary>Gets or sets the minimum value of the property2.</summary>
+        /// <value>The minimum value of the property2 <see cref="decimal"/>.</value>
         public decimal MinProperty2 { get; set; }
 
+        /// <summary>Gets or sets the maximum value of the property2.</summary>
+        /// <value>The maximum value of the property2 <see cref="decimal"/>.</value>
         public decimal MaxProperty2 { get; set; }
 
+        /// <summary>Gets or sets the ban symbols for the property3.</summary>
+        /// <value>The ban symbols for the property3 <see langword="char[]"/>.</value>
         public char[] BanSymbols { get; set; }
 
+        /// <summary>Sets the default parameters of the validation rules.</summary>
         public void SetDefaultParametrs()
         {
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("validation-rules.json").Build();
@@ -69,6 +98,7 @@ namespace FileCabinetApp
             this.ValidateInfo = "default";
         }
 
+        /// <summary>Sets the custom parameters of the validation rules.</summary>
         public void SetCustomParametrs()
         {
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("validation-rules.json").Build();
