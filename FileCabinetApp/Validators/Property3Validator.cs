@@ -23,7 +23,7 @@ namespace FileCabinetApp
         /// <summary>Validates the property3 in a record.</summary>
         /// <param name="record">The record.</param>
         /// <returns>
-        ///   <see langword="true"/> if the record passed validation, <see langword="false"/> otherwise  .
+        ///   <see langword="true"/> if the record passed validation, <see langword="false"/> otherwise.
         /// </returns>
         public bool ValidateParametrs(FileCabinetRecord record)
         {

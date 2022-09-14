@@ -3,6 +3,10 @@ using System.Globalization;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    ///    Represents the file cabinet service with a set of methods that can interact with records.
+    /// </summary>
+    /// <remarks> That class uses a memory to store data.</remarks>
     public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
@@ -21,16 +25,28 @@ namespace FileCabinetApp
         private readonly Dictionary<string, IEnumerable<FileCabinetRecord>> findRecordsDictionary = new Dictionary<string, IEnumerable<FileCabinetRecord>>();
         private readonly Dictionary<FileCabinetRecord, long> findIndexDictionary = new Dictionary<FileCabinetRecord, long>();
 
+        /// <summary>Initializes a new instance of the <see cref="FileCabinetMemoryService" /> class.</summary>
+        /// <param name="validator">The validator.</param>
         public FileCabinetMemoryService(IRecordValidator? validator)
         {
             this.validator = validator;
         }
 
+        /// <summary>Return the name of the validation rules.</summary>
+        /// <returns>
+        ///   The name of the validation rules <see cref="string" />.
+        /// </returns>
         public string ServiceInfo()
         {
             return this.serviceRules;
         }
 
+        /// <summary>Adds a new record to the list.</summary>
+        /// <param name="newRecord">The new record.</param>
+        /// <returns>
+        ///   New record id.
+        /// </returns>
+        /// <exception cref="System.ArgumentException"> Validation fail - newRecord. </exception>
         public int CreateRecord(FileCabinetRecord newRecord)
         {
             if (!this.validator?.ValidateParametrs(newRecord) ?? false)
@@ -62,6 +78,10 @@ namespace FileCabinetApp
             return newRecord.Id;
         }
 
+        /// <summary>Gets all records.</summary>
+        /// <returns>
+        ///   All records <see langword="ReadOnlyCollection" />.
+        /// </returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
             if (this.list.Count == 0)
@@ -80,6 +100,11 @@ namespace FileCabinetApp
             }
         }
 
+        /// <summary>Identifiers the exist.</summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        ///   The position of the record.
+        /// </returns>
         public bool IdExist(int id)
         {
             var index = this.list.FindIndex(x => x.Id == id);
@@ -91,6 +116,12 @@ namespace FileCabinetApp
             return true;
         }
 
+        /// <summary>Finds the records by name and value.</summary>
+        /// <param name="name">The name of property in the record.</param>
+        /// <param name="value">The value of property in the record, which wiil be found.</param>
+        /// <returns>
+        ///   Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindRecords(string name, string value)
         {
             if (this.findRecordsDictionary.ContainsKey(name + value))
@@ -144,6 +175,11 @@ namespace FileCabinetApp
             return new List<FileCabinetRecord>();
         }
 
+        /// <summary>Finds the record and return his position.</summary>
+        /// <param name="record">The record.</param>
+        /// <returns>
+        ///   The position of the record.
+        /// </returns>
         public long FindIndex(FileCabinetRecord record)
         {
             if (this.findIndexDictionary.ContainsKey(record))
@@ -155,21 +191,40 @@ namespace FileCabinetApp
             return this.list.FindIndex(x => x == record);
         }
 
+        /// <summary>Gets the record by position.</summary>
+        /// <param name="position">The position.</param>
+        /// <returns>
+        ///  The record by position.
+        /// </returns>
         public FileCabinetRecord GetRecord(long position)
         {
             return this.list[(int)position];
         }
 
+        /// <summary>Gets count of records.</summary>
+        /// <returns>
+        ///   Count of records.
+        /// </returns>
         public int GetStat()
         {
             return this.list.Count;
         }
 
+        /// <summary>Gets count of records deleted.</summary>
+        /// <returns>
+        ///   Count of records deleted.
+        /// </returns>
         public int GetStatDelete()
         {
             return this.deleteRecords;
         }
 
+        /// <summary>Updates the record.</summary>
+        /// <param name="position">Position of the old record.</param>
+        /// <param name="recordUpdate">A new record that will overwrite the old record.</param>
+        /// <returns>
+        ///   Updated record id.
+        /// </returns>
         public int UpdateRecord(long position, FileCabinetRecord recordUpdate)
         {
             if (!(this.validator?.ValidateParametrs(recordUpdate) ?? false))
@@ -186,6 +241,11 @@ namespace FileCabinetApp
             return recordUpdate.Id;
         }
 
+        /// <summary>Deletes the record.</summary>
+        /// <param name="record">The record that should be deleted.</param>
+        /// <returns>
+        ///   Deleted record id.
+        /// </returns>
         public int DeleteRecord(FileCabinetRecord record)
         {
             if (this.FindIndex(record) == -1)
@@ -201,12 +261,18 @@ namespace FileCabinetApp
             return record.Id;
         }
 
+        /// <summary>Purges deleted records.</summary>
         public void PurgeRecords()
         {
             Console.WriteLine("Error -> This command works only with 'file' type of service");
             return;
         }
 
+        /// <summary>Finds the records by identifier.</summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        ///   Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindById(string id)
         {
             if (id is null)
@@ -217,6 +283,11 @@ namespace FileCabinetApp
             return this.idrecordDictionary[Convert.ToInt32(id, CultureInfo.CurrentCulture)];
         }
 
+        /// <summary>Finds the records by first name.</summary>
+        /// <param name="firstName">The first name.</param>
+        /// <returns>
+        ///   Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             if (firstName is null)
@@ -227,6 +298,11 @@ namespace FileCabinetApp
             return this.firstNameDictionary[firstName];
         }
 
+        /// <summary>Finds the records by last name.</summary>
+        /// <param name="lastName">The last name.</param>
+        /// <returns>
+        ///    Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             if (lastName is null)
@@ -237,6 +313,11 @@ namespace FileCabinetApp
             return this.lastNameDictionary[lastName];
         }
 
+        /// <summary>Finds the records by date of birth.</summary>
+        /// <param name="dateofbirth">The date of birth.</param>
+        /// <returns>
+        ///    Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindByDateoOfBirth(string dateofbirth)
         {
             if (dateofbirth is null)
@@ -247,6 +328,11 @@ namespace FileCabinetApp
             return this.dateOfBirthDictionary[DateTime.Parse(dateofbirth, CultureInfo.CurrentCulture)];
         }
 
+        /// <summary>Finds the records by property1.</summary>
+        /// <param name="property1">The property1.</param>
+        /// <returns>
+        ///    Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindByProperty1(string property1)
         {
             if (property1 is null)
@@ -257,6 +343,11 @@ namespace FileCabinetApp
             return this.property1Dictionary[Convert.ToInt16(property1, CultureInfo.CurrentCulture)];
         }
 
+        /// <summary>Finds the records by property2.</summary>
+        /// <param name="property2">The property2.</param>
+        /// <returns>
+        ///   Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindByProperty2(string property2)
         {
             if (property2 is null)
@@ -267,6 +358,11 @@ namespace FileCabinetApp
             return this.property2Dictionary[Convert.ToDecimal(property2, CultureInfo.CurrentCulture)];
         }
 
+        /// <summary>Finds the records by property3.</summary>
+        /// <param name="property3">The property3.</param>
+        /// <returns>
+        ///    Returns an enumerator.
+        /// </returns>
         public IEnumerable<FileCabinetRecord> FindByProperty3(string property3)
         {
             if (property3 is null)
@@ -277,11 +373,17 @@ namespace FileCabinetApp
             return this.property3Dictionary[Convert.ToChar(property3, CultureInfo.CurrentCulture)];
         }
 
+        /// <summary>Makes the snapshot of file cabinet service.</summary>
+        /// <returns>
+        ///   The snapshot of file cabinet service <see cref="FileCabinetServiceSnapshot" />.
+        /// </returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             return new FileCabinetServiceSnapshot(this.list);
         }
 
+        /// <summary>Restores the specified snapshot.</summary>
+        /// <param name="snapshot">The snapshot of file cabinet service.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             var records = snapshot.GetRecords();
@@ -318,6 +420,8 @@ namespace FileCabinetApp
             Console.WriteLine($"{newlist.Count} records were imported");
         }
 
+        /// <summary>Adds record to search dictionaries.</summary>
+        /// <param name="record">The record.</param>
         private void AddToDictionary(FileCabinetRecord record)
         {
             if (!this.idrecordDictionary.ContainsKey(record.Id))
@@ -370,6 +474,8 @@ namespace FileCabinetApp
             this.property3Dictionary[record.Property3].Add(record);
         }
 
+        /// <summary>Removes record from search dictionaries.</summary>
+        /// <param name="record">The record.</param>
         private void RemoveFromDictionary(FileCabinetRecord record)
         {
             this.idrecordDictionary[record.Id].Remove(record);
