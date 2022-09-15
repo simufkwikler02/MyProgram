@@ -103,7 +103,7 @@ namespace FileCabinetApp
         /// <summary>Identifiers the exist.</summary>
         /// <param name="id">The identifier.</param>
         /// <returns>
-        ///   The position of the record.
+        ///   <see langword="true"/> if the record with this id exists, <see langword="false"/> otherwise.
         /// </returns>
         public bool IdExist(int id)
         {

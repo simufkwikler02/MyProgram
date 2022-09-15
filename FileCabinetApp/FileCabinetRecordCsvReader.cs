@@ -7,15 +7,24 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    ///   Represents the CSV reader class with a set methods that can read saved records from a file.
+    /// </summary>
     public class FileCabinetRecordCsvReader
     {
         private StreamReader reader;
 
+        /// <summary>Initializes a new instance of the <see cref="FileCabinetRecordCsvReader" /> class.</summary>
+        /// <param name="fstream">The fstream.</param>
         public FileCabinetRecordCsvReader(StreamReader fstream)
         {
             this.reader = fstream;
         }
 
+        /// <summary>Reads all records from CSV file.</summary>
+        /// <returns>
+        ///  The records <see langword="IList" />.
+        /// </returns>
         public IList<FileCabinetRecord> ReadAll()
         {
             string? line;

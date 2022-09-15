@@ -100,7 +100,9 @@ namespace FileCabinetApp
             return newRecord.Id;
         }
 
-        /// <summary>Purges deleted records.</summary>
+        /// <summary>
+        /// Purges deleted records.
+        /// </summary>
         public void PurgeRecords()
         {
             var records = this.GetRecords();
@@ -213,7 +215,7 @@ namespace FileCabinetApp
         /// <summary>Identifiers the exist.</summary>
         /// <param name="id">The identifier.</param>
         /// <returns>
-        ///   <see langword="true"/> if the record passed validation, <see langword="false"/> otherwise.
+        ///   <see langword="true"/> if the record with this id exists, <see langword="false"/> otherwise.
         /// </returns>
         public bool IdExist(int id)
         {
