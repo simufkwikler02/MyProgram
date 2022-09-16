@@ -872,6 +872,24 @@
             <summary>Defines the entry point of the application.</summary>
             <param name="args">The arguments.</param>
         </member>
+        <member name="M:FileCabinetApp.Program.FileCabinetServiceCreate(System.String[])">
+            <summary>Reads and analyzes the command line arguments.</summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:FileCabinetApp.Program.ValidationRules(System.String[])">
+            <summary>Reads and analyzes the command line arguments.</summary>
+            <param name="input">The arguments.</param>
+        </member>
+        <member name="M:FileCabinetApp.Program.FileCabinetServiceRules(System.String[])">
+            <summary>Reads and analyzes the command line arguments.</summary>
+            <param name="input">The arguments.</param>
+        </member>
+        <member name="M:FileCabinetApp.Program.PrintTable(System.String[],System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord})">
+            <summary>Prints the records.</summary>
+            <param name="tableName">The table header.</param>
+            <param name="record">The record.</param>
+            <exception cref="T:System.ArgumentNullException">record or tableName.</exception>
+        </member>
         <member name="T:FileCabinetApp.Properties.Resources">
             <summary>
               Класс ресурса со строгой типизацией для поиска локализованных строк и т.д.
