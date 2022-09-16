@@ -7,15 +7,22 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "export".
+    /// </summary>
     public class ExportCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageExport = "Use: export [csv | xml] [directory]";
 
+        /// <summary>Initializes a new instance of the <see cref="ExportCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
         public ExportCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("export", StringComparison.OrdinalIgnoreCase))
@@ -23,7 +30,7 @@ namespace FileCabinetApp.CommandHandlers
                 var inputs = request.Parameters != null && request.Parameters != string.Empty ? request.Parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
                 if (inputs.Length <= 1)
                 {
-                    PrintMissedCommandInfo(request.Parameters);
+                    PrintMissedCommandInfo(request.Parameters ?? string.Empty);
                     Console.WriteLine(HintMessageExport);
                     return;
                 }
@@ -39,7 +46,7 @@ namespace FileCabinetApp.CommandHandlers
                 {
                     fileInfo = new FileInfo(path);
                     directory = fileInfo.Directory;
-                    if (!directory.Exists)
+                    if (!directory?.Exists ?? false)
                     {
                         throw new ArgumentException(nameof(directory));
                     }
@@ -64,6 +71,8 @@ namespace FileCabinetApp.CommandHandlers
                                 return;
                         }
                     }
+
+                    fstream = new StreamWriter(path, false);
                 }
                 catch
                 {
@@ -72,15 +81,14 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                fstream = new StreamWriter(path, false);
-                var snapshot = this.service.MakeSnapshot();
+                var snapshot = this.Service?.MakeSnapshot();
                 switch (command.ToLower(CultureInfo.CurrentCulture))
                 {
                     case "csv":
-                        snapshot.SaveToCsv(fstream);
+                        snapshot?.SaveToCsv(fstream);
                         break;
                     case "xml":
-                        snapshot.SaveToXml(fstream);
+                        snapshot?.SaveToXml(fstream);
                         break;
                     default:
                         PrintMissedCommandInfo(command);

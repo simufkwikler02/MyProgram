@@ -7,15 +7,22 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "import".
+    /// </summary>
     public class ImportCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageImport = "Use: import [csv | xml] [directory]";
 
+        /// <summary>Initializes a new instance of the <see cref="ImportCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
         public ImportCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("import", StringComparison.OrdinalIgnoreCase))
@@ -23,7 +30,7 @@ namespace FileCabinetApp.CommandHandlers
                 var inputs = request.Parameters != null && request.Parameters != string.Empty ? request.Parameters.Split(' ', 2) : new string[] { string.Empty, string.Empty };
                 if (inputs.Length <= 1)
                 {
-                    PrintMissedCommandInfo(request.Parameters);
+                    PrintMissedCommandInfo(request.Parameters ?? string.Empty);
                     Console.WriteLine(HintMessageImport);
                     return;
                 }
@@ -42,11 +49,11 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         case "csv":
                             snapshot.LoadFromCsv(new StreamReader(fstream));
-                            this.service.Restore(snapshot);
+                            this.Service?.Restore(snapshot);
                             break;
                         case "xml":
                             snapshot.LoadFromXml(new StreamReader(fstream));
-                            this.service.Restore(snapshot);
+                            this.Service?.Restore(snapshot);
                             break;
                         default:
                             PrintMissedCommandInfo(command);

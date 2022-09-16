@@ -74,11 +74,11 @@
     <Rule Id="CA2242" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1011" Action="None" />
     <Rule Id="SA1200" Action="None" />
     <Rule Id="SA1305" Action="Warning" />
     <Rule Id="SA1400" Action="Error" />
     <Rule Id="SA1412" Action="Warning" />
-    <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1609" Action="Warning" />
     <Rule Id="SA1610" Action="None" />
     <Rule Id="SA1633" Action="None" />

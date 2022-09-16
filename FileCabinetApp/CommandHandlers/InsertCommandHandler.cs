@@ -7,15 +7,22 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "insert".
+    /// </summary>
     public class InsertCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageInsert = "Use: insert (id, firstname, lastname, dateofbirth, Property1, Property2, Property3) values ('[value]', '[value]', ...)";
 
+        /// <summary>Initializes a new instance of the <see cref="InsertCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
         public InsertCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("insert", StringComparison.OrdinalIgnoreCase))
@@ -61,7 +68,7 @@ namespace FileCabinetApp.CommandHandlers
                     ind = Array.FindIndex(name, i => i.Equals("Property3", StringComparison.OrdinalIgnoreCase));
                     record.Property3 = Convert.ToChar(value[ind], CultureInfo.CurrentCulture);
 
-                    var number = this.service?.CreateRecord(record);
+                    var number = this.Service?.CreateRecord(record);
                     Console.WriteLine($"Record #{number} is created.");
                 }
                 catch

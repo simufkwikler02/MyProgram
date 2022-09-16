@@ -6,88 +6,94 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "select".
+    /// </summary>
     public class SelectCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageSelect = "Use: select id, firstname, lastname, dateofbirth, Property1 ... Property3 where firstname = '[value]' [and/or] lastname = '[value]'";
-        private Action<string[], IEnumerable<FileCabinetRecord>> printer;
+        private Action<string[]?, IEnumerable<FileCabinetRecord>?> printer;
 
-        public SelectCommandHandler(IFileCabinetService? fileCabinetService, Action<string[], IEnumerable<FileCabinetRecord>> printer)
+        /// <summary>Initializes a new instance of the <see cref="SelectCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
+        /// <param name="printer">The <see cref="Action" /> printer.</param>
+        public SelectCommandHandler(IFileCabinetService? fileCabinetService, Action<string[]?, IEnumerable<FileCabinetRecord>?> printer)
             : base(fileCabinetService)
         {
             this.printer = printer;
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
-            if (request.Command.Equals("select", StringComparison.OrdinalIgnoreCase))
+            if (request.Command?.Equals("select", StringComparison.OrdinalIgnoreCase) ?? false)
             {
-                var data = request.Parameters.Replace("select", string.Empty, StringComparison.CurrentCulture).Replace("'", string.Empty, StringComparison.CurrentCulture).Split("where", StringSplitOptions.TrimEntries);
-
-                var select = data[0].Split(new char[] { ',' }, StringSplitOptions.TrimEntries);
-                string where;
-                if (data.Length == 1)
-                {
-                    where = string.Empty;
-                }
-                else
-                {
-                    where = data[1];
-                }
-
-                var whereParametrs = where.Split(new string[] { "and", "or" }, StringSplitOptions.TrimEntries);
-                List<IEnumerable<FileCabinetRecord>> parameters = new List<IEnumerable<FileCabinetRecord>>();
-                foreach (var param in whereParametrs)
-                {
-                    var nameValue = param.Split('=', StringSplitOptions.TrimEntries);
-                    if (nameValue.Length == 2)
-                    {
-                        var records = this.service.FindRecords(nameValue[0], nameValue[1]);
-                        parameters.Add(records);
-                    }
-                }
-
-                if (where.Contains("and", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    for (int g = 1; g < parameters.Count; g++)
-                    {
-                        var result = this.And(parameters[g - 1], parameters[g]);
-                        parameters[g] = result;
-                    }
-                }
-                else if (where.Contains("or", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    for (int g = 1; g < parameters.Count; g++)
-                    {
-                        var result = this.Or(parameters[g - 1], parameters[g]);
-                        parameters[g] = result;
-                    }
-                }
-
-                IEnumerable<FileCabinetRecord> resultWhere = new List<FileCabinetRecord>();
-                if (parameters.Count > 0)
-                {
-                    resultWhere = parameters[parameters.Count - 1];
-                }
-
-
-                if (string.IsNullOrEmpty(where))
-                {
-                    resultWhere = this.service.GetRecords();
-                }
-
-                if (!resultWhere.Any())
-                {
-                    Console.WriteLine("records are not found.");
-                    return;
-                }
-
-                if (select.Length == 1 && string.IsNullOrEmpty(select[0]))
-                {
-                    select = new string[] { "id", "firstname", "lastname", "dateofbirth", "property1", "property2", "property3" };
-                }
-
                 try
                 {
+                    if (string.IsNullOrEmpty(request.Parameters))
+                    {
+                        this.printer(new string[] { "id", "firstname", "lastname", "dateofbirth", "property1", "property2", "property3" }, this.Service?.GetRecords());
+                        return;
+                    }
+
+                    if (!request.Parameters.Contains("where", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var selectIf = request.Parameters?.Replace("'", string.Empty, StringComparison.CurrentCulture).Split(new char[] { ',' }, StringSplitOptions.TrimEntries);
+                        this.printer(selectIf, this.Service?.GetRecords());
+                        return;
+                    }
+
+                    var data = request.Parameters.Replace("'", string.Empty, StringComparison.CurrentCulture).Split("where", StringSplitOptions.TrimEntries);
+
+                    var select = data[0].Split(new char[] { ',' }, StringSplitOptions.TrimEntries);
+                    var where = data[1].Split(new string[] { "and", "or" }, StringSplitOptions.TrimEntries);
+
+                    List<IEnumerable<FileCabinetRecord>> parameters = new List<IEnumerable<FileCabinetRecord>>();
+                    foreach (var param in where)
+                    {
+                        var nameValue = param.Split('=', StringSplitOptions.TrimEntries);
+                        if (nameValue.Length == 2)
+                        {
+                            var records = this.Service?.FindRecords(nameValue[0], nameValue[1]) ?? new List<FileCabinetRecord>();
+                            parameters.Add(records);
+                        }
+                    }
+
+                    if (data[1].Contains("and", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        for (int g = 1; g < parameters.Count; g++)
+                        {
+                            var result = And(parameters[g - 1], parameters[g]);
+                            parameters[g] = result;
+                        }
+                    }
+                    else if (data[1].Contains("or", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        for (int g = 1; g < parameters.Count; g++)
+                        {
+                            var result = Or(parameters[g - 1], parameters[g]);
+                            parameters[g] = result;
+                        }
+                    }
+
+                    IEnumerable<FileCabinetRecord> resultWhere = new List<FileCabinetRecord>();
+                    if (parameters.Count > 0)
+                    {
+                        resultWhere = parameters[parameters.Count - 1];
+                    }
+
+                    if (!resultWhere.Any())
+                    {
+                        Console.WriteLine("records are not found.");
+                        return;
+                    }
+
+                    if (select.Length == 1 && string.IsNullOrEmpty(select[0]))
+                    {
+                        select = new string[] { "id", "firstname", "lastname", "dateofbirth", "property1", "property2", "property3" };
+                    }
+
                     this.printer(select, resultWhere);
                 }
                 catch
@@ -102,14 +108,14 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private IEnumerable<FileCabinetRecord> And(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
+        private static IEnumerable<FileCabinetRecord> And(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
         {
             var result = new List<FileCabinetRecord>();
             foreach (var item1 in one)
             {
                 foreach (var item2 in two)
                 {
-                    if (item1.Id == item2.Id && !result.Contains(item2))
+                    if (item1.Equals(item2) && !result.Contains(item2))
                     {
                         result.Add(item2);
                     }
@@ -119,7 +125,7 @@ namespace FileCabinetApp.CommandHandlers
             return result;
         }
 
-        private IEnumerable<FileCabinetRecord> Or(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
+        private static IEnumerable<FileCabinetRecord> Or(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
         {
             var result = new List<FileCabinetRecord>();
             foreach (var item1 in one)

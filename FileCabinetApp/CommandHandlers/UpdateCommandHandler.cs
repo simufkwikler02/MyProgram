@@ -7,15 +7,22 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "update".
+    /// </summary>
     public class UpdateCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageUpdate = "Use: update set [name] = '[value]', [name] = '[value]' where [name] = '[value]'";
 
+        /// <summary>Initializes a new instance of the <see cref="UpdateCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
         public UpdateCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("update", StringComparison.OrdinalIgnoreCase))
@@ -31,20 +38,30 @@ namespace FileCabinetApp.CommandHandlers
                     var data = request.Parameters.Replace("set", string.Empty, StringComparison.CurrentCulture).Replace("'", string.Empty, StringComparison.CurrentCulture).Split("where", StringSplitOptions.TrimEntries);
 
                     var set = data[0].Split(new char[] { ',' }, StringSplitOptions.TrimEntries);
-                    var where = data[1].Split("and", StringSplitOptions.TrimEntries);
+                    var where = data[1].Split(new string[] { "and", "or" }, StringSplitOptions.TrimEntries);
 
                     List<IEnumerable<FileCabinetRecord>> parameters = new List<IEnumerable<FileCabinetRecord>>();
                     foreach (var param in where)
                     {
-                        var records = this.service.FindRecords(param.Split('=')[0], param.Split('=')[1]);
+                        var records = this.Service?.FindRecords(param.Split('=')[0], param.Split('=')[1]) ?? new List<FileCabinetRecord>();
                         parameters.Add(records);
-
                     }
 
-                    for (int g = 1; g < parameters.Count; g++)
+                    if (data[1].Contains("and", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var result = this.Intersect(parameters[g - 1], parameters[g]);
-                        parameters[g] = result;
+                        for (int g = 1; g < parameters.Count; g++)
+                        {
+                            var result = And(parameters[g - 1], parameters[g]);
+                            parameters[g] = result;
+                        }
+                    }
+                    else if (data[1].Contains("or", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        for (int g = 1; g < parameters.Count; g++)
+                        {
+                            var result = Or(parameters[g - 1], parameters[g]);
+                            parameters[g] = result;
+                        }
                     }
 
                     var resultWhere = parameters[parameters.Count - 1];
@@ -87,7 +104,7 @@ namespace FileCabinetApp.CommandHandlers
 
                         ind = name.FindIndex(i => i.Equals("Property3", StringComparison.OrdinalIgnoreCase));
                         record.Property3 = ind == -1 ? record.Property3 : Convert.ToChar(value[ind], CultureInfo.CurrentCulture);
-                        var indexUpdate = this.service.UpdateRecord(this.service.FindIndex(record), record);
+                        var indexUpdate = this.Service?.UpdateRecord(this.Service.FindIndex(record), record) ?? -1;
                         if (indexUpdate != -1)
                         {
                             idupdate.Add(indexUpdate);
@@ -126,17 +143,39 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private IEnumerable<FileCabinetRecord> Intersect(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
+        private static IEnumerable<FileCabinetRecord> And(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
         {
             var result = new List<FileCabinetRecord>();
             foreach (var item1 in one)
             {
                 foreach (var item2 in two)
                 {
-                    if (item1 == item2 && !result.Contains(item2))
+                    if (item1.Equals(item2) && !result.Contains(item2))
                     {
                         result.Add(item2);
                     }
+                }
+            }
+
+            return result;
+        }
+
+        private static IEnumerable<FileCabinetRecord> Or(IEnumerable<FileCabinetRecord> one, IEnumerable<FileCabinetRecord> two)
+        {
+            var result = new List<FileCabinetRecord>();
+            foreach (var item1 in one)
+            {
+                if (!result.Contains(item1))
+                {
+                    result.Add(item1);
+                }
+            }
+
+            foreach (var item2 in two)
+            {
+                if (!result.Contains(item2))
+                {
+                    result.Add(item2);
                 }
             }
 

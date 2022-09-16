@@ -1,11 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
-using FileCabinetApp.CommandHandlers;
 using ConsoleTables;
+using FileCabinetApp.CommandHandlers;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    ///   The main class.
+    /// </summary>
     public static class Program
     {
         private const string DeveloperName = "Azemsha Oleg";
@@ -15,6 +18,8 @@ namespace FileCabinetApp
         private static IFileCabinetService? fileCabinetService;
         private static bool isRunning = true;
 
+        /// <summary>Defines the entry point of the application.</summary>
+        /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
             Program.FileCabinetServiceCreate(args);
@@ -65,6 +70,8 @@ namespace FileCabinetApp
             return helpHander;
         }
 
+        /// <summary>Reads and analyzes the command line arguments.</summary>
+        /// <param name="args">The arguments.</param>
         private static void FileCabinetServiceCreate(string[] args)
         {
             if (args.Length == 0)
@@ -129,6 +136,8 @@ namespace FileCabinetApp
             }
         }
 
+        /// <summary>Reads and analyzes the command line arguments.</summary>
+        /// <param name="input">The arguments.</param>
         private static IRecordValidator ValidationRules(string[] input)
         {
             var inputs = new string[] { string.Empty, string.Empty };
@@ -167,6 +176,8 @@ namespace FileCabinetApp
             return new ValidatorBuilder().CreateDefault();
         }
 
+        /// <summary>Reads and analyzes the command line arguments.</summary>
+        /// <param name="input">The arguments.</param>
         private static IFileCabinetService FileCabinetServiceRules(string[] input)
         {
             var inputs = new string[] { string.Empty, string.Empty };
@@ -206,8 +217,22 @@ namespace FileCabinetApp
             return new FileCabinetMemoryService(recordValidator);
         }
 
-        private static void PrintTable(string[] tableName, IEnumerable<FileCabinetRecord> record)
+        /// <summary>Prints the records.</summary>
+        /// <param name="tableName">The table header.</param>
+        /// <param name="record">The record.</param>
+        /// <exception cref="System.ArgumentNullException">record or tableName.</exception>
+        private static void PrintTable(string[]? tableName, IEnumerable<FileCabinetRecord>? record)
         {
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            if (tableName is null)
+            {
+                throw new ArgumentNullException(nameof(tableName));
+            }
+
             var table = new ConsoleTable(tableName);
             foreach (var recordItem in record)
             {

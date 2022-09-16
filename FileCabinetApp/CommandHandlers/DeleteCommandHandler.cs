@@ -6,15 +6,22 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents the command handler "delete".
+    /// </summary>
     public class DeleteCommandHandler : ServiceCommandHandlerBase
     {
         private const string HintMessageDelete = "Use: delete where [name] = '[value]'";
 
+        /// <summary>Initializes a new instance of the <see cref="DeleteCommandHandler" /> class.</summary>
+        /// <param name="fileCabinetService">The file cabinet service.</param>
         public DeleteCommandHandler(IFileCabinetService? fileCabinetService)
             : base(fileCabinetService)
         {
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
         {
             if (request.Command.Equals("delete", StringComparison.OrdinalIgnoreCase))
@@ -33,14 +40,13 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                int index;
                 List<int> indexDelete = new List<int>();
 
-                var recordsDelete = this.service.FindRecords(data[0], data[1]);
+                var recordsDelete = this.Service?.FindRecords(data[0], data[1]) ?? new List<FileCabinetRecord>();
 
                 foreach (var record in recordsDelete)
                 {
-                    index = this.service.DeleteRecord(record);
+                    var index = this.Service?.DeleteRecord(record) ?? -1;
 
                     if (index != -1)
                     {

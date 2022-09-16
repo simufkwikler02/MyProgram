@@ -7,16 +7,26 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
+    /// <summary>
+    ///   Represents an abstract class for command handlers.
+    /// </summary>
     public abstract class CommandHandlerBase : ICommandHandler
     {
-        private ICommandHandler nextHandler;
+        private ICommandHandler? nextHandler;
 
+        /// <summary>Sets the next command handler.</summary>
+        /// <param name="handler">The command handler.</param>
+        /// <returns>
+        ///   The next command handler.
+        /// </returns>
         public ICommandHandler SetNext(ICommandHandler handler)
         {
             this.nextHandler = handler;
             return handler;
         }
 
+        /// <summary>Handles the specified request.</summary>
+        /// <param name="request">The request.</param>
         public virtual void Handle(AppCommandRequest request)
         {
             if (this.nextHandler != null)
@@ -29,6 +39,8 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
+        /// <summary>Prints the missed command and the most similar commands.</summary>
+        /// <param name="command">The missed command.</param>
         protected static void PrintMissedCommandInfo(string command)
         {
             Console.WriteLine($"There is no '{command}' command. See 'help' command.");

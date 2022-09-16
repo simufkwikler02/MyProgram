@@ -5,7 +5,10 @@ using FileCabinetApp;
 
 namespace FileCabinetGenerator
 {
-    public static class Program2
+    /// <summary>
+    ///   Represents the file cabinet generator which can generate a file with records.
+    /// </summary>
+    public static class FileCabinetGenerator
     {
         private static string? format;
         private static string? path;
@@ -13,6 +16,9 @@ namespace FileCabinetGenerator
         private static int id;
         private static char[] letters = "abcdefghigklmnopqrstuvwxwz".ToCharArray();
 
+        /// <summary>Defines the entry point of the application.</summary>
+        /// <param name="args">The arguments.</param>
+        /// <exception cref="System.ArgumentException">directory</exception>
         public static void Main(string[] args)
         {
             ReadParametrs(args);
@@ -34,7 +40,7 @@ namespace FileCabinetGenerator
             {
                 fileInfo = new FileInfo(path);
                 directory = fileInfo.Directory;
-                if (!directory.Exists)
+                if (!(directory?.Exists ?? false))
                 {
                     throw new ArgumentException(nameof(directory));
                 }
@@ -87,6 +93,10 @@ namespace FileCabinetGenerator
 
         }
 
+        /// <summary>Generates records.</summary>
+        /// <returns>
+        ///   The random record.
+        /// </returns>
         private static FileCabinetRecord fileCabinetRecordGenerator()
         {
             var validator = new ValidatorBuilder().CreateDefault();
@@ -95,18 +105,17 @@ namespace FileCabinetGenerator
             Random random = new Random();
             StringBuilder? stringBuilder= new StringBuilder();
             var parametrs = validator.ParametrsInfo();
-
             do
             {
                 stringBuilder.Clear();
-                for (int i = 0; i < 10; i++)
+                for (int i = parametrs.MinLengthFirstName; i < parametrs.MaxLengthFirstName; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
                 }
                 record.FirstName = stringBuilder.ToString();
 
                 stringBuilder.Clear();
-                for (int i = 0; i < 10; i++)
+                for (int i = parametrs.MinLengthLastName; i < parametrs.MaxLengthLastName; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
                 }
@@ -131,6 +140,8 @@ namespace FileCabinetGenerator
 
         }
 
+        /// <summary>Reads and analyzes the command line arguments.</summary>
+        /// <param name="args">The arguments.</param>
         private static void ReadParametrs(string[] args)
         {
             for (int i = 0; i < args.Length; i++)

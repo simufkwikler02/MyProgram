@@ -8,15 +8,21 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    ///   Represents the enumerator, which supports an iteration over a file.
+    /// </summary>
     public class Enumerable : IEnumerable<FileCabinetRecord>
     {
+        private readonly string data;
 
-        private string data;
+        private readonly string name;
 
-        private string name;
+        private readonly FileStream? fileStream;
 
-        private FileStream? fileStream;
-
+        /// <summary>Initializes a new instance of the <see cref="Enumerable" /> class.</summary>
+        /// <param name="fileStream">The file stream.</param>
+        /// <param name="data">The value of property in the record, which wiil be found.</param>
+        /// <param name="name">The name of property in the record.</param>
         public Enumerable(FileStream? fileStream, string data, string name)
         {
             this.fileStream = fileStream;
@@ -24,14 +30,31 @@ namespace FileCabinetApp
             this.name = name;
         }
 
+        /// <summary>Gets the enumerator.</summary>
+        /// <returns>
+        ///   Returns an enumerator that iterates through a file.
+        /// </returns>
         public IEnumerator<FileCabinetRecord> GetEnumerator()
         {
+            if (this.fileStream is null)
+            {
+                yield break;
+            }
+
             this.fileStream.Seek(0, SeekOrigin.Begin);
             while (this.fileStream.Position < this.fileStream.Length)
             {
                 var record = this.ReadRecord();
                 switch (this.name)
                 {
+                    case "id":
+                        int id;
+                        if (int.TryParse(this.data, out id) && record.Id == id)
+                        {
+                            yield return record;
+                        }
+
+                        break;
                     case "firstname":
                         if (record.FirstName == this.data)
                         {
@@ -47,7 +70,7 @@ namespace FileCabinetApp
 
                         break;
                     case "dateofbirth":
-                        var dateofbirth = new DateTime();
+                        var dateofbirth = default(DateTime);
                         if (DateTime.TryParse(this.data, out dateofbirth) && record.DateOfBirth == dateofbirth)
                         {
                             yield return record;
@@ -84,11 +107,18 @@ namespace FileCabinetApp
             yield break;
         }
 
+        /// <summary>Returns an enumerator that iterates through a collection.</summary>
+        /// <returns>  <see cref="IEnumerator" />. </returns>
+        /// <exception cref="System.NotImplementedException">.</exception>
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>Reads next record in the file.</summary>
+        /// <returns>
+        ///   The record <see cref="FileCabinetRecord" />.
+        /// </returns>
         private FileCabinetRecord ReadRecord()
         {
             FileCabinetRecord record = new FileCabinetRecord();
