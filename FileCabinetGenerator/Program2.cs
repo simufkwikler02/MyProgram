@@ -95,18 +95,17 @@ namespace FileCabinetGenerator
             Random random = new Random();
             StringBuilder? stringBuilder= new StringBuilder();
             var parametrs = validator.ParametrsInfo();
-
             do
             {
                 stringBuilder.Clear();
-                for (int i = 0; i < 10; i++)
+                for (int i = parametrs.MinLengthFirstName; i < parametrs.MaxLengthFirstName; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
                 }
                 record.FirstName = stringBuilder.ToString();
 
                 stringBuilder.Clear();
-                for (int i = 0; i < 10; i++)
+                for (int i = parametrs.MinLengthLastName; i < parametrs.MaxLengthLastName; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
                 }

@@ -12,7 +12,7 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class CreateCommandHandler : ServiceCommandHandlerBase
     {
-        private IRecordValidator? recordValidator;
+        private readonly IRecordValidator? recordValidator;
 
         /// <summary>Initializes a new instance of the <see cref="CreateCommandHandler" /> class.</summary>
         /// <param name="fileCabinetService">The file cabinet service.</param>

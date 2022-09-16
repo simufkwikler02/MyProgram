@@ -13,7 +13,7 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetRecordXmlReader
     {
-        private XmlReader reader;
+        private readonly XmlReader reader;
 
         /// <summary>Initializes a new instance of the <see cref="FileCabinetRecordXmlReader" /> class.</summary>
         /// <param name="fstream">The fstream.</param>

@@ -12,7 +12,7 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetRecordCsvReader
     {
-        private StreamReader reader;
+        private readonly StreamReader reader;
 
         /// <summary>Initializes a new instance of the <see cref="FileCabinetRecordCsvReader" /> class.</summary>
         /// <param name="fstream">The fstream.</param>

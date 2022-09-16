@@ -29,7 +29,7 @@ namespace FileCabinetApp
             this.fileStream = new FileStream("cabinet-records.db", FileMode.OpenOrCreate);
             this.validator = validator;
             int i = 0;
-            var poz = (int)this.fileStream.Seek(0, SeekOrigin.Begin);
+            this.fileStream.Seek(0, SeekOrigin.Begin);
             while (this.fileStream.Position < this.fileStream.Length)
             {
                 var record = this.ReadRecord();
@@ -131,7 +131,7 @@ namespace FileCabinetApp
                 return new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
             }
 
-            var poz = this.fileStream?.Seek(0, SeekOrigin.Begin);
+            this.fileStream?.Seek(0, SeekOrigin.Begin);
 
             List<FileCabinetRecord> list = new List<FileCabinetRecord>();
             while (this.fileStream?.Position < this.fileStream?.Length)
