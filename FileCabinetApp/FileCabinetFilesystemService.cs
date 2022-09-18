@@ -457,35 +457,35 @@ namespace FileCabinetApp
         /// <remarks> if status = 1, then the entry is marked as deleted, otherwise status = 0.</remarks>
         private void WriteRecord(short status, FileCabinetRecord newRecord)
         {
-            byte[] buffer = Encoding.Default.GetBytes(status.ToString(CultureInfo.CurrentCulture));
+            byte[] buffer = BitConverter.GetBytes(status);
             Array.Resize(ref buffer, 2);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.Id.ToString(CultureInfo.CurrentCulture));
+            buffer = BitConverter.GetBytes(newRecord.Id);
             Array.Resize(ref buffer, 4);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.FirstName.ToString(CultureInfo.CurrentCulture));
+            buffer = Encoding.Default.GetBytes(newRecord.FirstName);
             Array.Resize(ref buffer, 120);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.LastName.ToString(CultureInfo.CurrentCulture));
+            buffer = Encoding.Default.GetBytes(newRecord.LastName);
             Array.Resize(ref buffer, 120);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Year.ToString(CultureInfo.CurrentCulture));
+            buffer = BitConverter.GetBytes(newRecord.DateOfBirth.Year);
             Array.Resize(ref buffer, 4);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Month.ToString(CultureInfo.CurrentCulture));
+            buffer = BitConverter.GetBytes(newRecord.DateOfBirth.Month);
             Array.Resize(ref buffer, 4);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.DateOfBirth.Day.ToString(CultureInfo.CurrentCulture));
+            buffer = BitConverter.GetBytes(newRecord.DateOfBirth.Day);
             Array.Resize(ref buffer, 4);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.Property1.ToString(CultureInfo.CurrentCulture));
+            buffer = BitConverter.GetBytes(newRecord.Property1);
             Array.Resize(ref buffer, 2);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
@@ -493,7 +493,7 @@ namespace FileCabinetApp
             Array.Resize(ref buffer, 16);
             this.fileStream?.Write(buffer, 0, buffer.Length);
 
-            buffer = Encoding.Default.GetBytes(newRecord.Property3.ToString(CultureInfo.CurrentCulture));
+            buffer = BitConverter.GetBytes(newRecord.Property3);
             Array.Resize(ref buffer, 2);
             this.fileStream?.Write(buffer, 0, buffer.Length);
         }
@@ -506,123 +506,86 @@ namespace FileCabinetApp
         {
             FileCabinetRecord? record = new FileCabinetRecord();
 
-            if (this.fileStream?.Position == this.fileStream?.Length)
+            try
+            {
+                byte[] buffer = new byte[2];
+                this.fileStream?.Read(buffer, 0, 2);
+
+                short status = BitConverter.ToInt16(buffer, 0);
+
+                buffer = new byte[4];
+                this.fileStream?.Read(buffer, 0, 4);
+
+                record.Id = BitConverter.ToInt32(buffer, 0);
+
+                buffer = new byte[120];
+                this.fileStream?.Read(buffer, 0, 120);
+                int num = Array.IndexOf(buffer, (byte)0);
+                if (num > 0)
+                {
+                    Array.Resize(ref buffer, num);
+                }
+
+                record.FirstName = Convert.ToString(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+                buffer = new byte[120];
+                this.fileStream?.Read(buffer, 0, 120);
+                num = Array.IndexOf(buffer, (byte)0);
+                if (num > 0)
+                {
+                    Array.Resize(ref buffer, num);
+                }
+
+                record.LastName = Convert.ToString(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+                buffer = new byte[4];
+                this.fileStream?.Read(buffer, 0, 4);
+                num = Array.IndexOf(buffer, (byte)0);
+
+                var year = BitConverter.ToInt32(buffer, 0);
+
+                buffer = new byte[4];
+                this.fileStream?.Read(buffer, 0, 4);
+                num = Array.IndexOf(buffer, (byte)0);
+
+                var month = BitConverter.ToInt32(buffer, 0);
+
+                buffer = new byte[4];
+                this.fileStream?.Read(buffer, 0, 4);
+                num = Array.IndexOf(buffer, (byte)0);
+
+                var day = BitConverter.ToInt32(buffer, 0);
+
+                record.DateOfBirth = new DateTime(year, month, day);
+
+                buffer = new byte[2];
+                this.fileStream?.Read(buffer, 0, 2);
+                num = Array.IndexOf(buffer, (byte)0);
+
+                record.Property1 = BitConverter.ToInt16(buffer, 0);
+
+                buffer = new byte[16];
+                this.fileStream?.Read(buffer, 0, 16);
+                num = Array.IndexOf(buffer, (byte)0);
+                if (num > 0)
+                {
+                    Array.Resize(ref buffer, num);
+                }
+
+                record.Property2 = Convert.ToDecimal(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
+
+                buffer = new byte[2];
+                this.fileStream?.Read(buffer, 0, 2);
+                num = Array.IndexOf(buffer, (byte)0);
+
+                record.Property3 = BitConverter.ToChar(buffer, 0);
+                record = status == 0 ? record : this.ReadRecord();
+                return record;
+            }
+            catch
             {
                 return null;
             }
-
-            byte[] buffer = new byte[2];
-            this.fileStream?.Read(buffer, 0, 2);
-            int num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            short status = Convert.ToInt16(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-            buffer = new byte[4];
-
-            this.fileStream?.Read(buffer, 0, 4);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            record.Id = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-            buffer = new byte[120];
-
-            this.fileStream?.Read(buffer, 0, 120);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            record.FirstName = Encoding.Default.GetString(buffer);
-
-            buffer = new byte[120];
-
-            this.fileStream?.Read(buffer, 0, 120);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            record.LastName = Encoding.Default.GetString(buffer);
-
-            buffer = new byte[4];
-
-            this.fileStream?.Read(buffer, 0, 4);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            var year = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-            buffer = new byte[4];
-
-            this.fileStream?.Read(buffer, 0, 4);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            var month = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-            buffer = new byte[4];
-
-            this.fileStream?.Read(buffer, 0, 4);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            var day = Convert.ToInt32(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-            record.DateOfBirth = new DateTime(year, month, day);
-
-            buffer = new byte[2];
-
-            this.fileStream?.Read(buffer, 0, 2);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            record.Property1 = Convert.ToInt16(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-            buffer = new byte[16];
-
-            this.fileStream?.Read(buffer, 0, 16);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            record.Property2 = Convert.ToDecimal(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-
-            buffer = new byte[2];
-
-            this.fileStream?.Read(buffer, 0, 2);
-            num = Array.IndexOf(buffer, (byte)0);
-            if (num > 0)
-            {
-                Array.Resize(ref buffer, num);
-            }
-
-            record.Property3 = Convert.ToChar(Encoding.Default.GetString(buffer), CultureInfo.CurrentCulture);
-            record = status == 0 ? record : this.ReadRecord();
-            return record;
         }
     }
 }

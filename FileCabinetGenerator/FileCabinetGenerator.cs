@@ -108,14 +108,14 @@ namespace FileCabinetGenerator
             do
             {
                 stringBuilder.Clear();
-                for (int i = parametrs.MinLengthFirstName; i < parametrs.MaxLengthFirstName; i++)
+                for (int i = parametrs.MinLengthFirstName; i < parametrs.MaxLengthFirstName && i <= 10; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
                 }
                 record.FirstName = stringBuilder.ToString();
 
                 stringBuilder.Clear();
-                for (int i = parametrs.MinLengthLastName; i < parametrs.MaxLengthLastName; i++)
+                for (int i = parametrs.MinLengthLastName; i < parametrs.MaxLengthLastName && i <= 10; i++)
                 {
                     stringBuilder.Append(letters[random.Next(0, letters.Length - 1)]);
                 }
