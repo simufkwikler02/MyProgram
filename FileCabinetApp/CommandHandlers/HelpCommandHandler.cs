@@ -83,16 +83,16 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 else
                 {
-                    bool contain = true;
+                    int contain = 0;
                     foreach (var sim in com.ToCharArray())
                     {
-                        if (!helpMessage[0].Contains(sim, StringComparison.CurrentCultureIgnoreCase))
+                        if (helpMessage[0].Contains(sim, StringComparison.CurrentCultureIgnoreCase))
                         {
-                            contain = false;
+                            contain++;
                         }
                     }
 
-                    if (contain)
+                    if (contain >= com.Length - 1)
                     {
                         command.Add(helpMessage[0]);
                     }
